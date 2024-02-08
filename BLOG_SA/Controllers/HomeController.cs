@@ -21,6 +21,7 @@ namespace BLOG_SA.Controllers
 
         public IActionResult Privacy()
         {
+            //first commit
             return View();
         }
 
