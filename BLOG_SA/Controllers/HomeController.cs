@@ -14,16 +14,27 @@ namespace BLOG_SA.Controllers
             _logger = logger;
         }
 
+        #region Views
         public IActionResult Index()
         {
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Contact()
         {
-            //first commit
             return View();
         }
+
+        public IActionResult RSS()
+        {
+            return View();
+        }
+
+        public IActionResult Subscribe()
+        {
+            return View();
+        }
+        #endregion
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
