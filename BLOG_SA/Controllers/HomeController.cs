@@ -20,7 +20,12 @@ namespace BLOG_SA.Controllers
             return View();
         }
 
-        public IActionResult Contact()
+		public IActionResult Article()
+		{
+			return View();
+		}
+
+		public IActionResult Contact()
         {
             return View();
         }

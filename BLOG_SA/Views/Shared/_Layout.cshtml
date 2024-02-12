@@ -16,51 +16,51 @@
 </head>
 <body>
 
-	<header class="header text-center">
-		<h1 class="blog-name pt-lg-4 mb-0"><a href="index.html">Blog Akan</a></h1>
+    <header class="header text-center">
+        <h1 class="blog-name pt-lg-4 mb-0"><a href="index.html">Blog Akan</a></h1>
 
-		<nav class="navbar navbar-expand-lg navbar-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark">
 
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-			<div id="navigation" class="collapse navbar-collapse flex-column">
-				<div class="profile-section pt-3 pt-lg-0">
-					<img class="profile-image mb-3 mx-auto" src="~/img/dev_icon.png" alt="image">
-					<div class="bio mb-3">Merhaba, ben Selahattin Akan.<br /> Güncel teknolojiler hakkında öğrendiklerimi deneyimlemek için bu blog siteyi yarattım.  </div><!--//bio-->
-					<ul class="social-list list-inline py-3 mx-auto">
-						<li title="Linkedin" class="list-inline-item"><a href="https://www.linkedin.com/in/selahattin-akan-80697014a/" target="_blank"><i class="fab fa-linkedin-in fa-fw"></i></a></li>
-						<li title="GitHub" class="list-inline-item"><a href="https://github.com/selahattinakan" target="_blank"><i class="fab fa-github-alt fa-fw"></i></a></li>
-						<li title="Stack Overflow" class="list-inline-item"><a href="https://stackoverflow.com/users/5118387/interrupt" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i></a></li>
-					</ul><!--//social-list-->
-					<hr>
-				</div><!--//profile-section-->
+            <div id="navigation" class="collapse navbar-collapse flex-column">
+                <div class="profile-section pt-3 pt-lg-0">
+                    <img class="profile-image mb-3 mx-auto" src="~/img/dev_icon.png" alt="image">
+                    <div class="bio mb-3">Merhaba, ben Selahattin Akan.<br /> Güncel teknolojiler hakkında öğrendiklerimi deneyimlemek için bu blog siteyi yarattım.  </div><!--//bio-->
+                    <ul class="social-list list-inline py-3 mx-auto">
+                        <li title="Linkedin" class="list-inline-item"><a href="https://www.linkedin.com/in/selahattin-akan-80697014a/" target="_blank"><i class="fab fa-linkedin-in fa-fw"></i></a></li>
+                        <li title="GitHub" class="list-inline-item"><a href="https://github.com/selahattinakan" target="_blank"><i class="fab fa-github-alt fa-fw"></i></a></li>
+                        <li title="Stack Overflow" class="list-inline-item"><a href="https://stackoverflow.com/users/5118387/interrupt" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i></a></li>
+                    </ul><!--//social-list-->
+                    <hr>
+                </div><!--//profile-section-->
 
-				<ul class="navbar-nav flex-column text-left">
-					<li class="nav-item active">
-						<a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index"><i class="fas fa-home fa-fw mr-2"></i>Anasayfa</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" asp-area="" asp-controller="Home" asp-action="Contact"><i class="fas fa-envelope-open fa-fw mr-2"></i>İletişim</a>
-					</li>
-				</ul>
+                <ul class="navbar-nav flex-column text-left">
+                    <li class="nav-item active">
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index"><i class="fas fa-home fa-fw mr-2"></i>Anasayfa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Contact"><i class="fas fa-envelope-open fa-fw mr-2"></i>İletişim</a>
+                    </li>
+                </ul>
 
-			</div>
-		</nav>
-	</header>
+            </div>
+        </nav>
+    </header>
 
-	<div class="main-wrapper">
+    <div class="main-wrapper">
 
-		@RenderBody()
+        @RenderBody()
 
-		<footer class="footer text-center py-2 theme-bg-dark">
-			<small class="copyright">
-				© @DateTime.Now.Year.ToString() - Selahattin Akan tarafından geliştirilmiştir
-			</small>
-		</footer>
+        <footer class="footer text-center py-2 theme-bg-dark" style="position: fixed;bottom: 0px;width: calc(100% - 280px);">
+            <small class="copyright">
+                © @DateTime.Now.Year.ToString() - Selahattin Akan tarafından geliştirilmiştir
+            </small>
+        </footer>
 
-	</div>
+    </div>
 
 
 
