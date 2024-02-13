@@ -1,5 +1,6 @@
 using BLOG_SA.Models;
 using DB_EFCore.DataAccessLayer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -25,6 +26,7 @@ namespace BLOG_SA.Controllers
 			return View();
 		}
 
+        
 		public IActionResult Contact()
         {
             return View();
