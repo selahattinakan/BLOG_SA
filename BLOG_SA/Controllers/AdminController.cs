@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BLOG_SA.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class AdminController : Controller
     {
         

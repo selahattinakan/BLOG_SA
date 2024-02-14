@@ -1,4 +1,5 @@
 ﻿using BLOG_SA.Models;
+using Business.Services;
 using DB_EFCore.DataAccessLayer;
 using DB_EFCore.Entity;
 using Microsoft.AspNetCore.Authentication;
@@ -21,28 +22,25 @@ namespace BLOG_SA.Controllers
         public async Task<IActionResult> Index(UserModel model, string ReturnUrl)
         {
             //returnurl güvenlik açığı olabilir, ilerde kalkacak
-            using (var context = new AppDbContext())
+            AdminService adminService = new AdminService();
+            bool logInControl = await adminService.LogInControlAsync(model.UserName, model.Password);
+            if (logInControl)
             {
-                //db işlemi başka bir katmana alınacak
-                Admin? admin = await context.Admin.FirstOrDefaultAsync(x => x.UserName == model.UserName && x.Password == model.Password);
-                if (admin != null)
-                {
-                    List<Claim> claims = new List<Claim>()
+                List<Claim> claims = new List<Claim>()
                     {
                         new Claim (ClaimTypes.Name, model.UserName)
                     };
-                    ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Login");
-                    ClaimsPrincipal principal = new ClaimsPrincipal(claimsIdentity);
-                    await HttpContext.SignInAsync(principal);
+                ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Login");
+                ClaimsPrincipal principal = new ClaimsPrincipal(claimsIdentity);
+                await HttpContext.SignInAsync(principal);
 
-                    if (!string.IsNullOrEmpty(ReturnUrl))
-                    {
-                        return Redirect(ReturnUrl);
-                    }
-                    else
-                    {
-                        return RedirectToAction("Index", "Admin");
-                    }
+                if (!string.IsNullOrEmpty(ReturnUrl))
+                {
+                    return Redirect(ReturnUrl);
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Admin");
                 }
             }
             return View(false);
