@@ -55,9 +55,3 @@ button.accept-policy {
 footer .container {
     background: #ccc;
 }*/
-
-@media (max-width: 991.98px) {
-    #layoutFooter {
-        width:100% !important;
-    }
-}

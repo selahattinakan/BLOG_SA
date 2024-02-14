@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="~/BLOG_SA.styles.css" asp-append-version="true" />
     <link rel="shortcut icon" href="favicon.ico">
 
+    @* v5.7.1 *@
     <script src="~/lib/font-awesome/font-awesome.min.js" integrity="sha384-eVEQC9zshBn0rFj4+TU78eNA19HMNigMviK/PU/FFjLXqa/GKPgX58rvt5Z8PLs7" crossorigin="anonymous"></script>
 
     <link href="~/css/themes/theme-7.css" rel="stylesheet" />
@@ -54,7 +55,7 @@
 
         @RenderBody()
 
-        <footer class="footer text-center py-2 theme-bg-dark" style="position: fixed;bottom: 0px;width: calc(100% - 280px);">
+        <footer id="layoutFooter" class="footer text-center py-2 theme-bg-dark" style="position: fixed;bottom: 0px;width: calc(100% - 280px);">
             <small class="copyright">
                 © @DateTime.Now.Year.ToString() - Selahattin Akan tarafından geliştirilmiştir
             </small>
@@ -67,7 +68,8 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/popper/popper.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @* <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> *@
+    <script src="~/js/bootstrap.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
