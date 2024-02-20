@@ -15,12 +15,13 @@ namespace Business.Services
 {
     public class AdminService
     {
+        // Şifre kayıt ve gösterme işlemleri encrytion sınıfı ile yapılacak
         #region LogIn
         public bool LogInControl(string userName, string password)
         {
             using (var context = new AppDbContext())
             {
-                Admin? admin = context.Admin.FirstOrDefault(x => x.UserName == userName && x.Password == Encryption.Encrypt(password));
+                Admin? admin = context.Admin.FirstOrDefault(x => x.UserName == userName && x.Password == password);
                 if (admin != null)
                 {
                     return true;
@@ -33,7 +34,7 @@ namespace Business.Services
         {
             using (var context = new AppDbContext())
             {
-                Admin? admin = await context.Admin.FirstOrDefaultAsync(x => x.UserName == userName && x.Password == Encryption.Encrypt(password));
+                Admin? admin = await context.Admin.FirstOrDefaultAsync(x => x.UserName == userName && x.Password == password);
                 if (admin != null)
                 {
                     return true;
@@ -96,12 +97,12 @@ namespace Business.Services
                     if (state == DbState.Update)
                     {
                         data.LastUpdateDate = DateTime.Now;
-                        data.UpdateAdminId = 2; //aktif kullanıcı id
+                        data.UpdateAdminId = Service.GetActiveUserId();
                     }
                     else
                     {
                         data.RegisterDate = DateTime.Now;
-                        data.RegisterId = 2; //aktif kullanıcı id
+                        data.RegisterId = Service.GetActiveUserId();
                         context.Add(data);
                     }
 
@@ -147,19 +148,19 @@ namespace Business.Services
                     if (state == DbState.Update)
                     {
                         data.LastUpdateDate = DateTime.Now;
-                        data.UpdateAdminId = 2; //aktif kullanıcı id
+                        data.UpdateAdminId = Service.GetActiveUserId();
                     }
                     else
                     {
                         data.RegisterDate = DateTime.Now;
-                        data.RegisterId = 2; //aktif kullanıcı id
+                        data.RegisterId = Service.GetActiveUserId();
                         await context.AddAsync(data);
                     }
 
                     int count = await context.SaveChangesAsync();
                     if (count > 0)
                     {
-                        result.Id = data.Id; 
+                        result.Id = data.Id;
                     }
                     else
                     {
