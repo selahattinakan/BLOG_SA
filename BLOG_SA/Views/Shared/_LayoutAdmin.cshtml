@@ -5,15 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Selahattin Akan">
     <title>@ViewData["Title"] - BLOG SAKAN</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="~/lib/admin-theme/css/styles.css" rel="stylesheet" />
     <link rel="shortcut icon" href="favicon.ico">
-
+    <link href="~/lib/datatable/datatables.min.css" rel="stylesheet" />
+    <link href="~/lib/jquery/dist/jquery-ui.css" rel="stylesheet" />
     @* v5.7.1 *@
     <script src="~/lib/font-awesome/font-awesome.min.js" integrity="sha384-eVEQC9zshBn0rFj4+TU78eNA19HMNigMviK/PU/FFjLXqa/GKPgX58rvt5Z8PLs7" crossorigin="anonymous"></script>
+    <script src="~/js/jquery-3.7.0.js"></script>
+    <script src="~/lib/jquery/dist/jquery-ui.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/datatable/datatables.min.js"></script>
+    <script src="~/lib/datatable/moment.js"></script>
+    @* <script src="~/lib/datatable/datetime.js"></script> *@
+    <script src="~/lib/admin-theme/js/scripts.js"></script>
 
-  
-
-
+    <script src="~/js/editor.js"></script>
 
 </head>
 <body class="sb-nav-fixed">
@@ -21,7 +28,7 @@
    
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
         <!-- Navbar Brand-->
-        <a class="navbar-brand ps-3" href="index.html">Yönetim Paneli</a>
+        <a class="navbar-brand ps-3" asp-area="" asp-controller="Admin" asp-action="Index">Yönetim Paneli</a>
         <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
         <!-- Navbar Search-->
@@ -46,23 +53,23 @@
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                 <div class="sb-sidenav-menu">
                     <div class="nav">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Article" id="articleLink">
                             <div class="sb-nav-link-icon"><i class="fas fa-newspaper"></i></div>
                             Makalaler
                         </a>
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Subscriber" id="subscriberLink">
                             <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                             Aboneler
                         </a>
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Contact" id="contactLink">
                             <div class="sb-nav-link-icon"><i class="fas fa-address-card"></i></div>
                             İletişim Mesajları
                         </a>
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="User" id="userLink">
                             <div class="sb-nav-link-icon"><i class="fas fa-user-friends"></i></div>
                             Kullanıcılar
                         </a>
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Setting" id="settingLink">
                             <div class="sb-nav-link-icon"><i class="fas fa-cogs"></i></div>
                             Ayarlar
                         </a>
@@ -88,8 +95,6 @@
 
 
 
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/admin-theme/js/scripts.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

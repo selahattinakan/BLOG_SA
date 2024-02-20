@@ -1,0 +1,297 @@
+﻿@using Constants.Enums;
+@{
+    ViewData["Title"] = "Makaleler";
+    Layout = "_LayoutAdmin";
+}
+
+<link href="~/lib/quill/quill.snow.css" rel="stylesheet" />
+<script src="~/lib/quill/quill.js"></script>
+
+
+<script>
+    var dTable;
+    $(document).ready(function () {
+        RenderTable(true);
+        $("#articleLink").addClass("active");
+        $('#PublishDate').datepicker({
+            dateFormat: 'dd.mm.yy'
+        });
+    });
+
+    function RenderTable(firstTime) {
+        if (!firstTime) {
+            dTable.clear().draw();
+            $.ajax({
+                type: "POST",
+                url: "/Admin/GetArticles",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    dTable.rows.add(result);
+                    dTable.draw();
+                    CreateSelectedEvent();
+                },
+                failure: function (response) {
+                    alert(response.d);
+                },
+                error: function (response) {
+                    alert(response.d);
+                }
+            });
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/Admin/GetArticles",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: OnSuccess,
+                failure: function (response) {
+                    alert(response.d);
+                },
+                error: function (response) {
+                    alert(response.d);
+                }
+            });
+        }
+
+        CreateSelectedEvent();
+
+    }
+
+    function OnSuccess(response) {
+        dTable = $("#dataTable").DataTable(
+            {
+                bLengthChange: true,
+                lengthMenu: [[10, 20, -1], [10, 20, "All"]],
+                bFilter: true,
+                bSort: true,
+                bPaginate: true,
+                bSelectedOnly: true,
+                select: true,
+                data: response,
+                columns: [
+                    { data: "id", name: "Id", visible: false },
+                    { data: "content", name: "Content", visible: false },
+                    { data: "title", name: "Başlık" },
+                    {
+                        data: "enable", name: "Aktif Mi", render: function (data, type, row) {
+                            return data == true ? "Evet" : "Hayır";
+                        }
+                    },
+                    {
+                        data: "publishDate", name: "Yayın Tarihi", render: function (data, type, row) {
+                            if (type === "sort" || type === "type") {
+                                return data;
+                            }
+                            return moment(data).format("DD.MM.YYYY");
+                        }
+                    },
+                    {
+                        data: "registerDate", name: "Kayıt Tarihi", render: function (data, type, row) {
+                            if (type === "sort" || type === "type") {
+                                return data;
+                            }
+                            return moment(data).format("DD.MM.YYYY HH:mm");
+                        }
+                    }
+                ]
+            });
+    }
+
+    function CreateSelectedEvent() {
+        $('#dataTable tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                ClearForm();
+                $(this).removeClass('selected');
+            }
+            else {
+                dTable.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                $("#Id").val(dTable.row(this).data().id);
+                $("#Title").val(dTable.row(this).data().title);
+                $("#PublishDate").val(new Date(dTable.row(this).data().publishDate).toLocaleDateString());
+                $("#Enable").prop('checked', dTable.row(this).data().enable);
+                quill.setContents(JSON.parse(dTable.row(this).data().content));
+            }
+        });
+    }
+
+    function ClearForm() {
+        $("form input").val('');
+        $("#Enable").prop('checked', false);
+        quill.setText('');
+    }
+
+    function NewClick() {
+        ClearForm();
+        dTable.$('tr.selected').removeClass('selected');
+    }
+
+    function SaveClick() {
+        var data = {
+            Id: $("#Id").val(),
+            Title: $("#Title").val(),
+            PublishDate: $("#PublishDate").val(),
+            Enable: $("#Enable").is(":checked"),
+            Content: JSON.stringify(quill.getContents())
+        };
+        $.ajax({
+            type: "POST",
+            url: "/Admin/SaveArticle",
+            data: data,
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            success: function (result) {
+                if (result.Result == @((int)Result.Success)) {
+                    ClearForm();
+                    RenderTable(false);
+                }
+                alert(result.Message);
+            },
+            failure: function (response) {
+                alert(response.d);
+            },
+            error: function (response) {
+                alert(response.d);
+            }
+        });
+    }
+
+    function DeleteClick() {
+        if (dTable.row('.selected').count() > 0 && parseInt(dTable.row('.selected').data().id) > 0) {
+            var id = parseInt(dTable.row('.selected').data().id);
+            if (confirm("Silme işlemini onaylıyor musunuz?")) {
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/DeleteArticle",
+                    data: "id=" + id,
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (result) {
+                        if (result.Result == @((int)Result.Success)) {
+                            ClearForm();
+                            RenderTable(false);
+                        }
+                        alert(result.Message);
+                    },
+                    failure: function (response) {
+                        alert(response.d);
+                    },
+                    error: function (response) {
+                        alert(response.d);
+                    }
+                });
+            }
+        }
+        else {
+            alert("Lütfen bir kayıt seçiniz");
+        }
+    }
+
+    function CommentClick() {
+        if (parseInt($("#Id").val()) > 0) {
+            $("form").trigger("submit");
+        }
+        else{
+            alert("Lütfen bir kayıt seçiniz");
+        }
+    }
+</script>
+
+<form action="@Url.Action("ArticleComment", "Admin")" method="post">
+    @Html.Hidden("Id")
+
+    <div style="margin: 20px 0px;">
+        <button type="button" class="btn btn-outline-primary" onclick="NewClick()">Yeni</button>
+        <button type="button" class="btn btn-outline-success" onclick="SaveClick()">Kaydet</button>
+        <button type="button" class="btn btn-outline-danger" onclick="DeleteClick()">Sil</button>
+        <button type="button" class="btn btn-outline-secondary" onclick="CommentClick()">Yorumlar</button>
+    </div>
+
+    <div style="height:1px;width:100%;margin:20px 0;background:#ccc;"></div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col col-md-4">
+                <label for="Title">Başlık</label>
+                <input type="text" class="form-control" id="Title" name="Title" placeholder="Başlık">
+            </div>
+            <div class="col col-md-4">
+                <label for="PublishDate">Yayın Tarihi</label>
+                <div class="input-group date">
+                    <input type="text" id="PublishDate" name="PublishDate" class="form-control">
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-th"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-md-4" style="padding-top: 30px;padding-left: 30px;">
+                <input class="form-check-input" type="checkbox" id="Enable" name="Enable">
+                <label class="form-check-label" for="Enable">Aktif Mi</label>
+            </div>
+        </div>
+
+        <div class="row" style="padding-top: 30px;padding-bottom: 40px;">
+            <div class="col col-md-12">
+                <div id="editor">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div style="height:1px;width:100%;margin:30px 0;background:#ccc;"></div>
+
+</form>
+
+
+<table id="dataTable" class="display">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Content</th>
+            <th>Başlık</th>
+            <th>Aktif Mi</th>
+            <th>Yayın Tarihi</th>
+            <th>Kayıt Tarihi</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr></tr>
+    </tbody>
+</table>
+
+
+<script>
+    const toolbarOptions = [
+        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+        ['blockquote', 'code-block'],
+        ['link', 'image', 'video', 'formula'],
+
+        [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
+        [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
+        [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
+        [{ 'direction': 'rtl' }],                         // text direction
+
+        [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+        [{ 'font': [] }],
+        [{ 'align': [] }],
+
+        ['clean']                                         // remove formatting button
+    ];
+
+    const quill = new Quill('#editor', {
+        modules: {
+            //syntax: true,
+            toolbar: toolbarOptions
+        },
+        placeholder: 'İçerik Giriniz...',
+        theme: 'snow', // or 'bubble'
+    });
+</script>

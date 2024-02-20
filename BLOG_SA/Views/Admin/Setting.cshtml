@@ -1,0 +1,81 @@
+﻿@using Constants.Enums;
+@model DB_EFCore.Entity.Setting
+@{
+    ViewData["Title"] = "Ayarlar";
+    Layout = "_LayoutAdmin";
+}
+
+<script>
+    $(document).ready(function () {
+        $("#settingLink").addClass("active");
+    });
+    function SaveClick() {
+        var data = {
+            Id: $("#Id").val(),
+            MaintenanceImgPath: $("#MaintenanceImgPath").val(),
+            MaintenanceText: $("#MaintenanceText").val(),
+            MaintenanceMode: $("#MaintenanceMode").is(":checked"),
+            SubscribeMode: $("#SubscribeMode").is(":checked"),
+            IsCommentEnable: $("#IsCommentEnable").is(":checked"),
+        };
+        // data += "&MaintenanceMode=" + $("#MaintenanceMode").is(":checked");
+        // data += "&SubscribeMode=" + $("#SubscribeMode").is(":checked");
+        // data += "&IsCommentEnable=" + $("#IsCommentEnable").is(":checked");
+         debugger;
+        $.ajax({
+            type: "POST",
+            url: "/Admin/SaveSetting",
+            data: data,
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            success: function (result) {
+                alert(result.Message);
+            },
+            failure: function (response) {
+                alert(response.d);
+            },
+            error: function (response) {
+                alert(response.d);
+            }
+        });
+    }
+</script>
+
+<form>
+    @Html.Hidden("Id",Model.Id)
+
+    <div style="margin: 20px 0px;">
+        <button type="button" class="btn btn-outline-success" onclick="SaveClick()">Kaydet</button>
+    </div>
+
+    <div style="height:1px;width:100%;margin:20px 0;background:#ccc;"></div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col col-md-4">
+                <input class="form-check-input" type="checkbox" id="MaintenanceMode" name="MaintenanceMode" checked="@Model.MaintenanceMode">
+                <label class="form-check-label" for="MaintenanceMode">Bakım Modu</label>
+            </div>
+            <div class="col col-md-4">
+                <input class="form-check-input" type="checkbox" id="SubscribeMode" name="SubscribeMode" checked="@Model.SubscribeMode">
+                <label class="form-check-label" for="SubscribeMode">Abone Modu</label>
+            </div>
+            <div class="col col-md-4">
+                <input class="form-check-input" type="checkbox" id="IsCommentEnable" name="IsCommentEnable" checked="@Model.IsCommentEnable">
+                <label class="form-check-label" for="IsCommentEnable">Yorumlar Açık Mı</label>
+            </div>
+        </div>
+        <div class="row" style="margin-top:20px;">
+            <div class="col col-md-4">
+                <label for="UserName">Bakım Modu Img Yolu</label>
+                <input type="text" class="form-control" id="MaintenanceImgPath" name="MaintenanceImgPath" placeholder="Bakım Modu Img Yolu" value="@Model.MaintenanceImgPath">
+            </div>
+            <div class="col col-md-8">
+                <label for="Password">Bakım Metni</label>
+                <input type="text" class="form-control" id="MaintenanceText" name="MaintenanceText" placeholder="Bakım Metni" value="@Model.MaintenanceText">
+            </div>
+        </div>
+    </div>
+
+    <div style="height:1px;width:100%;margin:30px 0;background:#ccc;"></div>
+
+</form>

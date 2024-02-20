@@ -1,0 +1,194 @@
+﻿@using Constants.Enums;
+@model int;
+@{
+    ViewData["Title"] = "Makale Yorumları";
+    Layout = "_LayoutAdmin";
+}
+
+<script>
+    var dTable;
+    $(document).ready(function () {
+        RenderTable(true);
+        $("#articleLink").addClass("active");
+    });
+
+    function RenderTable(firstTime) {
+        if (!firstTime) {
+            dTable.clear().draw();
+            $.ajax({
+                type: "POST",
+                url: "/Admin/GetArticleComments?articleId=" + $("#ArticleId").val(),
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    dTable.rows.add(result);
+                    dTable.draw();
+                    CreateSelectedEvent();
+                },
+                failure: function (response) {
+                    alert(response.d);
+                },
+                error: function (response) {
+                    alert(response.d);
+                }
+            });
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/Admin/GetArticleComments?articleId=" + $("#ArticleId").val(),
+                data: "{}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: OnSuccess,
+                failure: function (response) {
+                    alert(response.d);
+                },
+                error: function (response) {
+                    alert(response.d);
+                }
+            });
+        }
+
+
+        CreateSelectedEvent();
+    }
+
+    function OnSuccess(response) {
+        dTable = $("#dataTable").DataTable(
+            {
+                bLengthChange: true,
+                lengthMenu: [[10, 20, -1], [10, 20, "All"]],
+                bFilter: true,
+                bSort: true,
+                bPaginate: true,
+                bSelectedOnly: true,
+                select: true,
+                data: response,
+                columns: [
+                    { data: "id", name: "Id", visible: false },
+                    { data: "fullName", name: "Adı Soyadı" },
+                    { data: "mail", name: "Mail" },
+                    { data: "content", name: "İçerik" },
+                    {
+                        data: "isConfirm", name: "Onaylandı Mı", render: function (data, type, row) {
+                            return data == true ? "Evet" : "Hayır";
+                        }
+                    },
+                    {
+                        data: "registerDate", name: "Kayıt Tarihi", render: function (data, type, row) {
+                            if (type === "sort" || type === "type") {
+                                return data;
+                            }
+                            return moment(data).format("DD.MM.YYYY HH:mm");
+                        }
+                    }
+                ]
+            });
+    }
+
+    function CreateSelectedEvent() {
+        $('#dataTable tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+                $("#ArticleCommentId").val('');
+            }
+            else {
+                dTable.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                $("#ArticleCommentId").val(dTable.row(this).data().id);
+            }
+        });
+    }
+
+    function DeleteClick() {
+        if (dTable.row('.selected').count() > 0 && parseInt(dTable.row('.selected').data().id) > 0) {
+            var id = parseInt(dTable.row('.selected').data().id);
+            if (confirm("Silme işlemini onaylıyor musunuz?")) {
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/DeleteArticleComment",
+                    data: "id=" + id,
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (result) {
+                        if (result.Result == @((int)Result.Success)) {
+                            RenderTable(false);
+                        }
+                        alert(result.Message);
+                    },
+                    failure: function (response) {
+                        alert(response.d);
+                    },
+                    error: function (response) {
+                        alert(response.d);
+                    }
+                });
+            }
+        }
+        else {
+            alert("Lütfen bir kayıt seçiniz");
+        }
+    }
+
+    function ConfirmClick(status) {
+        if (dTable.row('.selected').count() > 0 && parseInt(dTable.row('.selected').data().id) > 0) {
+            var id = parseInt(dTable.row('.selected').data().id);
+            if (confirm("Silme işlemini onaylıyor musunuz?")) {
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/ConfirmArticleComment",
+                    data: "id=" + id + "&confirm=" + status,
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    success: function (result) {
+                        if (result.Result == @((int)Result.Success)) {
+                            RenderTable(false);
+                        }
+                        alert(result.Message);
+                    },
+                    failure: function (response) {
+                        alert(response.d);
+                    },
+                    error: function (response) {
+                        alert(response.d);
+                    }
+                });
+            }
+        }
+        else {
+            alert("Lütfen bir kayıt seçiniz");
+        }
+    }
+
+</script>
+
+@Html.Hidden("ArticleId", Model)
+@Html.Hidden("ArticleCommentId")
+
+<div style="margin: 20px 0px;">
+    <button type="button" class="btn btn-outline-danger" onclick="DeleteClick()">Sil</button>
+    <button type="button" class="btn btn-outline-success" onclick="ConfirmClick(true)">Onayla</button>
+    <button type="button" class="btn btn-outline-dark" onclick="ConfirmClick(false)">Red</button>
+</div>
+
+<div style="height:1px;width:100%;margin:20px 0;background:#ccc;"></div>
+
+
+<div style="margin-top:30px;">
+    <table id="dataTable" class="display">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Adı Soyadı</th>
+                <th>Mail</th>
+                <th>İçerik</th>
+                <th>Onaylandı Mı</th>
+                <th>Kayıt Tarihi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr></tr>
+        </tbody>
+    </table>
+</div>
+
