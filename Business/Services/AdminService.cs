@@ -216,5 +216,20 @@ namespace Business.Services
             }
             return result;
         }
+
+        public void SP_FN_Test()
+        {
+            using (var context = new AppDbContext())
+            {
+                string userName = "SAKAN";
+                var admin = context.Admin.FromSql($"GetAdminEncrypt {userName}").ToList();// entity doldurur
+
+
+                var param = new Dictionary<string, string>();
+                param.Add("@UserName", "SAKAN");
+                var spTest = context.GetDataTableFromSP("GetAdminFullName", param);
+
+            }
+        }
     }
 }
