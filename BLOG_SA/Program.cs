@@ -1,9 +1,24 @@
+using Business.Interfaces;
+using Business.Services;
+using DB_EFCore.DataAccessLayer;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<AppDbContext>();
+builder.Services.AddTransient<IAdminService, AdminService>();
+builder.Services.AddTransient<IArticleService, ArticleService>();
+builder.Services.AddTransient<IArticleCommentService, ArticleCommentService>();
+builder.Services.AddTransient<IChatService, ChatService>();
+builder.Services.AddTransient<IContactService, ContactService>();
+builder.Services.AddTransient<ILogService, LogService>();
+builder.Services.AddTransient<IService, Service>();
+builder.Services.AddTransient<ISettingService, SettingService>();
+builder.Services.AddTransient<ISubscriberService, SubscriberService>();
+
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(settings =>
     {
@@ -30,6 +45,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Admin}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

@@ -25,6 +25,14 @@ namespace DB_EFCore.DataAccessLayer
         public DbSet<Setting> Setting { get; set; }
         public DbSet<Subscriber> Subscriber { get; set; }
 
+
+        //fluent api kullanılabilir metot
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //modelBuilder.Entity<Admin>().Property(x => x.RegisterId).HasColumnName("Kayıt Eden"); //örnek
+            base.OnModelCreating(modelBuilder);
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             Initilazier.Build();

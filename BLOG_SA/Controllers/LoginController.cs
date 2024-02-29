@@ -1,4 +1,5 @@
 ﻿using BLOG_SA.Models;
+using Business.Interfaces;
 using Business.Services;
 using DB_EFCore.DataAccessLayer;
 using DB_EFCore.Entity;
@@ -13,6 +14,13 @@ namespace BLOG_SA.Controllers
     /*İlerde kimlik doğrulama ve yetkilendirme işlemleri detaylandırılacak*/
     public class LoginController : Controller
     {
+        private readonly IAdminService adminService;
+
+        public LoginController(IAdminService _adminService)
+        {
+            adminService = _adminService;
+        }
+
         public IActionResult Index()
         {
             return View(true);
@@ -22,7 +30,6 @@ namespace BLOG_SA.Controllers
         public async Task<IActionResult> Index(UserModel model, string ReturnUrl)
         {
             //returnurl güvenlik açığı olabilir, ilerde kalkacak
-            AdminService adminService = new AdminService();
             bool logInControl = await adminService.LogInControlAsync(model.UserName, model.Password);
             if (logInControl)
             {

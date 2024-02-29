@@ -8,14 +8,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Business.Interfaces;
 
 namespace Business.Services
 {
-    public class ArticleService
+    public class ArticleService : IArticleService
     {
+        private readonly AppDbContext context;
+        private readonly IService service;
+        public ArticleService(AppDbContext _context, IService _service)
+        {
+            context = _context;
+            service = _service;
+        }
         public Article? GetArticle(int id)
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return context.Article.FirstOrDefault(x => x.Id == id);
             }
@@ -23,7 +31,7 @@ namespace Business.Services
 
         public async Task<Article?> GetArticleAsync(int id)
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return await context.Article.FirstOrDefaultAsync(x => x.Id == id);
             }
@@ -31,7 +39,7 @@ namespace Business.Services
 
         public List<Article> GetArticles()
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return context.Article.ToList();
             }
@@ -39,7 +47,7 @@ namespace Business.Services
 
         public async Task<List<Article>> GetArticlesAsync()
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return await context.Article.ToListAsync();
             }
@@ -50,7 +58,7 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                using (var context = new AppDbContext())
+                using (context)
                 {
                     DbState state = DbState.Update;
                     Article? data = context.Article.FirstOrDefault(x => x.Id == article.Id);
@@ -67,12 +75,12 @@ namespace Business.Services
                     if (state == DbState.Update)
                     {
                         data.LastUpdateDate = DateTime.Now;
-                        data.UpdateAdminId = Service.GetActiveUserId();
+                        data.UpdateAdminId = service.GetActiveUserId();
                     }
                     else
                     {
                         data.RegisterDate = DateTime.Now;
-                        data.AdminId = Service.GetActiveUserId();
+                        data.AdminId = service.GetActiveUserId();
                         context.Add(data);
                     }
 
@@ -101,7 +109,7 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                using (var context = new AppDbContext())
+                using (context)
                 {
                     DbState state = DbState.Update;// context changetracker'dan da bakılabilir
                     Article? data = await context.Article.FirstOrDefaultAsync(x => x.Id == article.Id);
@@ -118,12 +126,12 @@ namespace Business.Services
                     if (state == DbState.Update)
                     {
                         data.LastUpdateDate = DateTime.Now;
-                        data.UpdateAdminId = Service.GetActiveUserId();
+                        data.UpdateAdminId = service.GetActiveUserId();
                     }
                     else
                     {
                         data.RegisterDate = DateTime.Now;
-                        data.AdminId = Service.GetActiveUserId();
+                        data.AdminId = service.GetActiveUserId();
                         context.Add(data);
                     }
 
@@ -150,7 +158,7 @@ namespace Business.Services
         public ResultSet DeleteArticle(int id)
         {
             ResultSet result = new ResultSet();
-            using (var context = new AppDbContext())
+            using (context)
             {
                 Article? article = context.Article.FirstOrDefault(x => x.Id == id);
                 if (article != null)
@@ -170,7 +178,7 @@ namespace Business.Services
         public async Task<ResultSet> DeleteArticleAsync(int id)
         {
             ResultSet result = new ResultSet();
-            using (var context = new AppDbContext())
+            using (context)
             {
                 Article? article = await context.Article.FirstOrDefaultAsync(x => x.Id == id);
                 if (article != null)

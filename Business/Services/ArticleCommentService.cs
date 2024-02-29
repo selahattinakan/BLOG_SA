@@ -9,14 +9,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Business.Interfaces;
 
 namespace Business.Services
 {
-    public class ArticleCommentService
+    public class ArticleCommentService : IArticleCommentService
     {
+        private readonly AppDbContext context;
+        public ArticleCommentService(AppDbContext _context)
+        {
+            context = _context;
+        }
+
         public ArticleComment? GetArticleComment(int id)
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return context.ArticleComment.FirstOrDefault(x => x.Id == id);
             }
@@ -24,7 +31,7 @@ namespace Business.Services
 
         public async Task<ArticleComment?> GetArticleCommentAsync(int id)
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
             }
@@ -32,7 +39,7 @@ namespace Business.Services
 
         public List<ArticleComment> GetArticleComments()
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return context.ArticleComment.ToList();
             }
@@ -40,18 +47,18 @@ namespace Business.Services
 
         public async Task<List<ArticleComment>> GetArticleCommentsAsync()
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return await context.ArticleComment.ToListAsync();
             }
         }
 
-        public ResultSet SaveArticle(ArticleComment articleComment)
+        public ResultSet SaveArticleComment(ArticleComment articleComment)
         {
             ResultSet result = new ResultSet();
             try
             {
-                using (var context = new AppDbContext())
+                using (context)
                 {
                     DbState state = DbState.Update;
                     ArticleComment? data = context.ArticleComment.FirstOrDefault(x => x.Id == articleComment.Id);
@@ -99,7 +106,7 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                using (var context = new AppDbContext())
+                using (context)
                 {
                     DbState state = DbState.Update;// context changetracker'dan da bakılabilir
                     ArticleComment? data = await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == articleComment.Id);
@@ -144,7 +151,7 @@ namespace Business.Services
         public ResultSet DeleteArticleComment(int id)
         {
             ResultSet result = new ResultSet();
-            using (var context = new AppDbContext())
+            using (context)
             {
                 ArticleComment? articleComment = context.ArticleComment.FirstOrDefault(x => x.Id == id);
                 if (articleComment != null)
@@ -164,7 +171,7 @@ namespace Business.Services
         public async Task<ResultSet> DeleteArticleCommentAsync(int id)
         {
             ResultSet result = new ResultSet();
-            using (var context = new AppDbContext())
+            using (context)
             {
                 ArticleComment? articleComment = await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
                 if (articleComment != null)
@@ -184,7 +191,7 @@ namespace Business.Services
         public async Task<ResultSet> SetConfirmAsync(int id, bool confirm)
         {
             ResultSet result = new ResultSet();
-            using (var context = new AppDbContext())
+            using (context)
             {
                 ArticleComment? articleComment = await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
                 if (articleComment != null)
@@ -203,7 +210,7 @@ namespace Business.Services
 
         public async Task<List<ArticleComment>> GetArticleCommentsAsync(int articleId)
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return await context.ArticleComment.Where(x => x.ArticleId == articleId).ToListAsync();
             }

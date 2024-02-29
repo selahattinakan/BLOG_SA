@@ -1,4 +1,5 @@
-﻿using DB_EFCore.DataAccessLayer;
+﻿using Business.Interfaces;
+using DB_EFCore.DataAccessLayer;
 using DB_EFCore.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,11 +10,16 @@ using System.Threading.Tasks;
 
 namespace Business.Services
 {
-    public class ContactService
+    public class ContactService : IContactService
     {
+        private readonly AppDbContext context;
+        public ContactService(AppDbContext _context)
+        {
+            context = _context;
+        }
         public Contact? GetContact(int id)
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return context.Contact.FirstOrDefault(x => x.Id == id);
             }
@@ -21,7 +27,7 @@ namespace Business.Services
 
         public async Task<Contact?> GetContactAsync(int id)
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return await context.Contact.FirstOrDefaultAsync(x => x.Id == id);
             }
@@ -29,7 +35,7 @@ namespace Business.Services
 
         public List<Contact> GetContacts()
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return context.Contact.ToList();
             }
@@ -37,7 +43,7 @@ namespace Business.Services
 
         public async Task<List<Contact>> GetContactsAsync()
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return await context.Contact.ToListAsync();
             }

@@ -1,4 +1,5 @@
-﻿using DB_EFCore.DataAccessLayer;
+﻿using Business.Interfaces;
+using DB_EFCore.DataAccessLayer;
 using DB_EFCore.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,11 +10,16 @@ using System.Threading.Tasks;
 
 namespace Business.Services
 {
-    public class SubscriberService
+    public class SubscriberService : ISubscriberService
     {
+        private readonly AppDbContext context;
+        public SubscriberService(AppDbContext _context)
+        {
+            context = _context;
+        }
         public Subscriber? GetSubscriber(int id)
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return context.Subscriber.FirstOrDefault(x => x.Id == id);
             }
@@ -21,7 +27,7 @@ namespace Business.Services
 
         public async Task<Subscriber?> GetSubscriberAsync(int id)
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return await context.Subscriber.FirstOrDefaultAsync(x => x.Id == id);
             }
@@ -29,7 +35,7 @@ namespace Business.Services
 
         public List<Subscriber> GetSubscribers()
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return context.Subscriber.ToList();
             }
@@ -37,7 +43,7 @@ namespace Business.Services
 
         public async Task<List<Subscriber>> GetSubscribersAsync()
         {
-            using (var context = new AppDbContext())
+            using (context)
             {
                 return await context.Subscriber.ToListAsync();
             }

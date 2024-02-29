@@ -1,7 +1,9 @@
 ﻿using BLOG_SA.Models;
 using Business.Services;
+using Business.Interfaces;
 using Constants;
 using Constants.Enums;
+using DB_EFCore.DataAccessLayer;
 using DB_EFCore.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +14,22 @@ namespace BLOG_SA.Controllers
     //[Authorize]
     public class AdminController : Controller
     {
+        private readonly IAdminService adminService;
+        private readonly IArticleService articleService;
+        private readonly IArticleCommentService articleCommentService;
+        private readonly IContactService contactService;
+        private readonly ISettingService settingService;
+        private readonly ISubscriberService subscriberService;
+
+        public AdminController(IArticleService _articleService, IAdminService _adminService, IArticleCommentService _articleCommentService, IContactService _contactService, ISettingService _settingService, ISubscriberService _subscriberService)
+        {
+            articleService = _articleService;
+            adminService = _adminService;
+            articleCommentService = _articleCommentService;
+            contactService = _contactService;
+            settingService = _settingService;
+            subscriberService = _subscriberService;
+        }
 
         public IActionResult Index()
         {
@@ -28,7 +46,7 @@ namespace BLOG_SA.Controllers
         public async Task<IActionResult> GetAdmins()
         {
             //jquery datatable ile listeleme işlemleri yapılıyor, bu bir backend projesi olduğu için standart kolay yöntem ne ise o şekilde listeleme yapıldı, performans ya da işlevsellik üzerinde durulmadı
-            AdminService adminService = new AdminService();
+            //AdminService adminService = new AdminService();
             List<Admin> admins = await adminService.GetAdminsAsync();
             return Json(admins);
         }
@@ -39,7 +57,7 @@ namespace BLOG_SA.Controllers
             ResultSet result = new ResultSet();
             if (!string.IsNullOrEmpty(admin.FullName) && !string.IsNullOrEmpty(admin.UserName) && !string.IsNullOrEmpty(admin.Password))
             {
-                AdminService adminService = new AdminService();
+                //AdminService adminService = new AdminService();
                 result = await adminService.SaveAdminAsync(admin);
             }
             else
@@ -56,7 +74,7 @@ namespace BLOG_SA.Controllers
             ResultSet result = new ResultSet();
             if (id > 0)
             {
-                AdminService adminService = new AdminService();
+                //AdminService adminService = new AdminService();
                 result = await adminService.DeleteAdminAsync(id);
             }
             else
@@ -71,7 +89,7 @@ namespace BLOG_SA.Controllers
         #region Setting
         public IActionResult Setting()
         {
-            SettingService settingService = new SettingService();
+            //SettingService settingService = new SettingService();
             Setting setting = settingService.GetSetting();
             return View(setting);
         }
@@ -79,7 +97,7 @@ namespace BLOG_SA.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveSetting(Setting setting)
         {
-            SettingService settingService = new SettingService();
+            //SettingService settingService = new SettingService();
             ResultSet result = await settingService.SaveSettingAsync(setting);
             return Json(result);
         }
@@ -94,7 +112,7 @@ namespace BLOG_SA.Controllers
         [HttpPost]
         public async Task<IActionResult> GetContacts()
         {
-            ContactService contactService = new ContactService();
+            //ContactService contactService = new ContactService();
             List<Contact> contacts = await contactService.GetContactsAsync();
             return Json(contacts);
         }
@@ -110,7 +128,7 @@ namespace BLOG_SA.Controllers
         [HttpPost]
         public async Task<IActionResult> GetSubscribers()
         {
-            SubscriberService subscriberService = new SubscriberService();
+            //SubscriberService subscriberService = new SubscriberService();
             List<Subscriber> subscribers = await subscriberService.GetSubscribersAsync();
             return Json(subscribers);
         }
@@ -126,7 +144,7 @@ namespace BLOG_SA.Controllers
         [HttpPost]
         public async Task<IActionResult> GetArticles()
         {
-            ArticleService articleService = new ArticleService();
+            //ArticleService articleService = new ArticleService();
             List<Article> articles = await articleService.GetArticlesAsync();
             return Json(articles);
         }
@@ -137,7 +155,7 @@ namespace BLOG_SA.Controllers
             ResultSet result = new ResultSet();
             if (!string.IsNullOrEmpty(article.Title) && !string.IsNullOrEmpty(article.Content) && article.PublishDate != DateTime.MinValue)
             {
-                ArticleService articleService = new ArticleService();
+                //ArticleService articleService = new ArticleService();
                 result = await articleService.SaveArticleAsync(article);
             }
             else
@@ -154,7 +172,7 @@ namespace BLOG_SA.Controllers
             ResultSet result = new ResultSet();
             if (id > 0)
             {
-                ArticleService articleService = new ArticleService();
+                //ArticleService articleService = new ArticleService();
                 result = await articleService.DeleteArticleAsync(id);
             }
             else
@@ -168,7 +186,7 @@ namespace BLOG_SA.Controllers
         [HttpPost]
         public async Task<IActionResult> GetTestArticle()
         {
-            ArticleService articleService = new ArticleService();
+            //ArticleService articleService = new ArticleService();
             Article article = await articleService.GetArticleAsync(1);
             return Json(article);
         }
@@ -176,14 +194,14 @@ namespace BLOG_SA.Controllers
 
         #region ArticleComment
         public IActionResult ArticleComment(Article article)
-        { 
+        {
             return View(article.Id);
         }
 
         [HttpPost]
         public async Task<IActionResult> GetArticleComments(int articleId)
         {
-            ArticleCommentService articleCommentService = new ArticleCommentService();
+            //ArticleCommentService articleCommentService = new ArticleCommentService();
             List<ArticleComment> articleComments = await articleCommentService.GetArticleCommentsAsync(articleId);
             return Json(articleComments);
         }
@@ -194,7 +212,7 @@ namespace BLOG_SA.Controllers
             ResultSet result = new ResultSet();
             if (id > 0)
             {
-                ArticleCommentService articleCommentService = new ArticleCommentService();
+                //ArticleCommentService articleCommentService = new ArticleCommentService();
                 result = await articleCommentService.SetConfirmAsync(id, confirm);
             }
             else
@@ -211,7 +229,7 @@ namespace BLOG_SA.Controllers
             ResultSet result = new ResultSet();
             if (id > 0)
             {
-                ArticleCommentService articleCommentService = new ArticleCommentService();
+                //ArticleCommentService articleCommentService = new ArticleCommentService();
                 result = await articleCommentService.DeleteArticleCommentAsync(id);
             }
             else
