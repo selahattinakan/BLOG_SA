@@ -18,6 +18,7 @@ namespace DB_EFCore.Entity
         public DateTime RegisterDate { get; set; }
         public int? UpdateAdminId { get; set; }
         public DateTime? LastUpdateDate { get; set; }
+        public int PhotoIndex { get; set; }
 
         public Admin Admin { get; set; }
         public List<ArticleComment> ArticleComments { get; set; }

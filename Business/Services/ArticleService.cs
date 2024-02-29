@@ -71,6 +71,7 @@ namespace Business.Services
                     data.Content = article.Content;
                     data.PublishDate = article.PublishDate;
                     data.Enable = article.Enable;
+                    data.PhotoIndex = article.PhotoIndex;
 
                     if (state == DbState.Update)
                     {
@@ -122,6 +123,7 @@ namespace Business.Services
                     data.Content = article.Content;
                     data.PublishDate = article.PublishDate;
                     data.Enable = article.Enable;
+                    data.PhotoIndex = article.PhotoIndex;
 
                     if (state == DbState.Update)
                     {

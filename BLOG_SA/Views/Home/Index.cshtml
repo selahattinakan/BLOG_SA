@@ -1,4 +1,5 @@
-﻿@{
+﻿@model List<DB_EFCore.Entity.Article>
+@{
     ViewData["Title"] = "Anasayfa";
 }
 
@@ -18,8 +19,17 @@
 </section>
 
 
+@* Makaleler *@
 <section class="blog-list px-3 py-5 p-md-5">
     <div class="container">
+
+        @{
+            foreach (var item in Model)
+            {
+                
+            }
+        }
+
         <div class="item mb-5">
             <div class="media">
                 <img class="mr-3 img-fluid post-thumb d-none d-md-flex" src="~/img/sample_thumb_1.jpg" alt="image">

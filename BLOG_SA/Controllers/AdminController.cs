@@ -152,8 +152,9 @@ namespace BLOG_SA.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveArticle(Article article)
         {
+            // form kontrolleri standardize edilecek
             ResultSet result = new ResultSet();
-            if (!string.IsNullOrEmpty(article.Title) && !string.IsNullOrEmpty(article.Content) && article.PublishDate != DateTime.MinValue)
+            if (!string.IsNullOrEmpty(article.Title) && !string.IsNullOrEmpty(article.Content) && article.PublishDate != DateTime.MinValue && article.PhotoIndex > 0)
             {
                 //ArticleService articleService = new ArticleService();
                 result = await articleService.SaveArticleAsync(article);
