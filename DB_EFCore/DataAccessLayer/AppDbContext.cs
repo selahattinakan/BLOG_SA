@@ -1,5 +1,6 @@
 ﻿using DB_EFCore.Entity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,7 @@ namespace DB_EFCore.DataAccessLayer
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //modelBuilder.Entity<Admin>().Property(x => x.RegisterId).HasColumnName("Kayıt Eden"); //örnek
+            modelBuilder.Entity<Article>().Ignore(i => i.ReadMinute); // not mapped in db
             base.OnModelCreating(modelBuilder);
         }
 
@@ -37,6 +39,9 @@ namespace DB_EFCore.DataAccessLayer
         {
             Initilazier.Build();
             optionsBuilder.UseSqlServer(Initilazier.Configuration.GetConnectionString("SqlCon"));
+#if DEBUG
+            optionsBuilder.LogTo(s => System.Diagnostics.Debug.WriteLine(s)); //ef core'un hazırladığı sorgular
+#endif
         }
 
         public DataTable GetDataTableFromSP(string sp)

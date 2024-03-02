@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Business.Interfaces;
+using Business.DTOs;
 
 namespace Business.Services
 {
@@ -37,8 +38,34 @@ namespace Business.Services
         }
 
         public async Task<List<Article>> GetArticlesAsync()
-        {
+        {//admin tarafında tüm kayıtları çekiyor
             return await context.Article.ToListAsync();
+        }
+
+        public async Task<List<Article>> GetArticlesWithCommentsAsync()
+        {
+            return await context.Article.Include(x => x.ArticleComments).Where(x => x.Enable && x.PublishDate.Date <= DateTime.Now.Date).ToListAsync();
+        }
+
+        public async Task<List<ArticleDto>> GetArticlesWithCommentCountsAsync(int page, int pageSize)
+        {
+            var articles = await context.Article.Select(x => new ArticleDto
+            {
+                Id = x.Id,
+                PhotoIndex = x.PhotoIndex,
+                Title = x.Title,
+                PublishDate = x.PublishDate,
+                ReadMinute = x.ReadMinute,
+                CommentCounts = x.ArticleComments.Count,
+                IntroContent = x.IntroContent,
+                Enable = x.Enable
+            }).Where(x => x.Enable && x.PublishDate.Date <= DateTime.Now.Date).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            return articles;
+        }
+
+        public async Task<int> GetArticleCountAsync(bool enabled)
+        {
+            return await context.Article.Where(x => x.Enable && x.PublishDate.Date <= DateTime.Now.Date).CountAsync();
         }
 
         public ResultSet SaveArticle(Article article)

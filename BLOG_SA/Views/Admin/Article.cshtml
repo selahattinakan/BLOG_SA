@@ -143,7 +143,8 @@
             PublishDate: $("#PublishDate").val(),
             Enable: $("#Enable").is(":checked"),
             Content: JSON.stringify(quill.getContents()),
-            PhotoIndex: $("#PhotoIndex").val()
+            PhotoIndex: $("#PhotoIndex").val(),
+            IntroContent: quill.getText()
         };
         $.ajax({
             type: "POST",

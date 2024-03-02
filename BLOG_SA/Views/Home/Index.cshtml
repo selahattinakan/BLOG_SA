@@ -1,7 +1,20 @@
-﻿@model List<DB_EFCore.Entity.Article>
+﻿@model List<Business.DTOs.ArticleDto>
 @{
     ViewData["Title"] = "Anasayfa";
 }
+
+<script>
+    function NextPageClick(){
+        $('#page').val(parseInt($('#page').val()) + 1);
+        $('#listForm').submit();
+    }
+    function PrevPageClick() {
+        $('#page').val(parseInt($('#page').val()) - 1);
+        if ($('#page').val() < 1) //ilk sayfada ise geri gidememeli
+            return;
+        $('#listForm').submit();
+    }
+</script>
 
 @* Arama *@
 <section class="cta-section theme-bg-light py-5">
@@ -20,17 +33,36 @@
 
 
 @* Makaleler *@
+
 <section class="blog-list px-3 py-5 p-md-5">
     <div class="container">
+        <form id="listForm" action="@Url.Action("Index", "Home")" method="post">
+            @Html.Hidden("page", (int)ViewBag.Page)
+            @{
+                foreach (var item in Model)
+                {
+                        <div class="item mb-5">
+                            <div class="media">
+                                <img class="mr-3 img-fluid post-thumb d-none d-md-flex" src="~/img/sample_thumb_@(item.PhotoIndex).jpg" alt="image">
+                                <div class="media-body">
+                                    <h3 class="title mb-1"><a asp-area="" asp-controller="Home" asp-action="Article">@item.Title</a></h3>
+                                    <div class="meta mb-1">
+                                        <span class="date">@item.PublishDate.ToShortDateString() tarihinde yayınlandı</span>
+                                        <span class="time">@item.ReadMinute dakikalık okuma</span>
+                                        <span class="comment"><a href="#">@item.CommentCounts yorum</a></span>
+                                    </div>
+                                    <div class="intro introContent">@item.IntroContent</div>
+                                    <a class="more-link" asp-controller="Home" asp-action="Article">Daha fazla göster</a>
+                                </div><!--//media-body-->
+                            </div><!--//media-->
+                        </div>
 
-        @{
-            foreach (var item in Model)
-            {
-                
+                        <!--//item-->
+                }
             }
-        }
+      
 
-        <div class="item mb-5">
+@*         <div class="item mb-5">
             <div class="media">
                 <img class="mr-3 img-fluid post-thumb d-none d-md-flex" src="~/img/sample_thumb_1.jpg" alt="image">
                 <div class="media-body">
@@ -51,13 +83,13 @@
                     <a class="more-link" href="blog-post.html">Read more &rarr;</a>
                 </div><!--//media-body-->
             </div><!--//media-->
-        </div><!--//item-->
+        </div><!--//item--> *@
 
-        <nav class="blog-nav nav nav-justified my-5">
-            <a class="nav-link-prev nav-item nav-link d-none rounded-left" href="#">Önceki Sayfa<i class="arrow-prev fas fa-long-arrow-alt-left"></i></a>
-            <a class="nav-link-next nav-item nav-link rounded" href="blog-list.html">Sonraki Sayfa<i class="arrow-next fas fa-long-arrow-alt-right"></i></a>
-        </nav>
-
+            <nav class="blog-nav nav nav-justified my-5">
+                <a class="nav-link-prev nav-item nav-link @((bool) ViewBag.FirstPage == true ? "d-none" : "") rounded-left" href="javascript: PrevPageClick()">Önceki Sayfa<i class="arrow-prev fas fa-long-arrow-alt-left"></i></a>
+                <a class="nav-link-next nav-item nav-link @((bool) ViewBag.LastPage == true ? "d-none" : "") rounded-right" href="javascript: NextPageClick()">Sonraki Sayfa<i class="arrow-next fas fa-long-arrow-alt-right"></i></a>
+            </nav>
+        </form>
     </div>
 </section>
 

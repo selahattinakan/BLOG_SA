@@ -1,4 +1,5 @@
-﻿using Constants;
+﻿using Business.DTOs;
+using Constants;
 using DB_EFCore.Entity;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,9 @@ namespace Business.Interfaces
         public Task<Article?> GetArticleAsync(int id);
         public List<Article> GetArticles();
         public Task<List<Article>> GetArticlesAsync();
+        public Task<List<Article>> GetArticlesWithCommentsAsync();
+        public Task<List<ArticleDto>> GetArticlesWithCommentCountsAsync(int page, int pageSize);
+        public Task<int> GetArticleCountAsync(bool enabled);
         public ResultSet SaveArticle(Article article);
         public Task<ResultSet> SaveArticleAsync(Article article);
         public ResultSet DeleteArticle(int id);

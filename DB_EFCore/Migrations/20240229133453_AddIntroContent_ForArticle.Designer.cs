@@ -4,6 +4,7 @@ using DB_EFCore.DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DB_EFCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240229133453_AddIntroContent_ForArticle")]
+    partial class AddIntroContent_ForArticle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,7 +59,7 @@ namespace DB_EFCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Admin", (string)null);
+                    b.ToTable("Admin");
                 });
 
             modelBuilder.Entity("DB_EFCore.Entity.Article", b =>
@@ -104,7 +107,7 @@ namespace DB_EFCore.Migrations
 
                     b.HasIndex("AdminId");
 
-                    b.ToTable("Article", (string)null);
+                    b.ToTable("Article");
                 });
 
             modelBuilder.Entity("DB_EFCore.Entity.ArticleComment", b =>
@@ -143,7 +146,7 @@ namespace DB_EFCore.Migrations
 
                     b.HasIndex("ArticleId");
 
-                    b.ToTable("ArticleComment", (string)null);
+                    b.ToTable("ArticleComment");
                 });
 
             modelBuilder.Entity("DB_EFCore.Entity.Chat", b =>
@@ -171,7 +174,7 @@ namespace DB_EFCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Chat", (string)null);
+                    b.ToTable("Chat");
                 });
 
             modelBuilder.Entity("DB_EFCore.Entity.Contact", b =>
@@ -206,7 +209,7 @@ namespace DB_EFCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Contact", (string)null);
+                    b.ToTable("Contact");
                 });
 
             modelBuilder.Entity("DB_EFCore.Entity.Log", b =>
@@ -245,7 +248,7 @@ namespace DB_EFCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Log", (string)null);
+                    b.ToTable("Log");
                 });
 
             modelBuilder.Entity("DB_EFCore.Entity.Setting", b =>
@@ -289,7 +292,7 @@ namespace DB_EFCore.Migrations
 
                     b.HasIndex("AdminId");
 
-                    b.ToTable("Setting", (string)null);
+                    b.ToTable("Setting");
                 });
 
             modelBuilder.Entity("DB_EFCore.Entity.Subscriber", b =>
@@ -309,7 +312,7 @@ namespace DB_EFCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Subscriber", (string)null);
+                    b.ToTable("Subscriber");
                 });
 
             modelBuilder.Entity("DB_EFCore.Entity.Article", b =>
