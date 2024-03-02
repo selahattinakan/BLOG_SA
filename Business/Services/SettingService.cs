@@ -23,18 +23,12 @@ namespace Business.Services
         }
         public Setting? GetSetting()
         {
-            using (context)
-            {
-                return context.Setting.FirstOrDefault();
-            }
+            return context.Setting.FirstOrDefault();
         }
 
         public async Task<Setting?> GetSettingAsync()
         {
-            using (context)
-            {
-                return await context.Setting.FirstOrDefaultAsync();
-            }
+            return await context.Setting.FirstOrDefaultAsync();
         }
 
         public ResultSet SaveSetting(Setting setting)
@@ -42,43 +36,40 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                using (context)
+                DbState state = DbState.Update;
+                Setting? data = context.Setting.FirstOrDefault(x => x.Id == setting.Id);
+                if (data == null)
                 {
-                    DbState state = DbState.Update;
-                    Setting? data = context.Setting.FirstOrDefault(x => x.Id == setting.Id);
-                    if (data == null)
-                    {
-                        data = new Setting();
-                        state = DbState.Insert;
-                    }
-                    data.MaintenanceMode = setting.MaintenanceMode;
-                    data.MaintenanceImgPath = setting.MaintenanceImgPath;
-                    data.MaintenanceText = setting.MaintenanceText;
-                    data.SubscribeMode = setting.SubscribeMode;
-                    data.IsCommentEnable = setting.IsCommentEnable;
+                    data = new Setting();
+                    state = DbState.Insert;
+                }
+                data.MaintenanceMode = setting.MaintenanceMode;
+                data.MaintenanceImgPath = setting.MaintenanceImgPath;
+                data.MaintenanceText = setting.MaintenanceText;
+                data.SubscribeMode = setting.SubscribeMode;
+                data.IsCommentEnable = setting.IsCommentEnable;
 
-                    if (state == DbState.Update)
-                    {
-                        data.LastUpdateDate = DateTime.Now;
-                        data.UpdateAdminId = service.GetActiveUserId();
-                    }
-                    else
-                    {
-                        data.RegisterDate = DateTime.Now;
-                        data.AdminId = service.GetActiveUserId();
-                        context.Add(data);
-                    }
+                if (state == DbState.Update)
+                {
+                    data.LastUpdateDate = DateTime.Now;
+                    data.UpdateAdminId = service.GetActiveUserId();
+                }
+                else
+                {
+                    data.RegisterDate = DateTime.Now;
+                    data.AdminId = service.GetActiveUserId();
+                    context.Add(data);
+                }
 
-                    int count = context.SaveChanges();
-                    if (count > 0)
-                    {
-                        result.Id = data.Id;
-                    }
-                    else
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Db işlemi başarısız";
-                    }
+                int count = context.SaveChanges();
+                if (count > 0)
+                {
+                    result.Id = data.Id;
+                }
+                else
+                {
+                    result.Result = Result.Fail;
+                    result.Message = "Db işlemi başarısız";
                 }
             }
             catch (Exception ex)
@@ -94,43 +85,40 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                using (context)
+                DbState state = DbState.Update;// context changetracker'dan da bakılabilir
+                Setting? data = await context.Setting.FirstOrDefaultAsync(x => x.Id == setting.Id);
+                if (data == null)
                 {
-                    DbState state = DbState.Update;// context changetracker'dan da bakılabilir
-                    Setting? data = await context.Setting.FirstOrDefaultAsync(x => x.Id == setting.Id);
-                    if (data == null)
-                    {
-                        data = new Setting();
-                        state = DbState.Insert;
-                    }
-                    data.MaintenanceMode = setting.MaintenanceMode;
-                    data.MaintenanceImgPath = setting.MaintenanceImgPath;
-                    data.MaintenanceText = setting.MaintenanceText;
-                    data.SubscribeMode = setting.SubscribeMode;
-                    data.IsCommentEnable = setting.IsCommentEnable;
+                    data = new Setting();
+                    state = DbState.Insert;
+                }
+                data.MaintenanceMode = setting.MaintenanceMode;
+                data.MaintenanceImgPath = setting.MaintenanceImgPath;
+                data.MaintenanceText = setting.MaintenanceText;
+                data.SubscribeMode = setting.SubscribeMode;
+                data.IsCommentEnable = setting.IsCommentEnable;
 
-                    if (state == DbState.Update)
-                    {
-                        data.LastUpdateDate = DateTime.Now;
-                        data.UpdateAdminId = service.GetActiveUserId();
-                    }
-                    else
-                    {
-                        data.RegisterDate = DateTime.Now;
-                        data.AdminId = service.GetActiveUserId();
-                        context.Add(data);
-                    }
+                if (state == DbState.Update)
+                {
+                    data.LastUpdateDate = DateTime.Now;
+                    data.UpdateAdminId = service.GetActiveUserId();
+                }
+                else
+                {
+                    data.RegisterDate = DateTime.Now;
+                    data.AdminId = service.GetActiveUserId();
+                    context.Add(data);
+                }
 
-                    int count = await context.SaveChangesAsync();
-                    if (count > 0)
-                    {
-                        result.Id = data.Id;
-                    }
-                    else
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Db işlemi başarısız";
-                    }
+                int count = await context.SaveChangesAsync();
+                if (count > 0)
+                {
+                    result.Id = data.Id;
+                }
+                else
+                {
+                    result.Result = Result.Fail;
+                    result.Message = "Db işlemi başarısız";
                 }
             }
             catch (Exception ex)

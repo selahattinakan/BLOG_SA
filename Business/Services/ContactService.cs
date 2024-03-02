@@ -19,34 +19,22 @@ namespace Business.Services
         }
         public Contact? GetContact(int id)
         {
-            using (context)
-            {
-                return context.Contact.FirstOrDefault(x => x.Id == id);
-            }
+            return context.Contact.FirstOrDefault(x => x.Id == id);
         }
 
         public async Task<Contact?> GetContactAsync(int id)
         {
-            using (context)
-            {
-                return await context.Contact.FirstOrDefaultAsync(x => x.Id == id);
-            }
+            return await context.Contact.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public List<Contact> GetContacts()
         {
-            using (context)
-            {
-                return context.Contact.ToList();
-            }
+            return context.Contact.ToList();
         }
 
         public async Task<List<Contact>> GetContactsAsync()
         {
-            using (context)
-            {
-                return await context.Contact.ToListAsync();
-            }
+            return await context.Contact.ToListAsync();
         }
     }
 }

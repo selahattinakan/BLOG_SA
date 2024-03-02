@@ -23,34 +23,22 @@ namespace Business.Services
         }
         public Article? GetArticle(int id)
         {
-            using (context)
-            {
-                return context.Article.FirstOrDefault(x => x.Id == id);
-            }
+            return context.Article.FirstOrDefault(x => x.Id == id);
         }
 
         public async Task<Article?> GetArticleAsync(int id)
         {
-            using (context)
-            {
-                return await context.Article.FirstOrDefaultAsync(x => x.Id == id);
-            }
+            return await context.Article.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public List<Article> GetArticles()
-        {
-            using (context)
-            {
-                return context.Article.ToList();
-            }
+        { //article comment count u getiren metotlusu da yazılacak
+            return context.Article.ToList();
         }
 
         public async Task<List<Article>> GetArticlesAsync()
         {
-            using (context)
-            {
-                return await context.Article.ToListAsync();
-            }
+            return await context.Article.ToListAsync();
         }
 
         public ResultSet SaveArticle(Article article)
@@ -58,43 +46,41 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                using (context)
+                DbState state = DbState.Update;
+                Article? data = context.Article.FirstOrDefault(x => x.Id == article.Id);
+                if (data == null)
                 {
-                    DbState state = DbState.Update;
-                    Article? data = context.Article.FirstOrDefault(x => x.Id == article.Id);
-                    if (data == null)
-                    {
-                        data = new Article();
-                        state = DbState.Insert;
-                    }
-                    data.Title = article.Title;
-                    data.Content = article.Content;
-                    data.PublishDate = article.PublishDate;
-                    data.Enable = article.Enable;
-                    data.PhotoIndex = article.PhotoIndex;
+                    data = new Article();
+                    state = DbState.Insert;
+                }
+                data.Title = article.Title;
+                data.Content = article.Content;
+                data.IntroContent = article.IntroContent;
+                data.PublishDate = article.PublishDate;
+                data.Enable = article.Enable;
+                data.PhotoIndex = article.PhotoIndex;
 
-                    if (state == DbState.Update)
-                    {
-                        data.LastUpdateDate = DateTime.Now;
-                        data.UpdateAdminId = service.GetActiveUserId();
-                    }
-                    else
-                    {
-                        data.RegisterDate = DateTime.Now;
-                        data.AdminId = service.GetActiveUserId();
-                        context.Add(data);
-                    }
+                if (state == DbState.Update)
+                {
+                    data.LastUpdateDate = DateTime.Now;
+                    data.UpdateAdminId = service.GetActiveUserId();
+                }
+                else
+                {
+                    data.RegisterDate = DateTime.Now;
+                    data.AdminId = service.GetActiveUserId();
+                    context.Add(data);
+                }
 
-                    int count = context.SaveChanges();
-                    if (count > 0)
-                    {
-                        result.Id = data.Id;
-                    }
-                    else
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Db işlemi başarısız";
-                    }
+                int count = context.SaveChanges();
+                if (count > 0)
+                {
+                    result.Id = data.Id;
+                }
+                else
+                {
+                    result.Result = Result.Fail;
+                    result.Message = "Db işlemi başarısız";
                 }
             }
             catch (Exception ex)
@@ -110,43 +96,41 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                using (context)
+                DbState state = DbState.Update;// context changetracker'dan da bakılabilir
+                Article? data = await context.Article.FirstOrDefaultAsync(x => x.Id == article.Id);
+                if (data == null)
                 {
-                    DbState state = DbState.Update;// context changetracker'dan da bakılabilir
-                    Article? data = await context.Article.FirstOrDefaultAsync(x => x.Id == article.Id);
-                    if (data == null)
-                    {
-                        data = new Article();
-                        state = DbState.Insert;
-                    }
-                    data.Title = article.Title;
-                    data.Content = article.Content;
-                    data.PublishDate = article.PublishDate;
-                    data.Enable = article.Enable;
-                    data.PhotoIndex = article.PhotoIndex;
+                    data = new Article();
+                    state = DbState.Insert;
+                }
+                data.Title = article.Title;
+                data.Content = article.Content;
+                data.IntroContent = article.IntroContent;
+                data.PublishDate = article.PublishDate;
+                data.Enable = article.Enable;
+                data.PhotoIndex = article.PhotoIndex;
 
-                    if (state == DbState.Update)
-                    {
-                        data.LastUpdateDate = DateTime.Now;
-                        data.UpdateAdminId = service.GetActiveUserId();
-                    }
-                    else
-                    {
-                        data.RegisterDate = DateTime.Now;
-                        data.AdminId = service.GetActiveUserId();
-                        context.Add(data);
-                    }
+                if (state == DbState.Update)
+                {
+                    data.LastUpdateDate = DateTime.Now;
+                    data.UpdateAdminId = service.GetActiveUserId();
+                }
+                else
+                {
+                    data.RegisterDate = DateTime.Now;
+                    data.AdminId = service.GetActiveUserId();
+                    context.Add(data);
+                }
 
-                    int count = await context.SaveChangesAsync();
-                    if (count > 0)
-                    {
-                        result.Id = data.Id;
-                    }
-                    else
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Db işlemi başarısız";
-                    }
+                int count = await context.SaveChangesAsync();
+                if (count > 0)
+                {
+                    result.Id = data.Id;
+                }
+                else
+                {
+                    result.Result = Result.Fail;
+                    result.Message = "Db işlemi başarısız";
                 }
             }
             catch (Exception ex)
@@ -160,18 +144,15 @@ namespace Business.Services
         public ResultSet DeleteArticle(int id)
         {
             ResultSet result = new ResultSet();
-            using (context)
+            Article? article = context.Article.FirstOrDefault(x => x.Id == id);
+            if (article != null)
             {
-                Article? article = context.Article.FirstOrDefault(x => x.Id == id);
-                if (article != null)
+                context.Remove(article);
+                int count = context.SaveChanges();
+                if (count <= 0)
                 {
-                    context.Remove(article);
-                    int count = context.SaveChanges();
-                    if (count <= 0)
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Silme işlemi başarısız";
-                    }
+                    result.Result = Result.Fail;
+                    result.Message = "Silme işlemi başarısız";
                 }
             }
             return result;
@@ -180,18 +161,15 @@ namespace Business.Services
         public async Task<ResultSet> DeleteArticleAsync(int id)
         {
             ResultSet result = new ResultSet();
-            using (context)
+            Article? article = await context.Article.FirstOrDefaultAsync(x => x.Id == id);
+            if (article != null)
             {
-                Article? article = await context.Article.FirstOrDefaultAsync(x => x.Id == id);
-                if (article != null)
+                context.Remove(article);
+                int count = await context.SaveChangesAsync();
+                if (count <= 0)
                 {
-                    context.Remove(article);
-                    int count = await context.SaveChangesAsync();
-                    if (count <= 0)
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Silme işlemi başarısız";
-                    }
+                    result.Result = Result.Fail;
+                    result.Message = "Silme işlemi başarısız";
                 }
             }
             return result;

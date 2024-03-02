@@ -28,26 +28,20 @@ namespace Business.Services
         #region LogIn
         public bool LogInControl(string userName, string password)
         {
-            using (context)
+            Admin? admin = context.Admin.FirstOrDefault(x => x.UserName == userName && x.Password == password);
+            if (admin != null)
             {
-                Admin? admin = context.Admin.FirstOrDefault(x => x.UserName == userName && x.Password == password);
-                if (admin != null)
-                {
-                    return true;
-                }
+                return true;
             }
             return false;
         }
 
         public async Task<bool> LogInControlAsync(string userName, string password)
         {
-            using (context)
+            Admin? admin = await context.Admin.FirstOrDefaultAsync(x => x.UserName == userName && x.Password == password);
+            if (admin != null)
             {
-                Admin? admin = await context.Admin.FirstOrDefaultAsync(x => x.UserName == userName && x.Password == password);
-                if (admin != null)
-                {
-                    return true;
-                }
+                return true;
             }
             return false;
         }
@@ -55,34 +49,22 @@ namespace Business.Services
 
         public Admin? GetAdmin(int id)
         {
-            using (context)
-            {
-                return context.Admin.FirstOrDefault(x => x.Id == id);
-            }
+            return context.Admin.FirstOrDefault(x => x.Id == id);
         }
 
         public async Task<Admin?> GetAdminAsync(int id)
         {
-            using (context)
-            {
-                return await context.Admin.FirstOrDefaultAsync(x => x.Id == id);
-            }
+            return await context.Admin.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public List<Admin> GetAdmins()
         {
-            using (context)
-            {
-                return context.Admin.ToList();
-            }
+            return context.Admin.ToList();
         }
 
         public async Task<List<Admin>> GetAdminsAsync()
         {
-            using (context)
-            {
-                return await context.Admin.ToListAsync();
-            }
+            return await context.Admin.ToListAsync();
         }
 
         public ResultSet SaveAdmin(Admin admin)
@@ -90,41 +72,38 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                using (context)
+                DbState state = DbState.Update;// context changetracker'dan da bakılabilir
+                Admin? data = context.Admin.FirstOrDefault(x => x.Id == admin.Id);
+                if (data == null)
                 {
-                    DbState state = DbState.Update;// context changetracker'dan da bakılabilir
-                    Admin? data = context.Admin.FirstOrDefault(x => x.Id == admin.Id);
-                    if (data == null)
-                    {
-                        data = new Admin();
-                        state = DbState.Insert;
-                    }
-                    data.UserName = admin.UserName;
-                    data.Password = admin.Password;
-                    data.FullName = admin.FullName;
+                    data = new Admin();
+                    state = DbState.Insert;
+                }
+                data.UserName = admin.UserName;
+                data.Password = admin.Password;
+                data.FullName = admin.FullName;
 
-                    if (state == DbState.Update)
-                    {
-                        data.LastUpdateDate = DateTime.Now;
-                        data.UpdateAdminId = service.GetActiveUserId();
-                    }
-                    else
-                    {
-                        data.RegisterDate = DateTime.Now;
-                        data.RegisterId = service.GetActiveUserId();
-                        context.Add(data);
-                    }
+                if (state == DbState.Update)
+                {
+                    data.LastUpdateDate = DateTime.Now;
+                    data.UpdateAdminId = service.GetActiveUserId();
+                }
+                else
+                {
+                    data.RegisterDate = DateTime.Now;
+                    data.RegisterId = service.GetActiveUserId();
+                    context.Add(data);
+                }
 
-                    int count = context.SaveChanges();
-                    if (count > 0)
-                    {
-                        result.Id = data.Id;
-                    }
-                    else
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Db işlemi başarısız";
-                    }
+                int count = context.SaveChanges();
+                if (count > 0)
+                {
+                    result.Id = data.Id;
+                }
+                else
+                {
+                    result.Result = Result.Fail;
+                    result.Message = "Db işlemi başarısız";
                 }
             }
             catch (Exception ex)
@@ -140,42 +119,39 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                using (context)
+                DbState state = DbState.Update;
+                Admin? data = await context.Admin.FirstOrDefaultAsync(x => x.Id == admin.Id);
+                if (data == null)
                 {
-                    DbState state = DbState.Update;
-                    Admin? data = await context.Admin.FirstOrDefaultAsync(x => x.Id == admin.Id);
-                    if (data == null)
-                    {
-                        data = new Admin();
-                        state = DbState.Insert;
-                    }
-                    data.UserName = admin.UserName;
-                    data.Password = admin.Password;
-                    data.FullName = admin.FullName;
+                    data = new Admin();
+                    state = DbState.Insert;
+                }
+                data.UserName = admin.UserName;
+                data.Password = admin.Password;
+                data.FullName = admin.FullName;
 
 
-                    if (state == DbState.Update)
-                    {
-                        data.LastUpdateDate = DateTime.Now;
-                        data.UpdateAdminId = service.GetActiveUserId();
-                    }
-                    else
-                    {
-                        data.RegisterDate = DateTime.Now;
-                        data.RegisterId = service.GetActiveUserId();
-                        await context.AddAsync(data);
-                    }
+                if (state == DbState.Update)
+                {
+                    data.LastUpdateDate = DateTime.Now;
+                    data.UpdateAdminId = service.GetActiveUserId();
+                }
+                else
+                {
+                    data.RegisterDate = DateTime.Now;
+                    data.RegisterId = service.GetActiveUserId();
+                    await context.AddAsync(data);
+                }
 
-                    int count = await context.SaveChangesAsync();
-                    if (count > 0)
-                    {
-                        result.Id = data.Id;
-                    }
-                    else
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Db işlemi başarısız";
-                    }
+                int count = await context.SaveChangesAsync();
+                if (count > 0)
+                {
+                    result.Id = data.Id;
+                }
+                else
+                {
+                    result.Result = Result.Fail;
+                    result.Message = "Db işlemi başarısız";
                 }
             }
             catch (Exception ex)
@@ -189,18 +165,15 @@ namespace Business.Services
         public ResultSet DeleteAdmin(int id)
         {
             ResultSet result = new ResultSet();
-            using (context)
+            Admin? admin = context.Admin.FirstOrDefault(x => x.Id == id);
+            if (admin != null)
             {
-                Admin? admin = context.Admin.FirstOrDefault(x => x.Id == id);
-                if (admin != null)
+                context.Remove(admin);
+                int count = context.SaveChanges();
+                if (count <= 0)
                 {
-                    context.Remove(admin);
-                    int count = context.SaveChanges();
-                    if (count <= 0)
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Silme işlemi başarısız";
-                    }
+                    result.Result = Result.Fail;
+                    result.Message = "Silme işlemi başarısız";
                 }
             }
             return result;
@@ -209,18 +182,15 @@ namespace Business.Services
         public async Task<ResultSet> DeleteAdminAsync(int id)
         {
             ResultSet result = new ResultSet();
-            using (context)
+            Admin? admin = await context.Admin.FirstOrDefaultAsync(x => x.Id == id);
+            if (admin != null)
             {
-                Admin? admin = await context.Admin.FirstOrDefaultAsync(x => x.Id == id);
-                if (admin != null)
+                context.Remove(admin);
+                int count = await context.SaveChangesAsync();
+                if (count <= 0)
                 {
-                    context.Remove(admin);
-                    int count = await context.SaveChangesAsync();
-                    if (count <= 0)
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Silme işlemi başarısız";
-                    }
+                    result.Result = Result.Fail;
+                    result.Message = "Silme işlemi başarısız";
                 }
             }
             return result;
@@ -228,17 +198,14 @@ namespace Business.Services
 
         public void SP_FN_Test()
         {
-            using (context)
-            {
-                string userName = "SAKAN";
-                var admin = context.Admin.FromSql($"GetAdminEncrypt {userName}").ToList();// entity doldurur
+            string userName = "SAKAN";
+            var admin = context.Admin.FromSql($"GetAdminEncrypt {userName}").ToList();// entity doldurur
 
 
-                var param = new Dictionary<string, string>();
-                param.Add("@UserName", "SAKAN");
-                var spTest = context.GetDataTableFromSP("GetAdminFullName", param);
+            var param = new Dictionary<string, string>();
+            param.Add("@UserName", "SAKAN");
+            var spTest = context.GetDataTableFromSP("GetAdminFullName", param);
 
-            }
         }
     }
 }

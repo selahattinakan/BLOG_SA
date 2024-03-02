@@ -19,34 +19,22 @@ namespace Business.Services
         }
         public Subscriber? GetSubscriber(int id)
         {
-            using (context)
-            {
-                return context.Subscriber.FirstOrDefault(x => x.Id == id);
-            }
+            return context.Subscriber.FirstOrDefault(x => x.Id == id);
         }
 
         public async Task<Subscriber?> GetSubscriberAsync(int id)
         {
-            using (context)
-            {
-                return await context.Subscriber.FirstOrDefaultAsync(x => x.Id == id);
-            }
+            return await context.Subscriber.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public List<Subscriber> GetSubscribers()
         {
-            using (context)
-            {
-                return context.Subscriber.ToList();
-            }
+            return context.Subscriber.ToList();
         }
 
         public async Task<List<Subscriber>> GetSubscribersAsync()
         {
-            using (context)
-            {
-                return await context.Subscriber.ToListAsync();
-            }
+            return await context.Subscriber.ToListAsync();
         }
     }
 }

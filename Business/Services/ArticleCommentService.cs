@@ -23,34 +23,22 @@ namespace Business.Services
 
         public ArticleComment? GetArticleComment(int id)
         {
-            using (context)
-            {
-                return context.ArticleComment.FirstOrDefault(x => x.Id == id);
-            }
+            return context.ArticleComment.FirstOrDefault(x => x.Id == id);
         }
 
         public async Task<ArticleComment?> GetArticleCommentAsync(int id)
         {
-            using (context)
-            {
-                return await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
-            }
+            return await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public List<ArticleComment> GetArticleComments()
         {
-            using (context)
-            {
-                return context.ArticleComment.ToList();
-            }
+            return context.ArticleComment.ToList();
         }
 
         public async Task<List<ArticleComment>> GetArticleCommentsAsync()
         {
-            using (context)
-            {
-                return await context.ArticleComment.ToListAsync();
-            }
+            return await context.ArticleComment.ToListAsync();
         }
 
         public ResultSet SaveArticleComment(ArticleComment articleComment)
@@ -58,39 +46,36 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                using (context)
+                DbState state = DbState.Update;
+                ArticleComment? data = context.ArticleComment.FirstOrDefault(x => x.Id == articleComment.Id);
+                if (data == null)
                 {
-                    DbState state = DbState.Update;
-                    ArticleComment? data = context.ArticleComment.FirstOrDefault(x => x.Id == articleComment.Id);
-                    if (data == null)
-                    {
-                        data = new ArticleComment();
-                        state = DbState.Insert;
-                    }
+                    data = new ArticleComment();
+                    state = DbState.Insert;
+                }
 
-                    data.ArticleId = articleComment.ArticleId;
-                    data.Content = articleComment.Content;
-                    data.FullName = articleComment.FullName;
-                    data.Mail = articleComment.Mail;
-                    data.IsConfirm = articleComment.IsConfirm;
-                    data.ParentCommentId = articleComment.ParentCommentId;
+                data.ArticleId = articleComment.ArticleId;
+                data.Content = articleComment.Content;
+                data.FullName = articleComment.FullName;
+                data.Mail = articleComment.Mail;
+                data.IsConfirm = articleComment.IsConfirm;
+                data.ParentCommentId = articleComment.ParentCommentId;
 
-                    if (state == DbState.Insert)
-                    {
-                        data.RegisterDate = DateTime.Now;
-                        context.Add(data);
-                    }
+                if (state == DbState.Insert)
+                {
+                    data.RegisterDate = DateTime.Now;
+                    context.Add(data);
+                }
 
-                    int count = context.SaveChanges();
-                    if (count > 0)
-                    {
-                        result.Id = data.Id;
-                    }
-                    else
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Db işlemi başarısız";
-                    }
+                int count = context.SaveChanges();
+                if (count > 0)
+                {
+                    result.Id = data.Id;
+                }
+                else
+                {
+                    result.Result = Result.Fail;
+                    result.Message = "Db işlemi başarısız";
                 }
             }
             catch (Exception ex)
@@ -106,38 +91,35 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                using (context)
+                DbState state = DbState.Update;// context changetracker'dan da bakılabilir
+                ArticleComment? data = await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == articleComment.Id);
+                if (data == null)
                 {
-                    DbState state = DbState.Update;// context changetracker'dan da bakılabilir
-                    ArticleComment? data = await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == articleComment.Id);
-                    if (data == null)
-                    {
-                        data = new ArticleComment();
-                        state = DbState.Insert;
-                    }
-                    data.ArticleId = articleComment.ArticleId;
-                    data.Content = articleComment.Content;
-                    data.FullName = articleComment.FullName;
-                    data.Mail = articleComment.Mail;
-                    data.IsConfirm = articleComment.IsConfirm;
-                    data.ParentCommentId = articleComment.ParentCommentId;
+                    data = new ArticleComment();
+                    state = DbState.Insert;
+                }
+                data.ArticleId = articleComment.ArticleId;
+                data.Content = articleComment.Content;
+                data.FullName = articleComment.FullName;
+                data.Mail = articleComment.Mail;
+                data.IsConfirm = articleComment.IsConfirm;
+                data.ParentCommentId = articleComment.ParentCommentId;
 
-                    if (state == DbState.Insert)
-                    {
-                        data.RegisterDate = DateTime.Now;
-                        context.Add(data);
-                    }
+                if (state == DbState.Insert)
+                {
+                    data.RegisterDate = DateTime.Now;
+                    context.Add(data);
+                }
 
-                    int count = await context.SaveChangesAsync();
-                    if (count > 0)
-                    {
-                        result.Id = data.Id;
-                    }
-                    else
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Db işlemi başarısız";
-                    }
+                int count = await context.SaveChangesAsync();
+                if (count > 0)
+                {
+                    result.Id = data.Id;
+                }
+                else
+                {
+                    result.Result = Result.Fail;
+                    result.Message = "Db işlemi başarısız";
                 }
             }
             catch (Exception ex)
@@ -151,18 +133,15 @@ namespace Business.Services
         public ResultSet DeleteArticleComment(int id)
         {
             ResultSet result = new ResultSet();
-            using (context)
+            ArticleComment? articleComment = context.ArticleComment.FirstOrDefault(x => x.Id == id);
+            if (articleComment != null)
             {
-                ArticleComment? articleComment = context.ArticleComment.FirstOrDefault(x => x.Id == id);
-                if (articleComment != null)
+                context.Remove(articleComment);
+                int count = context.SaveChanges();
+                if (count <= 0)
                 {
-                    context.Remove(articleComment);
-                    int count = context.SaveChanges();
-                    if (count <= 0)
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Silme işlemi başarısız";
-                    }
+                    result.Result = Result.Fail;
+                    result.Message = "Silme işlemi başarısız";
                 }
             }
             return result;
@@ -171,18 +150,15 @@ namespace Business.Services
         public async Task<ResultSet> DeleteArticleCommentAsync(int id)
         {
             ResultSet result = new ResultSet();
-            using (context)
+            ArticleComment? articleComment = await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
+            if (articleComment != null)
             {
-                ArticleComment? articleComment = await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
-                if (articleComment != null)
+                context.Remove(articleComment);
+                int count = await context.SaveChangesAsync();
+                if (count <= 0)
                 {
-                    context.Remove(articleComment);
-                    int count = await context.SaveChangesAsync();
-                    if (count <= 0)
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Silme işlemi başarısız";
-                    }
+                    result.Result = Result.Fail;
+                    result.Message = "Silme işlemi başarısız";
                 }
             }
             return result;
@@ -191,18 +167,15 @@ namespace Business.Services
         public async Task<ResultSet> SetConfirmAsync(int id, bool confirm)
         {
             ResultSet result = new ResultSet();
-            using (context)
+            ArticleComment? articleComment = await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
+            if (articleComment != null)
             {
-                ArticleComment? articleComment = await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
-                if (articleComment != null)
+                articleComment.IsConfirm = confirm;
+                int count = await context.SaveChangesAsync();
+                if (count <= 0)
                 {
-                    articleComment.IsConfirm = confirm;
-                    int count = await context.SaveChangesAsync();
-                    if (count <= 0)
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Silme işlemi başarısız";
-                    }
+                    result.Result = Result.Fail;
+                    result.Message = "Silme işlemi başarısız";
                 }
             }
             return result;
@@ -210,10 +183,7 @@ namespace Business.Services
 
         public async Task<List<ArticleComment>> GetArticleCommentsAsync(int articleId)
         {
-            using (context)
-            {
-                return await context.ArticleComment.Where(x => x.ArticleId == articleId).ToListAsync();
-            }
+            return await context.ArticleComment.Where(x => x.ArticleId == articleId).ToListAsync();
         }
     }
 }
