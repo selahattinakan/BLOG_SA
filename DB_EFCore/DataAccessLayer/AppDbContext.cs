@@ -31,7 +31,8 @@ namespace DB_EFCore.DataAccessLayer
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //modelBuilder.Entity<Admin>().Property(x => x.RegisterId).HasColumnName("Kayıt Eden"); //örnek
-            modelBuilder.Entity<Article>().Ignore(i => i.ReadMinute); // not mapped in db
+            modelBuilder.Entity<Article>().Ignore(x => x.ReadMinute); // not mapped in db
+            modelBuilder.Entity<Article>().HasQueryFilter(x => x.Enable && x.PublishDate.Date <= DateTime.Now.Date);
             base.OnModelCreating(modelBuilder);
         }
 

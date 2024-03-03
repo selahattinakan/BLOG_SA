@@ -33,18 +33,18 @@ namespace Business.Services
         }
 
         public List<Article> GetArticles()
-        { //article comment count u getiren metotlusu da yazılacak
-            return context.Article.ToList();
+        { 
+            return context.Article.IgnoreQueryFilters().ToList();
         }
 
         public async Task<List<Article>> GetArticlesAsync()
         {//admin tarafında tüm kayıtları çekiyor
-            return await context.Article.ToListAsync();
+            return await context.Article.IgnoreQueryFilters().ToListAsync();
         }
 
         public async Task<List<Article>> GetArticlesWithCommentsAsync()
         {
-            return await context.Article.Include(x => x.ArticleComments).Where(x => x.Enable && x.PublishDate.Date <= DateTime.Now.Date).ToListAsync();
+            return await context.Article.Include(x => x.ArticleComments).ToListAsync();
         }
 
         public async Task<List<ArticleDto>> GetArticlesWithCommentCountsAsync(int page, int pageSize)
@@ -59,13 +59,13 @@ namespace Business.Services
                 CommentCounts = x.ArticleComments.Count,
                 IntroContent = x.IntroContent,
                 Enable = x.Enable
-            }).Where(x => x.Enable && x.PublishDate.Date <= DateTime.Now.Date).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            }).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             return articles;
         }
 
         public async Task<int> GetArticleCountAsync(bool enabled)
         {
-            return await context.Article.Where(x => x.Enable && x.PublishDate.Date <= DateTime.Now.Date).CountAsync();
+            return await context.Article.CountAsync();
         }
 
         public ResultSet SaveArticle(Article article)
