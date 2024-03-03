@@ -42,6 +42,12 @@ namespace Business.Services
             return await context.Article.IgnoreQueryFilters().ToListAsync();
         }
 
+        public List<Article> GetArticlesNoTracking()
+        {// as no tracking ile her bir kayıt için state durumu tutulmuyor(flagler) ve performans artıyor. bu sorgu sonucu 1m kayıt dönseydi 1m flag ramde tutulacaktı
+         // bu kayıtlardan birinde update,insert gibi bir işlem yapılacaksa flagler takip edilmediği için savechanges öncesi manuel işlemler yapılması gerekir
+            return context.Article.AsNoTracking().IgnoreQueryFilters().ToList();
+        }
+
         public async Task<List<Article>> GetArticlesWithCommentsAsync()
         {
             return await context.Article.Include(x => x.ArticleComments).ToListAsync();
