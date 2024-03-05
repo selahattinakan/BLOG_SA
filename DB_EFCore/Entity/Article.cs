@@ -21,7 +21,7 @@ namespace DB_EFCore.Entity
         public DateTime? LastUpdateDate { get; set; }
         public int PhotoIndex { get; set; }
 
-        public int ReadMinute => IntroContent.Split(' ').Length / 238;
+        public int ReadMinute => !string.IsNullOrEmpty(IntroContent) ? IntroContent.Split(' ').Length / 238 : 0;
 
         public Admin Admin { get; set; }
         public List<ArticleComment> ArticleComments { get; set; }

@@ -30,3 +30,7 @@ body {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }
+
+.ql-editor{
+    padding:0px !important;
+}

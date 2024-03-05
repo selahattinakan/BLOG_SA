@@ -53,7 +53,7 @@ namespace BLOG_SA.Controllers
 
         [HttpPost]
         public async Task<IActionResult> SaveAdmin(Admin admin)
-        {
+        { //Validation ve ModalState eklenecek
             ResultSet result = new ResultSet();
             if (!string.IsNullOrEmpty(admin.FullName) && !string.IsNullOrEmpty(admin.UserName) && !string.IsNullOrEmpty(admin.Password))
             {

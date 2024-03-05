@@ -1,4 +1,5 @@
 ﻿@model DB_EFCore.Entity.Article
+@using Constants.Enums;
 @{
     ViewData["Title"] = "Makale";
 }
@@ -34,8 +35,42 @@
             </div>
         </div>
 
-        <div>
-            @* Yorum alanları *@
+        <div class="commentContainer" style="margin-top:50px;">
+            <form id="commentForm">
+                @Html.Hidden("ArticleId", Model.Id)
+                <h4 class="">Yorumlar</h4>
+                @{
+                    foreach (var item in Model.ArticleComments)
+                    {
+                        <div class="commentItem" style="margin-top:20px !important;padding: 10px;border:1px solid #ccc">
+                            <div class="meta mb-3" style="margin-bottom:10px !important;color:#615c5c;cursor:pointer;">
+                                <span class="date">@item.FullName</span>
+                                <span class="time">@item.RegisterDate</span>
+                            </div>
+                            <div class="blog-post-body">
+                                <div>
+                                    @item.Content
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+
+                <div class="commentText" style="margin-top: 20px;border-top: 2px solid #ccc;padding-top: 20px;">
+                    <div style="width: 45%;display: inline-block;margin-bottom: 10px;">
+                        <label class="sr-only" for="FullName">FullName</label>
+                        <input type="text" id="FullName" name="FullName" class="form-control mr-md-1" placeholder="Ad Soyad">
+                    </div>
+                    <div style="width: 45%;display: inline-block;margin-bottom: 10px;float:right;">
+                        <label class="sr-only" for="mail">Mail</label>
+                        <input type="email" id="mail" name="mail" class="form-control mr-md-1" placeholder="Mail">
+                    </div>
+                    <textarea class="form-control" id="Content" name="Content" rows="2" placeholder="Yorum Yap.."></textarea>
+                    <div class="" style="text-align: right;margin-top: 10px;">
+                        <button type="button" class="btn btn-primary" onclick="SendComment()">Gönder</button>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <nav class="blog-nav nav nav-justified my-5">
@@ -71,4 +106,36 @@
 
     let contentJson = @Json.Serialize(Model.Content);
     quill.setContents(JSON.parse(contentJson));
+
+    function SendComment() {
+        var data = $("#commentForm").serialize();
+        $.ajax({
+            type: "POST",
+            url: "/Home/SaveComment",
+            data: data,
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            success: function (result) {
+                var msg = "";
+                if (result.Result == @((int)Result.Success)) {
+                    ClearForm();
+                    msg = result.Message + " Yorumunuz onaylandıktan sonra yayınlanacaktır";
+                }
+                else{
+                    msg = result.Message;
+                }
+                alert(msg);
+            },
+            failure: function (response) {
+                alert(response.d);
+            },
+            error: function (response) {
+                alert(response.d);
+            }
+        });
+    }
+
+    function ClearForm() {
+        $("#commentForm input").val('');
+        $("#Content").val('');
+    }
 </script>
