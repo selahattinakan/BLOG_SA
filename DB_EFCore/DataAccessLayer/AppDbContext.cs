@@ -42,6 +42,7 @@ namespace DB_EFCore.DataAccessLayer
             optionsBuilder.UseSqlServer(Initilazier.Configuration.GetConnectionString("SqlCon"));
 #if DEBUG
             optionsBuilder.LogTo(s => System.Diagnostics.Debug.WriteLine(s)); //ef core'un hazırladığı sorgular
+            //optionsBuilder.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
 #endif
         }
 
