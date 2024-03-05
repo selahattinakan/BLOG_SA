@@ -19,12 +19,12 @@ namespace Business.Services
         }
         public Subscriber? GetSubscriber(int id)
         {
-            return context.Subscriber.FirstOrDefault(x => x.Id == id);
+            return context.Subscriber.Find(id);
         }
 
         public async Task<Subscriber?> GetSubscriberAsync(int id)
         {
-            return await context.Subscriber.FirstOrDefaultAsync(x => x.Id == id);
+            return await context.Subscriber.FindAsync(id);
         }
 
         public List<Subscriber> GetSubscribers()

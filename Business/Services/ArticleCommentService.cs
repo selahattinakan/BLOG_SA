@@ -23,12 +23,12 @@ namespace Business.Services
 
         public ArticleComment? GetArticleComment(int id)
         {
-            return context.ArticleComment.FirstOrDefault(x => x.Id == id);
+            return context.ArticleComment.Find(id);
         }
 
         public async Task<ArticleComment?> GetArticleCommentAsync(int id)
         {
-            return await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
+            return await context.ArticleComment.FindAsync(id);
         }
 
         public List<ArticleComment> GetArticleComments()

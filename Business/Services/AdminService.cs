@@ -49,12 +49,12 @@ namespace Business.Services
 
         public Admin? GetAdmin(int id)
         {
-            return context.Admin.FirstOrDefault(x => x.Id == id);
+            return context.Admin.Find(id);
         }
 
         public async Task<Admin?> GetAdminAsync(int id)
         {
-            return await context.Admin.FirstOrDefaultAsync(x => x.Id == id);
+            return await context.Admin.FindAsync(id);
         }
 
         public List<Admin> GetAdmins()

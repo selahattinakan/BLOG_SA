@@ -27,12 +27,12 @@ namespace Business.Services
 		}
 		public Article? GetArticle(int id)
 		{
-			return context.Article.FirstOrDefault(x => x.Id == id);
+			return context.Article.Find(id);
 		}
 
 		public async Task<Article?> GetArticleAsync(int id)
-		{
-			return await context.Article.FirstOrDefaultAsync(x => x.Id == id);
+		{ // find faster than firstordefault
+			return await context.Article.FindAsync(id);
 		}
 
 		public List<Article> GetArticles()
