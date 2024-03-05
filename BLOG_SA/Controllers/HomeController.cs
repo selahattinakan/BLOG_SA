@@ -18,12 +18,14 @@ namespace BLOG_SA.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IArticleService articleService;
         private readonly IArticleCommentService articleCommentService;
+        private readonly ISubscriberService subscriberService;
 
-        public HomeController(ILogger<HomeController> logger, IArticleService _articleService, IArticleCommentService _articleCommentService)
+        public HomeController(ILogger<HomeController> logger, IArticleService _articleService, IArticleCommentService _articleCommentService, ISubscriberService _subscriberService)
         {
             _logger = logger;
             articleService = _articleService;
             articleCommentService = _articleCommentService;
+            subscriberService = _subscriberService;
         }
 
         #region Views
@@ -80,6 +82,21 @@ namespace BLOG_SA.Controllers
             if (Validations.IsMailValid(comment.Mail) && !string.IsNullOrEmpty(comment.FullName) && !string.IsNullOrEmpty(comment.Content))
             {
                 result = await articleCommentService.SaveArticleCommentAsync(comment);
+            }
+            else
+            {
+                result.Result = Result.Fail;
+                result.Message = "Lütfen tüm alanlarý geçerli bir þekilde doldurunuz";
+            }
+            return Json(result);
+        }
+
+        public async Task<ActionResult> SaveSubscriber(string subMail)
+        {
+            ResultSet result = new ResultSet();
+            if (Validations.IsMailValid(subMail))
+            {
+                result = await subscriberService.SaveSubscriberAsync(subMail);
             }
             else
             {

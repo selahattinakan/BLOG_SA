@@ -1,4 +1,5 @@
 ﻿@model List<Business.DTOs.ArticleDto>
+
 @{
     ViewData["Title"] = "Anasayfa";
 }
@@ -13,6 +14,24 @@
         if ($('#page').val() < 1) //ilk sayfada ise geri gidememeli
             return;
         $('#listForm').submit();
+    }
+    function Subs(){
+        $.ajax({
+            type: "POST",
+            url: "/Home/SaveSubscriber",
+            data: { subMail: $("#subMail").val() },
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            success: function (result) {
+                $("#subMail").val('');
+                alert(result.Message);
+            },
+            failure: function (response) {
+                alert(response.d);
+            },
+            error: function (response) {
+                alert(response.d);
+            }
+        });
     }
 </script>
 
@@ -77,10 +96,10 @@
         <div class="intro">Hoşgeldiniz, mail adresinizi girerek güncel makalalelerden haberdar olabilirsiniz!</div>
         <form class="signup-form form-inline justify-content-center pt-3">
             <div class="form-group">
-                <label class="sr-only" for="semail">Mail</label>
-                <input type="email" id="semail" name="semail1" class="form-control mr-md-1 semail" placeholder="Mailinizi giriniz">
+                <label class="sr-only" for="subMail">Mail</label>
+                <input type="email" id="subMail" name="subMail" class="form-control mr-md-1 semail" placeholder="Mailinizi giriniz">
             </div>
-            <button type="submit" class="btn btn-primary">Abone Ol</button>
+            <button type="button" class="btn btn-primary" onclick="Subs()">Abone Ol</button>
         </form>
     </div>
 </section>

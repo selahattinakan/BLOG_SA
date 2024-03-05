@@ -1,4 +1,5 @@
-﻿using DB_EFCore.Entity;
+﻿using Constants;
+using DB_EFCore.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,6 @@ namespace Business.Interfaces
         public Task<Subscriber?> GetSubscriberAsync(int id);
         public List<Subscriber> GetSubscribers();
         public Task<List<Subscriber>> GetSubscribersAsync();
+        public Task<ResultSet> SaveSubscriberAsync(string subMail);
     }
 }
