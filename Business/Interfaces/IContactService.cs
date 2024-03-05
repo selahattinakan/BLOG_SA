@@ -1,4 +1,5 @@
-﻿using DB_EFCore.Entity;
+﻿using Constants;
+using DB_EFCore.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,6 @@ namespace Business.Interfaces
         public Task<Contact?> GetContactAsync(int id);
         public List<Contact> GetContacts();
         public Task<List<Contact>> GetContactsAsync();
+        public Task<ResultSet> SaveContactAsync(Contact contact);
     }
 }

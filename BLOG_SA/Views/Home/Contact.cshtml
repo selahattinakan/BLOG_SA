@@ -2,34 +2,60 @@
     ViewData["Title"] = "İletişim";
 }
 
+<script>
+    function SendContact() {
+        var data = $("#contactForm").serialize();
+        $.ajax({
+            type: "POST",
+            url: "/Home/SaveContact",
+            data: data,
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            success: function (result) {
+                ClearForm();
+                alert(result.Message);
+            },
+            failure: function (response) {
+                alert(response.d);
+            },
+            error: function (response) {
+                alert(response.d);
+            }
+        });
+    }
+
+    function ClearForm() {
+        $("#contactForm input").val('');
+        $("#Message").val('');
+    }
+</script>
 
 <section class="cta-section theme-bg-light py-5">
     <div class="container text-center">
         <h2 class="heading">İletişim</h2>
         <div class="intro">Herhangi bir konu hakkında bize ulaşın</div>
-        <form class="signup-form form-inline justify-content-center pt-3">
+        <form id="contactForm" class="signup-form form-inline justify-content-center pt-3">
             <div class="form-group">
                 <div class="row">
-                    <label class="sr-only" for="name">Name</label>
-                    <input type="text" id="name" name="name" class="form-control mr-md-1" placeholder="Ad Soyad">
+                    <label class="sr-only" for="FullName">FullName</label>
+                    <input type="text" id="FullName" name="FullName" class="form-control mr-md-1" placeholder="Ad Soyad">
                 </div>
                 <div class="row">
-                    <label class="sr-only" for="mail">Mail</label>
-                    <input type="email" id="mail" name="mail" class="form-control mr-md-1" placeholder="Mail">
+                    <label class="sr-only" for="Mail">Mail</label>
+                    <input type="email" id="Mail" name="Mail" class="form-control mr-md-1" placeholder="Mail">
                 </div>
                 <div class="row">
-                    <label class="sr-only" for="subject">Subject</label>
-                    <input type="text" id="subject" name="subject" class="form-control mr-md-1" placeholder="Konu">
+                    <label class="sr-only" for="Subject">Subject</label>
+                    <input type="text" id="Subject" name="Subject" class="form-control mr-md-1" placeholder="Konu">
                 </div>
                 <div class="row">
-                    <label class="sr-only" for="message">Message</label>
-                    <textarea type="text" rows="12" id="message" name="message" class="form-control mr-md-1" placeholder="Mesaj"></textarea>
+                    <label class="sr-only" for="Message">Message</label>
+                    <textarea type="text" rows="12" id="Message" name="Message" class="form-control mr-md-1" placeholder="Mesaj"></textarea>
                 </div>
 
                 Captcha Alanı
 
                 <div class="row">
-                    <button type="submit" class="btn btn-primary">Gönder</button>
+                    <button type="button" class="btn btn-primary" onclick="SendContact()">Gönder</button>
                 </div>
             </div>
         </form>
