@@ -107,7 +107,7 @@ namespace Business.Services
                 {
                     data.RegisterDate = DateTime.Now;
                     data.AdminId = service.GetActiveUserId();
-                    context.Add(data);
+                    await context.AddAsync(data);
                 }
 
                 int count = await context.SaveChangesAsync();

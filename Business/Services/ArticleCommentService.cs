@@ -108,7 +108,7 @@ namespace Business.Services
                 if (state == DbState.Insert)
                 {
                     data.RegisterDate = DateTime.Now;
-                    context.Add(data);
+                    await context.AddAsync(data);
                 }
 
                 int count = await context.SaveChangesAsync();
