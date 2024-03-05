@@ -3,37 +3,25 @@
 }
 
 <script>
-    function SendContact() {
-        var data = $("#contactForm").serialize();
-        $.ajax({
-            type: "POST",
-            url: "/Home/SaveContact",
-            data: data,
-            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-            success: function (result) {
-                ClearForm();
-                alert(result.Message);
-            },
-            failure: function (response) {
-                alert(response.d);
-            },
-            error: function (response) {
-                alert(response.d);
-            }
-        });
-    }
+    document.addEventListener("DOMContentLoaded", () => {
+        var message = '@Html.Raw(ViewBag.Message)';
+        if (message) {
+            alert(message);
+        }
 
-    function ClearForm() {
-        $("#contactForm input").val('');
-        $("#Message").val('');
-    }
+        $(".nav-item").removeClass("active");
+        $("#contactLi").addClass("active");
+    });
 </script>
+
+<script src="https://www.google.com/recaptcha/api.js"></script>
+
 
 <section class="cta-section theme-bg-light py-5">
     <div class="container text-center">
         <h2 class="heading">İletişim</h2>
         <div class="intro">Herhangi bir konu hakkında bize ulaşın</div>
-        <form id="contactForm" class="signup-form form-inline justify-content-center pt-3">
+        <form id="contactForm" class="signup-form form-inline justify-content-center pt-3" method="post" action="@Url.Action("SaveContact", "Home")">
             <div class="form-group">
                 <div class="row">
                     <label class="sr-only" for="FullName">FullName</label>
@@ -52,10 +40,13 @@
                     <textarea type="text" rows="12" id="Message" name="Message" class="form-control mr-md-1" placeholder="Mesaj"></textarea>
                 </div>
 
-                Captcha Alanı
+                <div class="row">
+                    <div class="g-recaptcha" data-sitekey="@ViewBag.CaptchaKey">
+                    </div>
+                </div>
 
                 <div class="row">
-                    <button type="button" class="btn btn-primary" onclick="SendContact()">Gönder</button>
+                    <button type="submit" class="btn btn-primary">Gönder</button>
                 </div>
             </div>
         </form>

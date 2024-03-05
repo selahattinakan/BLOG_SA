@@ -9,6 +9,8 @@ using DB_EFCore.DataAccessLayer;
 using DB_EFCore.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 
 namespace BLOG_SA.Controllers
@@ -108,24 +110,59 @@ namespace BLOG_SA.Controllers
             return Json(result);
         }
 
-        public async Task<ActionResult> SaveContact(Contact contact)
+        [HttpPost]
+        public async Task<ActionResult> SaveContact()
         {
-            ResultSet result = new ResultSet();
-            if (Validations.IsMailValid(contact.Mail) && !string.IsNullOrEmpty(contact.FullName) && !string.IsNullOrEmpty(contact.Subject) && !string.IsNullOrEmpty(contact.Message))
+            string FullName = HttpContext.Request.Form["FullName"];
+            string Mail = HttpContext.Request.Form["Mail"];
+            string Subject = HttpContext.Request.Form["Subject"];
+            string Message = HttpContext.Request.Form["Message"];
+            if (!string.IsNullOrEmpty(FullName) && !string.IsNullOrEmpty(FullName) && !string.IsNullOrEmpty(FullName) && Validations.IsMailValid(Mail))
             {
-                result = await contactService.SaveContactAsync(contact);
+                var captchaImage = HttpContext.Request.Form["g-recaptcha-response"];
+                if (string.IsNullOrEmpty(captchaImage))
+                {
+                    TempData["PostMessage"] = "Captche fail!";
+                }
+                var verified = await CheckCaptcha();
+                if (verified)
+                {
+                    Contact contact = new Contact { FullName = FullName, Mail = Mail, Message = Message, Subject = Subject };
+                    ResultSet result = await contactService.SaveContactAsync(contact);
+                    TempData["PostMessage"] = result.Message;
+                }
+                else
+                {
+                    TempData["PostMessage"] = "Captche not verified!";
+                }
             }
             else
             {
-                result.Result = Result.Fail;
-                result.Message = "Lütfen tüm alanlarý geçerli bir þekilde doldurunuz";
+                TempData["PostMessage"] = "Lütfen tüm alanlarý doðru formatta doldurunuz.";
             }
-            return Json(result);
+            return RedirectToAction("Contact");
         }
 
-
-        public IActionResult Contact()
+        public async Task<bool> CheckCaptcha()
         {
+            var secretKey = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("Google")["RecaptchaV3SecretKey"];
+            var postData = new List<KeyValuePair<string, string>>();
+            {
+                new KeyValuePair<string, string>("secret", secretKey);
+                new KeyValuePair<string, string>("response", HttpContext.Request.Form["google-recaptcha-response"]);
+            };
+
+            var client = new HttpClient();
+            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", new FormUrlEncodedContent(postData));
+            var obj = (JObject)JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
+            return (bool)obj["success"];
+        }
+
+        public async Task<IActionResult> Contact()
+        {
+            var siteKey = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("Google")["RecaptchaV3SiteKey"];
+            ViewBag.CaptchaKey = siteKey;
+            ViewBag.Message = TempData["PostMessage"]?.ToString();
             return View();
         }
 

@@ -5,16 +5,23 @@
 }
 
 <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        $(".nav-item").removeClass("active");
+        $("#homeLi").addClass("active");
+    });
+
     function NextPageClick(){
         $('#page').val(parseInt($('#page').val()) + 1);
         $('#listForm').submit();
     }
+
     function PrevPageClick() {
         $('#page').val(parseInt($('#page').val()) - 1);
         if ($('#page').val() < 1) //ilk sayfada ise geri gidememeli
             return;
         $('#listForm').submit();
     }
+
     function Subs(){
         $.ajax({
             type: "POST",
