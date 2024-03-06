@@ -2,6 +2,7 @@ using Business.Interfaces;
 using Business.Services;
 using DB_EFCore.DataAccessLayer;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Principal;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,10 @@ builder.Services.AddTransient<ILogService, LogService>();
 builder.Services.AddTransient<IService, Service>();
 builder.Services.AddTransient<ISettingService, SettingService>();
 builder.Services.AddTransient<ISubscriberService, SubscriberService>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<IPrincipal>(
+    provider => provider.GetService<IHttpContextAccessor>().HttpContext.User);
 
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(settings =>

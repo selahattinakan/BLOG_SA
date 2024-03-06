@@ -36,14 +36,9 @@ namespace Business.Services
             return false;
         }
 
-        public async Task<bool> LogInControlAsync(string userName, string password)
+        public async Task<Admin> LogInControlAsync(string userName, string password)
         {
-            Admin? admin = await context.Admin.FirstOrDefaultAsync(x => x.UserName == userName && x.Password == password);
-            if (admin != null)
-            {
-                return true;
-            }
-            return false;
+            return await context.Admin.FirstOrDefaultAsync(x => x.UserName == userName && x.Password == password);
         }
         #endregion
 

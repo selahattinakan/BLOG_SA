@@ -11,7 +11,7 @@ namespace Business.Interfaces
     public interface IAdminService
     {
         public bool LogInControl(string userName, string password);
-        public Task<bool> LogInControlAsync(string userName, string password);
+        public Task<Admin> LogInControlAsync(string userName, string password);
         public Admin? GetAdmin(int id);
         public Task<Admin?> GetAdminAsync(int id);
         public List<Admin> GetAdmins();

@@ -30,12 +30,13 @@ namespace BLOG_SA.Controllers
         public async Task<IActionResult> Index(UserModel model, string ReturnUrl)
         {
             //returnurl güvenlik açığı olabilir, ilerde kalkacak
-            bool logInControl = await adminService.LogInControlAsync(model.UserName, model.Password);
-            if (logInControl)
+            Admin admin = await adminService.LogInControlAsync(model.UserName, model.Password);
+            if (admin != null && admin?.Id > 0)
             {
                 List<Claim> claims = new List<Claim>()
                     {
-                        new Claim (ClaimTypes.Name, model.UserName)
+                        new Claim (ClaimTypes.Name, admin.UserName),
+                        new Claim (ClaimTypes.NameIdentifier, admin.Id.ToString())
                     };
                 ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Login");
                 ClaimsPrincipal principal = new ClaimsPrincipal(claimsIdentity);
