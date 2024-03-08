@@ -11,7 +11,7 @@ using System.Text.Json;
 
 namespace BLOG_SA.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class AdminController : Controller
     {
         private readonly IAdminService adminService;

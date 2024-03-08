@@ -6,6 +6,11 @@ using System.Security.Principal;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(80);
+});
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

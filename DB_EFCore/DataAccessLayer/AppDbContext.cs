@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -39,11 +40,18 @@ namespace DB_EFCore.DataAccessLayer
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             Initilazier.Build();
-            optionsBuilder.UseSqlServer(Initilazier.Configuration.GetConnectionString("SqlCon"));
-#if DEBUG
-            optionsBuilder.LogTo(s => System.Diagnostics.Debug.WriteLine(s)); //ef core'un hazırladığı sorgular
-            //optionsBuilder.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
-#endif
+
+            if (Debugger.IsAttached)
+            {
+                optionsBuilder.UseSqlServer(Initilazier.Configuration.GetConnectionString("SqlConDebug"));
+                optionsBuilder.LogTo(s => System.Diagnostics.Debug.WriteLine(s)); //ef core'un hazırladığı sorgular
+                                                                                  //optionsBuilder.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information); 
+            }
+            else
+            {
+                optionsBuilder.UseSqlServer(Initilazier.Configuration.GetConnectionString("SqlCon"));
+            }
+
         }
 
         public DataTable GetDataTableFromSP(string sp)
