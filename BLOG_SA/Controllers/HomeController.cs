@@ -119,43 +119,15 @@ namespace BLOG_SA.Controllers
             string Message = HttpContext.Request.Form["Message"];
             if (!string.IsNullOrEmpty(FullName) && !string.IsNullOrEmpty(FullName) && !string.IsNullOrEmpty(FullName) && Validations.IsMailValid(Mail))
             {
-                var captchaImage = HttpContext.Request.Form["g-recaptcha-response"];
-                if (string.IsNullOrEmpty(captchaImage))
-                {
-                    TempData["PostMessage"] = "Captche fail!";
-                }
-                var verified = await CheckCaptcha();
-                if (verified)
-                {
-                    Contact contact = new Contact { FullName = FullName, Mail = Mail, Message = Message, Subject = Subject };
-                    ResultSet result = await contactService.SaveContactAsync(contact);
-                    TempData["PostMessage"] = result.Message;
-                }
-                else
-                {
-                    TempData["PostMessage"] = "Captche not verified!";
-                }
+                Contact contact = new Contact { FullName = FullName, Mail = Mail, Message = Message, Subject = Subject };
+                ResultSet result = await contactService.SaveContactAsync(contact);
+                TempData["PostMessage"] = result.Message;
             }
             else
             {
                 TempData["PostMessage"] = "Lütfen tüm alanlarý doðru formatta doldurunuz.";
             }
             return RedirectToAction("Contact");
-        }
-
-        public async Task<bool> CheckCaptcha()
-        {
-            var secretKey = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("Google")["RecaptchaV3SecretKey"];
-            var postData = new List<KeyValuePair<string, string>>();
-            {
-                new KeyValuePair<string, string>("secret", secretKey);
-                new KeyValuePair<string, string>("response", HttpContext.Request.Form["google-recaptcha-response"]);
-            };
-
-            var client = new HttpClient();
-            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", new FormUrlEncodedContent(postData));
-            var obj = (JObject)JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
-            return (bool)obj["success"];
         }
 
         public async Task<IActionResult> Contact()

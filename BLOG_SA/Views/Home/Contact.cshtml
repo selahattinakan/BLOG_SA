@@ -12,6 +12,9 @@
         $(".nav-item").removeClass("active");
         $("#contactLi").addClass("active");
     });
+    function onSubmit(token) {
+        document.getElementById("contactForm").submit();
+    }
 </script>
 
 <script src="https://www.google.com/recaptcha/api.js"></script>
@@ -41,12 +44,9 @@
                 </div>
 
                 <div class="row">
-                    <div class="g-recaptcha" data-sitekey="@ViewBag.CaptchaKey">
-                    </div>
-                </div>
-
-                <div class="row">
-                    <button type="submit" class="btn btn-primary">Gönder</button>
+                    <button type="submit" class="btn btn-primary g-recaptcha" data-sitekey="@ViewBag.CaptchaKey" data-callback='onSubmit' data-action='submit'>
+                        Gönder
+                    </button>
                 </div>
             </div>
         </form>
@@ -61,5 +61,10 @@
     .row {
         display: block !important;
         margin: 15px !important;
+    }
+
+    .grecaptcha-badge{
+        bottom: 0px!important;
+        z-index : 10;
     }
 </style>
