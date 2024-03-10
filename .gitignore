@@ -362,3 +362,10 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /DB_EFCore/dbsettings.json
+/BLOG_SA/wwwroot/css/themes/theme-1.css
+/BLOG_SA/wwwroot/css/themes/theme-2.css
+/BLOG_SA/wwwroot/css/themes/theme-3.css
+/BLOG_SA/wwwroot/css/themes/theme-4.css
+/BLOG_SA/wwwroot/css/themes/theme-5.css
+/BLOG_SA/wwwroot/css/themes/theme-6.css
+/BLOG_SA/wwwroot/css/themes/theme-8.css
