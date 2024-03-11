@@ -15,7 +15,8 @@ namespace Business.Interfaces
 		public Task<Article?> GetArticleAsync(int id);
 		public List<Article> GetArticles();
 		public Task<List<Article>> GetArticlesAsync();
-		public Task<Article> GetArticleWithCommentsAsync(int id);
+        public Task<List<Article>> GetArticlesForRssAsync();
+        public Task<Article> GetArticleWithCommentsAsync(int id);
 		public Task<List<Article>> GetArticlesWithCommentsAsync();
 		public Task<List<ArticleDto>> GetArticlesWithCommentCountsAsync(int page, int pageSize);
 		public Task<int> GetArticleCountAsync(bool enabled);

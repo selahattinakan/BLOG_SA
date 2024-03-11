@@ -60,4 +60,9 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.MapControllerRoute(
+    name: "rss",
+    pattern: "rss",
+    defaults: new { controller = "Rss", action = "Index" });
+
 app.Run();
