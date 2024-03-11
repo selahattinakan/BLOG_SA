@@ -2,6 +2,7 @@ using Business.Interfaces;
 using Business.Services;
 using DB_EFCore.DataAccessLayer;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using System.Security.Principal;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,6 +53,8 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
 app.MapControllerRoute(
     name: "default",
