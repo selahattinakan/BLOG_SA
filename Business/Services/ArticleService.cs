@@ -99,7 +99,7 @@ namespace Business.Services
             try
             {
                 DbState state = DbState.Update;
-                Article? data = context.Article.FirstOrDefault(x => x.Id == article.Id);
+                Article? data = context.Article.IgnoreQueryFilters().FirstOrDefault(x => x.Id == article.Id);
                 if (data == null)
                 {
                     data = new Article();
@@ -149,7 +149,7 @@ namespace Business.Services
             try
             {
                 DbState state = DbState.Update;// context changetracker'dan da bakılabilir
-                Article? data = await context.Article.FirstOrDefaultAsync(x => x.Id == article.Id);
+                Article? data = await context.Article.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == article.Id);
                 if (data == null)
                 {
                     data = new Article();
@@ -196,7 +196,7 @@ namespace Business.Services
         public ResultSet DeleteArticle(int id)
         {
             ResultSet result = new ResultSet();
-            Article? article = context.Article.FirstOrDefault(x => x.Id == id);
+            Article? article = context.Article.IgnoreQueryFilters().FirstOrDefault(x => x.Id == id);
             if (article != null)
             {
                 context.Remove(article);
@@ -218,7 +218,7 @@ namespace Business.Services
         public async Task<ResultSet> DeleteArticleAsync(int id)
         {
             ResultSet result = new ResultSet();
-            Article? article = await context.Article.FirstOrDefaultAsync(x => x.Id == id);
+            Article? article = await context.Article.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id);
             if (article != null)
             {
                 context.Remove(article);
