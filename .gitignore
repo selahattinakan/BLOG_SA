@@ -369,3 +369,5 @@ FodyWeavers.xsd
 /BLOG_SA/wwwroot/css/themes/theme-5.css
 /BLOG_SA/wwwroot/css/themes/theme-6.css
 /BLOG_SA/wwwroot/css/themes/theme-8.css
+/Elasticsearch/blog_mapping.json
+/Elasticsearch/appsettings.json
