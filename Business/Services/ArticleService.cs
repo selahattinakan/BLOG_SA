@@ -18,63 +18,63 @@ namespace Business.Services
 {
     public class ArticleService : IArticleService
     {
-        private readonly AppDbContext context;
-        private readonly IService service;
-        public ArticleService(AppDbContext _context, IService _service)
+        private readonly AppDbContext _context;
+        private readonly IService _service;
+        public ArticleService(AppDbContext context, IService service)
         {
-            context = _context;
-            service = _service;
+            _context = context;
+            _service = service;
         }
         public Article? GetArticle(int id)
         {
-            return context.Article.Find(id);
+            return _context.Article.Find(id);
         }
 
         public async Task<Article?> GetArticleAsync(int id)
         { // find faster than firstordefault
-            return await context.Article.FindAsync(id);
+            return await _context.Article.FindAsync(id);
         }
 
         public List<Article> GetArticles()
         {
-            return context.Article.IgnoreQueryFilters().ToList();
+            return _context.Article.IgnoreQueryFilters().ToList();
         }
 
         public async Task<List<Article>> GetArticlesAsync()
         {//admin tarafında tüm kayıtları çekiyor
-            return await context.Article.IgnoreQueryFilters().ToListAsync();
+            return await _context.Article.IgnoreQueryFilters().ToListAsync();
         }
 
         public async Task<List<Article>> GetArticlesForRssAsync()
         {
-            return await context.Article.AsNoTracking().ToListAsync();
+            return await _context.Article.AsNoTracking().ToListAsync();
         }
 
         public List<Article> GetArticlesNoTracking()
         {// as no tracking ile her bir kayıt için state durumu tutulmuyor(flagler) ve performans artıyor. bu sorgu sonucu 1m kayıt dönseydi 1m flag ramde tutulacaktı
          // bu kayıtlardan birinde update,insert gibi bir işlem yapılacaksa flagler takip edilmediği için savechanges öncesi manuel işlemler yapılması gerekir
-            return context.Article.AsNoTracking().IgnoreQueryFilters().ToList();
+            return _context.Article.AsNoTracking().IgnoreQueryFilters().ToList();
         }
 
         public async Task<Article> GetArticleWithCommentsAsync(int id)
         {
-            return await context.Article.Include(x => x.ArticleComments.Where(x => x.IsConfirm)).FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Article.Include(x => x.ArticleComments.Where(x => x.IsConfirm)).FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<List<Article>> GetArticlesWithCommentsAsync()
         {
-            return await context.Article.Include(x => x.ArticleComments).ToListAsync();
+            return await _context.Article.Include(x => x.ArticleComments).ToListAsync();
         }
 
         public List<int> GetArticleIds()
         {
-            var dataTable = context.GetDataTableFromSP($"SP_GetArticleIds");
+            var dataTable = _context.GetDataTableFromSP($"SP_GetArticleIds");
             return dataTable.Rows.OfType<DataRow>().Select(dr => dr.Field<int>("Id")).ToList();
         }
 
         public async Task<List<ArticleDto>> GetArticlesWithCommentCountsAsync(int page, int pageSize)
         {
-            var articles = await context.Article.Select(x => new ArticleDto
+            var articles = await _context.Article.Select(x => new ArticleDto
             {
                 Id = x.Id,
                 PhotoIndex = x.PhotoIndex,
@@ -90,7 +90,7 @@ namespace Business.Services
 
         public async Task<int> GetArticleCountAsync(bool enabled)
         {
-            return await context.Article.CountAsync();
+            return await _context.Article.CountAsync();
         }
 
         public ResultSet SaveArticle(Article article)
@@ -99,7 +99,7 @@ namespace Business.Services
             try
             {
                 DbState state = DbState.Update;
-                Article? data = context.Article.IgnoreQueryFilters().FirstOrDefault(x => x.Id == article.Id);
+                Article? data = _context.Article.IgnoreQueryFilters().FirstOrDefault(x => x.Id == article.Id);
                 if (data == null)
                 {
                     data = new Article();
@@ -115,16 +115,16 @@ namespace Business.Services
                 if (state == DbState.Update)
                 {
                     data.LastUpdateDate = DateTime.Now;
-                    data.UpdateAdminId = service.GetActiveUserId();
+                    data.UpdateAdminId = _service.GetActiveUserId();
                 }
                 else
                 {
                     data.RegisterDate = DateTime.Now;
-                    data.AdminId = service.GetActiveUserId();
-                    context.Add(data);
+                    data.AdminId = _service.GetActiveUserId();
+                    _context.Add(data);
                 }
 
-                int count = context.SaveChanges();
+                int count = _context.SaveChanges();
                 if (count > 0)
                 {
                     result.Id = data.Id;
@@ -148,8 +148,8 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                DbState state = DbState.Update;// context changetracker'dan da bakılabilir
-                Article? data = await context.Article.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == article.Id);
+                DbState state = DbState.Update;// _context changetracker'dan da bakılabilir
+                Article? data = await _context.Article.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == article.Id);
                 if (data == null)
                 {
                     data = new Article();
@@ -165,16 +165,16 @@ namespace Business.Services
                 if (state == DbState.Update)
                 {
                     data.LastUpdateDate = DateTime.Now;
-                    data.UpdateAdminId = service.GetActiveUserId();
+                    data.UpdateAdminId = _service.GetActiveUserId();
                 }
                 else
                 {
                     data.RegisterDate = DateTime.Now;
-                    data.AdminId = service.GetActiveUserId();
-                    await context.AddAsync(data);
+                    data.AdminId = _service.GetActiveUserId();
+                    await _context.AddAsync(data);
                 }
 
-                int count = await context.SaveChangesAsync();
+                int count = await _context.SaveChangesAsync();
                 if (count > 0)
                 {
                     result.Id = data.Id;
@@ -196,11 +196,11 @@ namespace Business.Services
         public ResultSet DeleteArticle(int id)
         {
             ResultSet result = new ResultSet();
-            Article? article = context.Article.IgnoreQueryFilters().FirstOrDefault(x => x.Id == id);
+            Article? article = _context.Article.IgnoreQueryFilters().FirstOrDefault(x => x.Id == id);
             if (article != null)
             {
-                context.Remove(article);
-                int count = context.SaveChanges();
+                _context.Remove(article);
+                int count = _context.SaveChanges();
                 if (count <= 0)
                 {
                     result.Result = Result.Fail;
@@ -218,11 +218,11 @@ namespace Business.Services
         public async Task<ResultSet> DeleteArticleAsync(int id)
         {
             ResultSet result = new ResultSet();
-            Article? article = await context.Article.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id);
+            Article? article = await _context.Article.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id);
             if (article != null)
             {
-                context.Remove(article);
-                int count = await context.SaveChangesAsync();
+                _context.Remove(article);
+                int count = await _context.SaveChangesAsync();
                 if (count <= 0)
                 {
                     result.Result = Result.Fail;

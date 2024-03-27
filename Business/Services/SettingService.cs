@@ -14,21 +14,21 @@ namespace Business.Services
 {
     public class SettingService : ISettingService
     {
-        private readonly AppDbContext context;
-        private readonly IService service;
-        public SettingService(AppDbContext _context, IService _service)
+        private readonly AppDbContext _context;
+        private readonly IService _service;
+        public SettingService(AppDbContext context, IService service)
         {
-            context = _context;
-            service = _service;
+            _context = context;
+            _service = service;
         }
         public Setting? GetSetting()
         {
-            return context.Setting.FirstOrDefault();
+            return _context.Setting.FirstOrDefault();
         }
 
         public async Task<Setting?> GetSettingAsync()
         {
-            return await context.Setting.FirstOrDefaultAsync();
+            return await _context.Setting.FirstOrDefaultAsync();
         }
 
         public ResultSet SaveSetting(Setting setting)
@@ -37,7 +37,7 @@ namespace Business.Services
             try
             {
                 DbState state = DbState.Update;
-                Setting? data = context.Setting.FirstOrDefault(x => x.Id == setting.Id);
+                Setting? data = _context.Setting.FirstOrDefault(x => x.Id == setting.Id);
                 if (data == null)
                 {
                     data = new Setting();
@@ -52,16 +52,16 @@ namespace Business.Services
                 if (state == DbState.Update)
                 {
                     data.LastUpdateDate = DateTime.Now;
-                    data.UpdateAdminId = service.GetActiveUserId();
+                    data.UpdateAdminId = _service.GetActiveUserId();
                 }
                 else
                 {
                     data.RegisterDate = DateTime.Now;
-                    data.AdminId = service.GetActiveUserId();
-                    context.Add(data);
+                    data.AdminId = _service.GetActiveUserId();
+                    _context.Add(data);
                 }
 
-                int count = context.SaveChanges();
+                int count = _context.SaveChanges();
                 if (count > 0)
                 {
                     result.Id = data.Id;
@@ -85,8 +85,8 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                DbState state = DbState.Update;// context changetracker'dan da bakılabilir
-                Setting? data = await context.Setting.FirstOrDefaultAsync(x => x.Id == setting.Id);
+                DbState state = DbState.Update;// _context changetracker'dan da bakılabilir
+                Setting? data = await _context.Setting.FirstOrDefaultAsync(x => x.Id == setting.Id);
                 if (data == null)
                 {
                     data = new Setting();
@@ -101,16 +101,16 @@ namespace Business.Services
                 if (state == DbState.Update)
                 {
                     data.LastUpdateDate = DateTime.Now;
-                    data.UpdateAdminId = service.GetActiveUserId();
+                    data.UpdateAdminId = _service.GetActiveUserId();
                 }
                 else
                 {
                     data.RegisterDate = DateTime.Now;
-                    data.AdminId = service.GetActiveUserId();
-                    await context.AddAsync(data);
+                    data.AdminId = _service.GetActiveUserId();
+                    await _context.AddAsync(data);
                 }
 
-                int count = await context.SaveChangesAsync();
+                int count = await _context.SaveChangesAsync();
                 if (count > 0)
                 {
                     result.Id = data.Id;

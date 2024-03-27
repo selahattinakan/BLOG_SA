@@ -14,29 +14,29 @@ namespace Business.Services
 {
     public class ContactService : IContactService
     {
-        private readonly AppDbContext context;
-        public ContactService(AppDbContext _context)
+        private readonly AppDbContext _context;
+        public ContactService(AppDbContext context)
         {
-            context = _context;
+            _context = context;
         }
         public Contact? GetContact(int id)
         {
-            return context.Contact.Find(id);
+            return _context.Contact.Find(id);
         }
 
         public async Task<Contact?> GetContactAsync(int id)
         {
-            return await context.Contact.FindAsync(id);
+            return await _context.Contact.FindAsync(id);
         }
 
         public List<Contact> GetContacts()
         {
-            return context.Contact.ToList();
+            return _context.Contact.ToList();
         }
 
         public async Task<List<Contact>> GetContactsAsync()
         {
-            return await context.Contact.ToListAsync();
+            return await _context.Contact.ToListAsync();
         }
 
         public async Task<ResultSet> SaveContactAsync(Contact contact)
@@ -45,7 +45,7 @@ namespace Business.Services
             try
             {
                 DbState state = DbState.Update;
-                Contact? data = await context.Contact.FirstOrDefaultAsync(x => x.Id == contact.Id);
+                Contact? data = await _context.Contact.FirstOrDefaultAsync(x => x.Id == contact.Id);
                 if (data == null)
                 {
                     data = new Contact();
@@ -60,10 +60,10 @@ namespace Business.Services
                 if (state == DbState.Insert)
                 {
                     data.RegisterDate = DateTime.Now;
-                    await context.AddAsync(data);
+                    await _context.AddAsync(data);
                 }
 
-                int count = await context.SaveChangesAsync();
+                int count = await _context.SaveChangesAsync();
                 if (count > 0)
                 {
                     result.Id = data.Id;

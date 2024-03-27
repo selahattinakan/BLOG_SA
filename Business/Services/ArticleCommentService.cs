@@ -15,30 +15,30 @@ namespace Business.Services
 {
     public class ArticleCommentService : IArticleCommentService
     {
-        private readonly AppDbContext context;
-        public ArticleCommentService(AppDbContext _context)
+        private readonly AppDbContext _context;
+        public ArticleCommentService(AppDbContext context)
         {
-            context = _context;
+            _context = context;
         }
 
         public ArticleComment? GetArticleComment(int id)
         {
-            return context.ArticleComment.Find(id);
+            return _context.ArticleComment.Find(id);
         }
 
         public async Task<ArticleComment?> GetArticleCommentAsync(int id)
         {
-            return await context.ArticleComment.FindAsync(id);
+            return await _context.ArticleComment.FindAsync(id);
         }
 
         public List<ArticleComment> GetArticleComments()
         {
-            return context.ArticleComment.ToList();
+            return _context.ArticleComment.ToList();
         }
 
         public async Task<List<ArticleComment>> GetArticleCommentsAsync()
         {
-            return await context.ArticleComment.ToListAsync();
+            return await _context.ArticleComment.ToListAsync();
         }
 
         public ResultSet SaveArticleComment(ArticleComment articleComment)
@@ -47,7 +47,7 @@ namespace Business.Services
             try
             {
                 DbState state = DbState.Update;
-                ArticleComment? data = context.ArticleComment.FirstOrDefault(x => x.Id == articleComment.Id);
+                ArticleComment? data = _context.ArticleComment.FirstOrDefault(x => x.Id == articleComment.Id);
                 if (data == null)
                 {
                     data = new ArticleComment();
@@ -64,10 +64,10 @@ namespace Business.Services
                 if (state == DbState.Insert)
                 {
                     data.RegisterDate = DateTime.Now;
-                    context.Add(data);
+                    _context.Add(data);
                 }
 
-                int count = context.SaveChanges();
+                int count = _context.SaveChanges();
                 if (count > 0)
                 {
                     result.Id = data.Id;
@@ -91,8 +91,8 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                DbState state = DbState.Update;// context changetracker'dan da bakılabilir
-                ArticleComment? data = await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == articleComment.Id);
+                DbState state = DbState.Update;// _context changetracker'dan da bakılabilir
+                ArticleComment? data = await _context.ArticleComment.FirstOrDefaultAsync(x => x.Id == articleComment.Id);
                 if (data == null)
                 {
                     data = new ArticleComment();
@@ -108,10 +108,10 @@ namespace Business.Services
                 if (state == DbState.Insert)
                 {
                     data.RegisterDate = DateTime.Now;
-                    await context.AddAsync(data);
+                    await _context.AddAsync(data);
                 }
 
-                int count = await context.SaveChangesAsync();
+                int count = await _context.SaveChangesAsync();
                 if (count > 0)
                 {
                     result.Id = data.Id;
@@ -133,11 +133,11 @@ namespace Business.Services
         public ResultSet DeleteArticleComment(int id)
         {
             ResultSet result = new ResultSet();
-            ArticleComment? articleComment = context.ArticleComment.FirstOrDefault(x => x.Id == id);
+            ArticleComment? articleComment = _context.ArticleComment.FirstOrDefault(x => x.Id == id);
             if (articleComment != null)
             {
-                context.Remove(articleComment);
-                int count = context.SaveChanges();
+                _context.Remove(articleComment);
+                int count = _context.SaveChanges();
                 if (count <= 0)
                 {
                     result.Result = Result.Fail;
@@ -150,11 +150,11 @@ namespace Business.Services
         public async Task<ResultSet> DeleteArticleCommentAsync(int id)
         {
             ResultSet result = new ResultSet();
-            ArticleComment? articleComment = await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
+            ArticleComment? articleComment = await _context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
             if (articleComment != null)
             {
-                context.Remove(articleComment);
-                int count = await context.SaveChangesAsync();
+                _context.Remove(articleComment);
+                int count = await _context.SaveChangesAsync();
                 if (count <= 0)
                 {
                     result.Result = Result.Fail;
@@ -167,11 +167,11 @@ namespace Business.Services
         public async Task<ResultSet> SetConfirmAsync(int id, bool confirm)
         {
             ResultSet result = new ResultSet();
-            ArticleComment? articleComment = await context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
+            ArticleComment? articleComment = await _context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
             if (articleComment != null)
             {
                 articleComment.IsConfirm = confirm;
-                int count = await context.SaveChangesAsync();
+                int count = await _context.SaveChangesAsync();
                 if (count <= 0)
                 {
                     result.Result = Result.Fail;
@@ -183,7 +183,7 @@ namespace Business.Services
 
         public async Task<List<ArticleComment>> GetArticleCommentsAsync(int articleId)
         {
-            return await context.ArticleComment.Where(x => x.ArticleId == articleId).ToListAsync();
+            return await _context.ArticleComment.Where(x => x.ArticleId == articleId).ToListAsync();
         }
     }
 }

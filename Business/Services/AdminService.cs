@@ -16,19 +16,19 @@ namespace Business.Services
 {
     public class AdminService : IAdminService
     {
-        private readonly AppDbContext context;
-        private readonly IService service;
-        public AdminService(AppDbContext _context, IService _service)
+        private readonly AppDbContext _context;
+        private readonly IService _service;
+        public AdminService(AppDbContext context, IService service)
         {
-            context = _context;
-            service = _service;
+            _context = context;
+            _service = service;
         }
 
         // Şifre kayıt ve gösterme işlemleri encrytion sınıfı ile yapılacak
         #region LogIn
         public bool LogInControl(string userName, string password)
         {
-            Admin? admin = context.Admin.FirstOrDefault(x => x.UserName == userName && x.Password == password);
+            Admin? admin = _context.Admin.FirstOrDefault(x => x.UserName == userName && x.Password == password);
             if (admin != null)
             {
                 return true;
@@ -38,28 +38,28 @@ namespace Business.Services
 
         public async Task<Admin> LogInControlAsync(string userName, string password)
         {
-            return await context.Admin.FirstOrDefaultAsync(x => x.UserName == userName && x.Password == password);
+            return await _context.Admin.FirstOrDefaultAsync(x => x.UserName == userName && x.Password == password);
         }
         #endregion
 
         public Admin? GetAdmin(int id)
         {
-            return context.Admin.Find(id);
+            return _context.Admin.Find(id);
         }
 
         public async Task<Admin?> GetAdminAsync(int id)
         {
-            return await context.Admin.FindAsync(id);
+            return await _context.Admin.FindAsync(id);
         }
 
         public List<Admin> GetAdmins()
         {
-            return context.Admin.ToList();
+            return _context.Admin.ToList();
         }
 
         public async Task<List<Admin>> GetAdminsAsync()
         {
-            return await context.Admin.ToListAsync();
+            return await _context.Admin.ToListAsync();
         }
 
         public ResultSet SaveAdmin(Admin admin)
@@ -68,7 +68,7 @@ namespace Business.Services
             try
             {
                 DbState state = DbState.Update;// context changetracker'dan da bakılabilir
-                Admin? data = context.Admin.FirstOrDefault(x => x.Id == admin.Id);
+                Admin? data = _context.Admin.FirstOrDefault(x => x.Id == admin.Id);
                 if (data == null)
                 {
                     data = new Admin();
@@ -81,16 +81,16 @@ namespace Business.Services
                 if (state == DbState.Update)
                 {
                     data.LastUpdateDate = DateTime.Now;
-                    data.UpdateAdminId = service.GetActiveUserId();
+                    data.UpdateAdminId = _service.GetActiveUserId();
                 }
                 else
                 {
                     data.RegisterDate = DateTime.Now;
-                    data.RegisterId = service.GetActiveUserId();
-                    context.Add(data);
+                    data.RegisterId = _service.GetActiveUserId();
+                    _context.Add(data);
                 }
 
-                int count = context.SaveChanges();
+                int count = _context.SaveChanges();
                 if (count > 0)
                 {
                     result.Id = data.Id;
@@ -115,7 +115,7 @@ namespace Business.Services
             try
             {
                 DbState state = DbState.Update;
-                Admin? data = await context.Admin.FirstOrDefaultAsync(x => x.Id == admin.Id);
+                Admin? data = await _context.Admin.FirstOrDefaultAsync(x => x.Id == admin.Id);
                 if (data == null)
                 {
                     data = new Admin();
@@ -129,16 +129,16 @@ namespace Business.Services
                 if (state == DbState.Update)
                 {
                     data.LastUpdateDate = DateTime.Now;
-                    data.UpdateAdminId = service.GetActiveUserId();
+                    data.UpdateAdminId = _service.GetActiveUserId();
                 }
                 else
                 {
                     data.RegisterDate = DateTime.Now;
-                    data.RegisterId = service.GetActiveUserId();
-                    await context.AddAsync(data);
+                    data.RegisterId = _service.GetActiveUserId();
+                    await _context.AddAsync(data);
                 }
 
-                int count = await context.SaveChangesAsync();
+                int count = await _context.SaveChangesAsync();
                 if (count > 0)
                 {
                     result.Id = data.Id;
@@ -160,11 +160,11 @@ namespace Business.Services
         public ResultSet DeleteAdmin(int id)
         {
             ResultSet result = new ResultSet();
-            Admin? admin = context.Admin.FirstOrDefault(x => x.Id == id);
+            Admin? admin = _context.Admin.FirstOrDefault(x => x.Id == id);
             if (admin != null)
             {
-                context.Remove(admin);
-                int count = context.SaveChanges();
+                _context.Remove(admin);
+                int count = _context.SaveChanges();
                 if (count <= 0)
                 {
                     result.Result = Result.Fail;
@@ -177,11 +177,11 @@ namespace Business.Services
         public async Task<ResultSet> DeleteAdminAsync(int id)
         {
             ResultSet result = new ResultSet();
-            Admin? admin = await context.Admin.FirstOrDefaultAsync(x => x.Id == id);
+            Admin? admin = await _context.Admin.FirstOrDefaultAsync(x => x.Id == id);
             if (admin != null)
             {
-                context.Remove(admin);
-                int count = await context.SaveChangesAsync();
+                _context.Remove(admin);
+                int count = await _context.SaveChangesAsync();
                 if (count <= 0)
                 {
                     result.Result = Result.Fail;
@@ -194,12 +194,12 @@ namespace Business.Services
         public void SP_FN_Test()
         {
             string userName = "SAKAN";
-            var admin = context.Admin.FromSql($"GetAdminEncrypt {userName}").ToList();// entity doldurur
+            var admin = _context.Admin.FromSql($"GetAdminEncrypt {userName}").ToList();// entity doldurur
 
 
             var param = new Dictionary<string, string>();
             param.Add("@UserName", "SAKAN");
-            var spTest = context.GetDataTableFromSP("GetAdminFullName", param);
+            var spTest = _context.GetDataTableFromSP("GetAdminFullName", param);
 
         }
     }

@@ -14,21 +14,21 @@ namespace BLOG_SA.Controllers
     [Authorize]
     public class AdminController : Controller
     {
-        private readonly IAdminService adminService;
-        private readonly IArticleService articleService;
-        private readonly IArticleCommentService articleCommentService;
-        private readonly IContactService contactService;
-        private readonly ISettingService settingService;
-        private readonly ISubscriberService subscriberService;
+        private readonly IAdminService _adminService;
+        private readonly IArticleService _articleService;
+        private readonly IArticleCommentService _articleCommentService;
+        private readonly IContactService _contactService;
+        private readonly ISettingService _settingService;
+        private readonly ISubscriberService _subscriberService;
 
-        public AdminController(IArticleService _articleService, IAdminService _adminService, IArticleCommentService _articleCommentService, IContactService _contactService, ISettingService _settingService, ISubscriberService _subscriberService)
+        public AdminController(IArticleService articleService, IAdminService adminService, IArticleCommentService articleCommentService, IContactService contactService, ISettingService settingService, ISubscriberService subscriberService)
         {
-            articleService = _articleService;
-            adminService = _adminService;
-            articleCommentService = _articleCommentService;
-            contactService = _contactService;
-            settingService = _settingService;
-            subscriberService = _subscriberService;
+            _articleService = articleService;
+            _adminService = adminService;
+            _articleCommentService = articleCommentService;
+            _contactService = contactService;
+            _settingService = settingService;
+            _subscriberService = subscriberService;
         }
 
         public IActionResult Index()
@@ -47,7 +47,7 @@ namespace BLOG_SA.Controllers
         {
             //jquery datatable ile listeleme işlemleri yapılıyor, bu bir backend projesi olduğu için standart kolay yöntem ne ise o şekilde listeleme yapıldı, performans ya da işlevsellik üzerinde durulmadı
             //AdminService adminService = new AdminService();
-            List<Admin> admins = await adminService.GetAdminsAsync();
+            List<Admin> admins = await _adminService.GetAdminsAsync();
             return Json(admins);
         }
 
@@ -58,7 +58,7 @@ namespace BLOG_SA.Controllers
             if (!string.IsNullOrEmpty(admin.FullName) && !string.IsNullOrEmpty(admin.UserName) && !string.IsNullOrEmpty(admin.Password))
             {
                 //AdminService adminService = new AdminService();
-                result = await adminService.SaveAdminAsync(admin);
+                result = await _adminService.SaveAdminAsync(admin);
             }
             else
             {
@@ -75,7 +75,7 @@ namespace BLOG_SA.Controllers
             if (id > 0)
             {
                 //AdminService adminService = new AdminService();
-                result = await adminService.DeleteAdminAsync(id);
+                result = await _adminService.DeleteAdminAsync(id);
             }
             else
             {
@@ -90,7 +90,7 @@ namespace BLOG_SA.Controllers
         public IActionResult Setting()
         {
             //SettingService settingService = new SettingService();
-            Setting setting = settingService.GetSetting();
+            Setting setting = _settingService.GetSetting();
             return View(setting);
         }
 
@@ -98,7 +98,7 @@ namespace BLOG_SA.Controllers
         public async Task<IActionResult> SaveSetting(Setting setting)
         {
             //SettingService settingService = new SettingService();
-            ResultSet result = await settingService.SaveSettingAsync(setting);
+            ResultSet result = await _settingService.SaveSettingAsync(setting);
             return Json(result);
         }
         #endregion
@@ -113,7 +113,7 @@ namespace BLOG_SA.Controllers
         public async Task<IActionResult> GetContacts()
         {
             //ContactService contactService = new ContactService();
-            List<Contact> contacts = await contactService.GetContactsAsync();
+            List<Contact> contacts = await _contactService.GetContactsAsync();
             return Json(contacts);
         }
 
@@ -129,7 +129,7 @@ namespace BLOG_SA.Controllers
         public async Task<IActionResult> GetSubscribers()
         {
             //SubscriberService subscriberService = new SubscriberService();
-            List<Subscriber> subscribers = await subscriberService.GetSubscribersAsync();
+            List<Subscriber> subscribers = await _subscriberService.GetSubscribersAsync();
             return Json(subscribers);
         }
 
@@ -145,7 +145,7 @@ namespace BLOG_SA.Controllers
         public async Task<IActionResult> GetArticles()
         {
             //ArticleService articleService = new ArticleService();
-            List<Article> articles = await articleService.GetArticlesAsync();
+            List<Article> articles = await _articleService.GetArticlesAsync();
             return Json(articles);
         }
 
@@ -157,7 +157,7 @@ namespace BLOG_SA.Controllers
             if (!string.IsNullOrEmpty(article.Title) && !string.IsNullOrEmpty(article.Content) && article.PublishDate != DateTime.MinValue && article.PhotoIndex > 0)
             {
                 //ArticleService articleService = new ArticleService();
-                result = await articleService.SaveArticleAsync(article);
+                result = await _articleService.SaveArticleAsync(article);
             }
             else
             {
@@ -174,7 +174,7 @@ namespace BLOG_SA.Controllers
             if (id > 0)
             {
                 //ArticleService articleService = new ArticleService();
-                result = await articleService.DeleteArticleAsync(id);
+                result = await _articleService.DeleteArticleAsync(id);
             }
             else
             {
@@ -188,7 +188,7 @@ namespace BLOG_SA.Controllers
         public async Task<IActionResult> GetTestArticle()
         {
             //ArticleService articleService = new ArticleService();
-            Article article = await articleService.GetArticleAsync(1);
+            Article article = await _articleService.GetArticleAsync(1);
             return Json(article);
         }
         #endregion
@@ -203,7 +203,7 @@ namespace BLOG_SA.Controllers
         public async Task<IActionResult> GetArticleComments(int articleId)
         {
             //ArticleCommentService articleCommentService = new ArticleCommentService();
-            List<ArticleComment> articleComments = await articleCommentService.GetArticleCommentsAsync(articleId);
+            List<ArticleComment> articleComments = await _articleCommentService.GetArticleCommentsAsync(articleId);
             return Json(articleComments);
         }
 
@@ -214,7 +214,7 @@ namespace BLOG_SA.Controllers
             if (id > 0)
             {
                 //ArticleCommentService articleCommentService = new ArticleCommentService();
-                result = await articleCommentService.SetConfirmAsync(id, confirm);
+                result = await _articleCommentService.SetConfirmAsync(id, confirm);
             }
             else
             {
@@ -231,7 +231,7 @@ namespace BLOG_SA.Controllers
             if (id > 0)
             {
                 //ArticleCommentService articleCommentService = new ArticleCommentService();
-                result = await articleCommentService.DeleteArticleCommentAsync(id);
+                result = await _articleCommentService.DeleteArticleCommentAsync(id);
             }
             else
             {

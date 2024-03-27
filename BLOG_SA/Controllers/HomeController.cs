@@ -18,18 +18,18 @@ namespace BLOG_SA.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IArticleService articleService;
-        private readonly IArticleCommentService articleCommentService;
-        private readonly ISubscriberService subscriberService;
-        private readonly IContactService contactService;
+        private readonly IArticleService _articleService;
+        private readonly IArticleCommentService _articleCommentService;
+        private readonly ISubscriberService _subscriberService;
+        private readonly IContactService _contactService;
 
-        public HomeController(ILogger<HomeController> logger, IArticleService _articleService, IArticleCommentService _articleCommentService, ISubscriberService _subscriberService, IContactService _contactService)
+        public HomeController(ILogger<HomeController> logger, IArticleService articleService, IArticleCommentService articleCommentService, ISubscriberService subscriberService, IContactService contactService)
         {
             _logger = logger;
-            articleService = _articleService;
-            articleCommentService = _articleCommentService;
-            subscriberService = _subscriberService;
-            contactService = _contactService;
+            _articleService = articleService;
+            _articleCommentService = articleCommentService;
+            _subscriberService = subscriberService;
+            _contactService = contactService;
         }
 
         #region Views
@@ -38,8 +38,8 @@ namespace BLOG_SA.Controllers
             ViewBag.Page = page;
             ViewBag.FirstPage = false;
             ViewBag.LastPage = false;
-            List<ArticleDto> articles = await articleService.GetArticlesWithCommentCountsAsync(page, pageSize);
-            int totalCount = await articleService.GetArticleCountAsync(true);
+            List<ArticleDto> articles = await _articleService.GetArticlesWithCommentCountsAsync(page, pageSize);
+            int totalCount = await _articleService.GetArticleCountAsync(true);
             if (page == 1)
             {
                 ViewBag.FirstPage = true;
@@ -57,8 +57,8 @@ namespace BLOG_SA.Controllers
             ViewBag.LastArticle = false;
             ViewBag.NextArticle = 0;
             ViewBag.PrevArticle = 0;
-            Article article = await articleService.GetArticleWithCommentsAsync(articleId);
-            List<int> articleIds = articleService.GetArticleIds();
+            Article article = await _articleService.GetArticleWithCommentsAsync(articleId);
+            List<int> articleIds = _articleService.GetArticleIds();
             var index = articleIds.IndexOf(article.Id);
             if (index == 0)
             {
@@ -85,7 +85,7 @@ namespace BLOG_SA.Controllers
             ResultSet result = new ResultSet();
             if (Validations.IsMailValid(comment.Mail) && !string.IsNullOrEmpty(comment.FullName) && !string.IsNullOrEmpty(comment.Content))
             {
-                result = await articleCommentService.SaveArticleCommentAsync(comment);
+                result = await _articleCommentService.SaveArticleCommentAsync(comment);
             }
             else
             {
@@ -100,7 +100,7 @@ namespace BLOG_SA.Controllers
             ResultSet result = new ResultSet();
             if (Validations.IsMailValid(subMail))
             {
-                result = await subscriberService.SaveSubscriberAsync(subMail);
+                result = await _subscriberService.SaveSubscriberAsync(subMail);
             }
             else
             {
@@ -120,7 +120,7 @@ namespace BLOG_SA.Controllers
             if (!string.IsNullOrEmpty(FullName) && !string.IsNullOrEmpty(FullName) && !string.IsNullOrEmpty(FullName) && Validations.IsMailValid(Mail))
             {
                 Contact contact = new Contact { FullName = FullName, Mail = Mail, Message = Message, Subject = Subject };
-                ResultSet result = await contactService.SaveContactAsync(contact);
+                ResultSet result = await _contactService.SaveContactAsync(contact);
                 TempData["PostMessage"] = result.Message;
             }
             else

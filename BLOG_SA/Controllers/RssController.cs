@@ -8,16 +8,16 @@ namespace BLOG_SA.Controllers
 {
     public class RssController : Controller
     {
-        private readonly IArticleService articleService;
+        private readonly IArticleService _articleService;
 
-        public RssController(IArticleService _articleService)
+        public RssController(IArticleService articleService)
         {
-            articleService = _articleService;
+            _articleService = articleService;
         }
 
         public async Task<IActionResult> IndexAsync()
         {
-            List<Article> articles = await articleService.GetArticlesForRssAsync();
+            List<Article> articles = await _articleService.GetArticlesForRssAsync();
             List<RssModel> rssItems = new();
             foreach (var item in articles)
             {

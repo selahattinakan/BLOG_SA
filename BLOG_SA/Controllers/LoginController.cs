@@ -14,11 +14,11 @@ namespace BLOG_SA.Controllers
     /*İlerde kimlik doğrulama ve yetkilendirme işlemleri detaylandırılacak*/
     public class LoginController : Controller
     {
-        private readonly IAdminService adminService;
+        private readonly IAdminService _adminService;
 
-        public LoginController(IAdminService _adminService)
+        public LoginController(IAdminService adminService)
         {
-            adminService = _adminService;
+            _adminService = adminService;
         }
 
         public IActionResult Index()
@@ -30,7 +30,7 @@ namespace BLOG_SA.Controllers
         public async Task<IActionResult> Index(UserModel model, string ReturnUrl)
         {
             //returnurl güvenlik açığı olabilir, ilerde kalkacak
-            Admin admin = await adminService.LogInControlAsync(model.UserName, model.Password);
+            Admin admin = await _adminService.LogInControlAsync(model.UserName, model.Password);
             if (admin != null && admin?.Id > 0)
             {
                 List<Claim> claims = new List<Claim>()

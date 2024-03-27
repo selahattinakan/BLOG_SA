@@ -11,14 +11,14 @@ namespace Business.Services
 {
     public class Service : IService
     {
-        private IHttpContextAccessor httpContextAccessor;
-        public Service(IHttpContextAccessor _httpContextAccessor)
+        private IHttpContextAccessor _httpContextAccessor;
+        public Service(IHttpContextAccessor httpContextAccessor)
         {
-            httpContextAccessor = _httpContextAccessor;
+            _httpContextAccessor = httpContextAccessor;
         }
         public int GetActiveUserId()
         {
-            return Int32.Parse(httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
+            return Int32.Parse(_httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
         }
     }
 }
