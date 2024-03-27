@@ -58,6 +58,9 @@ namespace BLOG_SA.Controllers
             ViewBag.NextArticle = 0;
             ViewBag.PrevArticle = 0;
             Article article = await _articleService.GetArticleWithCommentsAsync(articleId);
+
+            if (article == null) return View(new Article() { ArticleComments = new List<ArticleComment>()});
+
             List<int> articleIds = _articleService.GetArticleIds();
             var index = articleIds.IndexOf(article.Id);
             if (index == 0)

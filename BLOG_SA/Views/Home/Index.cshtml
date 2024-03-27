@@ -73,7 +73,7 @@
                                 <div class="media-body">
                                 <h3 class="title mb-1"><a asp-area="" asp-controller="Home" asp-action="Article" asp-route-articleId="@item.Id">@item.Title</a></h3>
                                     <div class="meta mb-1">
-                                        <span class="date">@item.PublishDate.ToShortDateString() tarihinde yayınlandı</span>
+                                        <span class="date">@item.PublishDate.ToString("dd.MM.yyyy") tarihinde yayınlandı</span>
                                         <span class="time">@item.ReadMinute dakikalık okuma</span>
                                         <span class="comment"><a href="#">@item.CommentCounts yorum</a></span>
                                     </div>

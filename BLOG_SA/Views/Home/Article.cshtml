@@ -18,7 +18,7 @@
         <header class="blog-post-header">
             <h2 class="title mb-2">@Model.Title</h2>
             <div class="meta mb-3">
-                <span class="date">@Model.PublishDate.ToShortDateString() tarihinde yayınlandı</span>
+                <span class="date">@Model.PublishDate.ToString("dd.MM.yyyy") tarihinde yayınlandı</span>
                 <span class="time">@Model.ReadMinute dakikalık okuma</span>
                 <span class="comment">
                     <a href="#">@Model.ArticleComments.Count yorum</a>
