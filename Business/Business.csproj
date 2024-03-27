@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Constants\Constants.csproj" />
     <ProjectReference Include="..\DB_EFCore\DB_EFCore.csproj" />
+    <ProjectReference Include="..\Elasticsearch\Elasticsearch.csproj" />
   </ItemGroup>
 
 </Project>

@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLOG_SA", "BLOG_SA\BLOG_SA.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DB_EFCore", "DB_EFCore\DB_EFCore.csproj", "{A8597645-D8A3-4E23-9349-9386E874C849}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Business.csproj", "{6AEE944F-D83C-4E08-95A2-2312518D3C09}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Business", "Business\Business.csproj", "{6AEE944F-D83C-4E08-95A2-2312518D3C09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Constants", "Constants\Constants.csproj", "{7ADE998B-52C8-4CA5-801A-4A992A3779F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Constants", "Constants\Constants.csproj", "{7ADE998B-52C8-4CA5-801A-4A992A3779F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elasticsearch", "Elasticsearch\Elasticsearch.csproj", "{D946D9AB-FBA2-49B8-BD9A-EF4340AD53AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{7ADE998B-52C8-4CA5-801A-4A992A3779F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7ADE998B-52C8-4CA5-801A-4A992A3779F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7ADE998B-52C8-4CA5-801A-4A992A3779F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D946D9AB-FBA2-49B8-BD9A-EF4340AD53AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D946D9AB-FBA2-49B8-BD9A-EF4340AD53AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D946D9AB-FBA2-49B8-BD9A-EF4340AD53AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D946D9AB-FBA2-49B8-BD9A-EF4340AD53AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

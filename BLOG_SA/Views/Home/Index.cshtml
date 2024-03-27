@@ -47,10 +47,10 @@
     <div class="container text-center">
         <h2 class="heading">Blog SAkan'a Hoşgeldiniz</h2>
         <div class="intro">Aramak istediğiniz makaleyi bir kaç kelime ile giriniz</div>
-        <form class="signup-form form-inline justify-content-center pt-3">
+        <form class="signup-form form-inline justify-content-center pt-3" action="@Url.Action("Index", "Search")" method="post">
             <div class="form-group">
-                <label class="sr-only" for="search">Ara</label>
-                <input type="text" id="search" name="search" class="form-control mr-md-1" placeholder="Aranacak kelimeyi giriniz">
+                <label class="sr-only" for="searchText">Ara</label>
+                <input type="text" id="searchText" name="searchText" class="form-control mr-md-1" placeholder="Aranacak kelimeyi giriniz">
             </div>
             <button type="submit" class="btn btn-primary">Ara</button>
         </form>

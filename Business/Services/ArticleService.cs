@@ -13,17 +13,21 @@ using Business.DTOs;
 using System.Data;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Elasticsearch.Models;
 
 namespace Business.Services
 {
+    //db işlemleri reposityor altına alınacak, reposityr dönüşlerine göre elastic search eklenecek, yani elastic ile main db işlemleri tamamen ayrı katmanlarda olup aynı katman altında sıralı işlem yapacak
     public class ArticleService : IArticleService
     {
         private readonly AppDbContext _context;
         private readonly IService _service;
-        public ArticleService(AppDbContext context, IService service)
+        private readonly IElasticsearch _elasticsearch;
+        public ArticleService(AppDbContext context, IService service, IElasticsearch elasticsearch)
         {
             _context = context;
             _service = service;
+            _elasticsearch = elasticsearch;
         }
         public Article? GetArticle(int id)
         {
@@ -128,6 +132,28 @@ namespace Business.Services
                 if (count > 0)
                 {
                     result.Id = data.Id;
+                    if (state == DbState.Insert)
+                    {
+                        ES_Article es_article = new ES_Article()
+                        {
+                            Content = data.IntroContent,
+                            Title = data.Title,
+                            Tags = string.Empty
+                        };
+                        var resultElastic = _elasticsearch.Save(es_article, data.Id);
+                        if (!resultElastic) throw new Exception("Elasticsearch kayıt işlemi başarısız");
+                    }
+                    else
+                    {
+                        ES_Article es_article = new ES_Article()
+                        {
+                            Content = data.IntroContent,
+                            Title = data.Title,
+                            Tags = string.Empty
+                        };
+                        var resultElastic = _elasticsearch.Update(es_article, data.Id);
+                        if (!resultElastic) throw new Exception("Elasticsearch güncelleme işlemi başarısız");
+                    }
                 }
                 else
                 {
@@ -178,6 +204,28 @@ namespace Business.Services
                 if (count > 0)
                 {
                     result.Id = data.Id;
+                    if (state == DbState.Insert)
+                    {
+                        ES_Article es_article = new ES_Article()
+                        {
+                            Content = data.IntroContent,
+                            Title = data.Title,
+                            Tags = string.Empty
+                        };
+                        var resultElastic = await _elasticsearch.SaveAsync(es_article, data.Id);
+                        if (!resultElastic) throw new Exception("Elasticsearch kayıt işlemi başarısız");
+                    }
+                    else
+                    {
+                        ES_Article es_article = new ES_Article()
+                        {
+                            Content = data.IntroContent,
+                            Title = data.Title,
+                            Tags = string.Empty
+                        };
+                        var resultElastic = await _elasticsearch.UpdateAsync(es_article, data.Id);
+                        if (!resultElastic) throw new Exception("Elasticsearch güncelleme işlemi başarısız");
+                    }
                 }
                 else
                 {
@@ -206,6 +254,11 @@ namespace Business.Services
                     result.Result = Result.Fail;
                     result.Message = "Silme işlemi başarısız";
                 }
+                else
+                {
+                    var resultElastic = _elasticsearch.Delete(id);
+                    if (!resultElastic) throw new Exception("Elasticsearch silme işlemi başarısız");
+                }
             }
             return result;
         }
@@ -227,6 +280,11 @@ namespace Business.Services
                 {
                     result.Result = Result.Fail;
                     result.Message = "Silme işlemi başarısız";
+                }
+                else
+                {
+                    var resultElastic = await _elasticsearch.DeleteAsync(id);
+                    if (!resultElastic) throw new Exception("Elasticsearch silme işlemi başarısız");
                 }
             }
             return result;

@@ -4,6 +4,8 @@ using DB_EFCore.DataAccessLayer;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using System.Security.Principal;
+using Elasticsearch.Extensions;
+using Elasticsearch.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,7 @@ builder.WebHost.ConfigureKestrel(options =>
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<AppDbContext>();
+
 builder.Services.AddTransient<IAdminService, AdminService>();
 builder.Services.AddTransient<IArticleService, ArticleService>();
 builder.Services.AddTransient<IArticleCommentService, ArticleCommentService>();
@@ -25,6 +28,10 @@ builder.Services.AddTransient<ILogService, LogService>();
 builder.Services.AddTransient<IService, Service>();
 builder.Services.AddTransient<ISettingService, SettingService>();
 builder.Services.AddTransient<ISubscriberService, SubscriberService>();
+
+builder.Services.AddElastic(builder.Configuration);
+builder.Services.AddScoped<ArticleRepository>();
+builder.Services.AddScoped<IElasticsearch, ElasticsearchService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<IPrincipal>(

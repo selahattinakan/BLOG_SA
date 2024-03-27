@@ -14,6 +14,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Business.Services
 {
+    //repositories burdan ayrılabilir
     public class AdminService : IAdminService
     {
         private readonly AppDbContext _context;
