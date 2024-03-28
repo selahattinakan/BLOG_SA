@@ -20,5 +20,10 @@ namespace Business.Services
         {
             return Int32.Parse(_httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString());
         }
+
+        public string GetActiveUserName()
+        {
+            return _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value.ToString();
+        }
     }
 }

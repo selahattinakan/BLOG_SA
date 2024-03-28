@@ -20,8 +20,9 @@ namespace BLOG_SA.Controllers
         private readonly IContactService _contactService;
         private readonly ISettingService _settingService;
         private readonly ISubscriberService _subscriberService;
+        private readonly IService _service;
 
-        public AdminController(IArticleService articleService, IAdminService adminService, IArticleCommentService articleCommentService, IContactService contactService, ISettingService settingService, ISubscriberService subscriberService)
+        public AdminController(IArticleService articleService, IAdminService adminService, IArticleCommentService articleCommentService, IContactService contactService, ISettingService settingService, ISubscriberService subscriberService, IService service)
         {
             _articleService = articleService;
             _adminService = adminService;
@@ -29,16 +30,19 @@ namespace BLOG_SA.Controllers
             _contactService = contactService;
             _settingService = settingService;
             _subscriberService = subscriberService;
+            _service = service;
         }
 
         public IActionResult Index()
         {
+            ViewData["UserName"] = _service.GetActiveUserName();
             return View();
         }
 
         #region User
         public IActionResult User()
         {
+            ViewData["UserName"] = _service.GetActiveUserName();
             return View();
         }
 
@@ -89,7 +93,7 @@ namespace BLOG_SA.Controllers
         #region Setting
         public IActionResult Setting()
         {
-            //SettingService settingService = new SettingService();
+            ViewData["UserName"] = _service.GetActiveUserName();
             Setting setting = _settingService.GetSetting();
             return View(setting);
         }
@@ -106,6 +110,7 @@ namespace BLOG_SA.Controllers
         #region Contact
         public IActionResult Contact()
         {
+            ViewData["UserName"] = _service.GetActiveUserName();
             return View();
         }
 
@@ -122,6 +127,7 @@ namespace BLOG_SA.Controllers
         #region Subscriber
         public IActionResult Subscriber()
         {
+            ViewData["UserName"] = _service.GetActiveUserName();
             return View();
         }
 
@@ -138,6 +144,7 @@ namespace BLOG_SA.Controllers
         #region Article
         public IActionResult Article()
         {
+            ViewData["UserName"] = _service.GetActiveUserName();
             return View();
         }
 
@@ -196,6 +203,7 @@ namespace BLOG_SA.Controllers
         #region ArticleComment
         public IActionResult ArticleComment(Article article)
         {
+            ViewData["UserName"] = _service.GetActiveUserName();
             return View(article.Id);
         }
 

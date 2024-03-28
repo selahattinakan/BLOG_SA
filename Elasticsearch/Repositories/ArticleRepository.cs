@@ -112,6 +112,8 @@ namespace Elasticsearch.Repositories
                     .Bool(b => b
                         .Should(ListQuery.ToArray()))));
 
+            if (!result.IsValidResponse) return new(new List<ES_Article>(), 0);
+
             foreach (var hit in result.Hits) hit.Source.Id = hit.Id;
             return (list: result.Documents.ToList(), result.Total);
         }

@@ -9,5 +9,6 @@ namespace Business.Interfaces
     public interface IService
     {
         public int GetActiveUserId();
+        public string GetActiveUserName();
     }
 }
