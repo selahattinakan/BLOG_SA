@@ -17,6 +17,7 @@
             MaintenanceMode: $("#MaintenanceMode").is(":checked"),
             SubscribeMode: $("#SubscribeMode").is(":checked"),
             IsCommentEnable: $("#IsCommentEnable").is(":checked"),
+            IsElasticsearchEnable: $("#IsElasticsearchEnable").is(":checked"),
         };
         // data += "&MaintenanceMode=" + $("#MaintenanceMode").is(":checked");
         // data += "&SubscribeMode=" + $("#SubscribeMode").is(":checked");
@@ -51,17 +52,21 @@
 
     <div class="form-group">
         <div class="row">
-            <div class="col col-md-4">
+            <div class="col col-md-3">
                 <input class="form-check-input" type="checkbox" id="MaintenanceMode" name="MaintenanceMode" checked="@Model.MaintenanceMode">
                 <label class="form-check-label" for="MaintenanceMode">Bakım Modu</label>
             </div>
-            <div class="col col-md-4">
+            <div class="col col-md-3">
                 <input class="form-check-input" type="checkbox" id="SubscribeMode" name="SubscribeMode" checked="@Model.SubscribeMode">
                 <label class="form-check-label" for="SubscribeMode">Abone Modu</label>
             </div>
-            <div class="col col-md-4">
+            <div class="col col-md-3">
                 <input class="form-check-input" type="checkbox" id="IsCommentEnable" name="IsCommentEnable" checked="@Model.IsCommentEnable">
-                <label class="form-check-label" for="IsCommentEnable">Yorumlar Açık Mı</label>
+                <label class="form-check-label" for="IsCommentEnable">Yorumlar Açık</label>
+            </div>
+            <div class="col col-md-3">
+                <input class="form-check-input" type="checkbox" id="IsElasticsearchEnable" name="IsElasticsearchEnable" checked="@Model.IsElasticsearchEnable">
+                <label class="form-check-label" for="IsElasticsearchEnable">Elasticsearch Aktif</label>
             </div>
         </div>
         <div class="row" style="margin-top:20px;">

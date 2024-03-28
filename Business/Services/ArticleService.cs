@@ -23,11 +23,13 @@ namespace Business.Services
         private readonly AppDbContext _context;
         private readonly IService _service;
         private readonly IElasticsearch _elasticsearch;
-        public ArticleService(AppDbContext context, IService service, IElasticsearch elasticsearch)
+        private readonly ISettingService _settingService;
+        public ArticleService(AppDbContext context, IService service, IElasticsearch elasticsearch, ISettingService settingService)
         {
             _context = context;
             _service = service;
             _elasticsearch = elasticsearch;
+            _settingService = settingService;
         }
         public Article? GetArticle(int id)
         {
@@ -132,27 +134,31 @@ namespace Business.Services
                 if (count > 0)
                 {
                     result.Id = data.Id;
-                    if (state == DbState.Insert)
+                    var setting = _settingService.GetSetting();
+                    if (setting.IsElasticsearchEnable)
                     {
-                        ES_Article es_article = new ES_Article()
+                        if (state == DbState.Insert)
                         {
-                            Content = data.IntroContent,
-                            Title = data.Title,
-                            Tags = string.Empty
-                        };
-                        var resultElastic = _elasticsearch.Save(es_article, data.Id);
-                        if (!resultElastic) throw new Exception("Elasticsearch kayıt işlemi başarısız");
-                    }
-                    else
-                    {
-                        ES_Article es_article = new ES_Article()
+                            ES_Article es_article = new ES_Article()
+                            {
+                                Content = data.IntroContent,
+                                Title = data.Title,
+                                Tags = string.Empty
+                            };
+                            var resultElastic = _elasticsearch.Save(es_article, data.Id);
+                            if (!resultElastic) throw new Exception("Elasticsearch kayıt işlemi başarısız");
+                        }
+                        else
                         {
-                            Content = data.IntroContent,
-                            Title = data.Title,
-                            Tags = string.Empty
-                        };
-                        var resultElastic = _elasticsearch.Update(es_article, data.Id);
-                        if (!resultElastic) throw new Exception("Elasticsearch güncelleme işlemi başarısız");
+                            ES_Article es_article = new ES_Article()
+                            {
+                                Content = data.IntroContent,
+                                Title = data.Title,
+                                Tags = string.Empty
+                            };
+                            var resultElastic = _elasticsearch.Update(es_article, data.Id);
+                            if (!resultElastic) throw new Exception("Elasticsearch güncelleme işlemi başarısız");
+                        } 
                     }
                 }
                 else
@@ -204,27 +210,31 @@ namespace Business.Services
                 if (count > 0)
                 {
                     result.Id = data.Id;
-                    if (state == DbState.Insert)
+                    var setting = await _settingService.GetSettingAsync();
+                    if (setting.IsElasticsearchEnable)
                     {
-                        ES_Article es_article = new ES_Article()
+                        if (state == DbState.Insert)
                         {
-                            Content = data.IntroContent,
-                            Title = data.Title,
-                            Tags = string.Empty
-                        };
-                        var resultElastic = await _elasticsearch.SaveAsync(es_article, data.Id);
-                        if (!resultElastic) throw new Exception("Elasticsearch kayıt işlemi başarısız");
-                    }
-                    else
-                    {
-                        ES_Article es_article = new ES_Article()
+                            ES_Article es_article = new ES_Article()
+                            {
+                                Content = data.IntroContent,
+                                Title = data.Title,
+                                Tags = string.Empty
+                            };
+                            var resultElastic = await _elasticsearch.SaveAsync(es_article, data.Id);
+                            if (!resultElastic) throw new Exception("Elasticsearch kayıt işlemi başarısız");
+                        }
+                        else
                         {
-                            Content = data.IntroContent,
-                            Title = data.Title,
-                            Tags = string.Empty
-                        };
-                        var resultElastic = await _elasticsearch.UpdateAsync(es_article, data.Id);
-                        if (!resultElastic) throw new Exception("Elasticsearch güncelleme işlemi başarısız");
+                            ES_Article es_article = new ES_Article()
+                            {
+                                Content = data.IntroContent,
+                                Title = data.Title,
+                                Tags = string.Empty
+                            };
+                            var resultElastic = await _elasticsearch.UpdateAsync(es_article, data.Id);
+                            if (!resultElastic) throw new Exception("Elasticsearch güncelleme işlemi başarısız");
+                        } 
                     }
                 }
                 else
@@ -256,8 +266,12 @@ namespace Business.Services
                 }
                 else
                 {
-                    var resultElastic = _elasticsearch.Delete(id);
-                    if (!resultElastic) throw new Exception("Elasticsearch silme işlemi başarısız");
+                    var setting = _settingService.GetSetting();
+                    if (setting.IsElasticsearchEnable)
+                    {
+                        var resultElastic = _elasticsearch.Delete(id);
+                        if (!resultElastic) throw new Exception("Elasticsearch silme işlemi başarısız"); 
+                    }
                 }
             }
             return result;
@@ -283,8 +297,12 @@ namespace Business.Services
                 }
                 else
                 {
-                    var resultElastic = await _elasticsearch.DeleteAsync(id);
-                    if (!resultElastic) throw new Exception("Elasticsearch silme işlemi başarısız");
+                    var setting = await _settingService.GetSettingAsync();
+                    if (setting.IsElasticsearchEnable)
+                    {
+                        var resultElastic = await _elasticsearch.DeleteAsync(id);
+                        if (!resultElastic) throw new Exception("Elasticsearch silme işlemi başarısız"); 
+                    }
                 }
             }
             return result;

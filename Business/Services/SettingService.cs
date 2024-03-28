@@ -48,6 +48,7 @@ namespace Business.Services
                 data.MaintenanceText = setting.MaintenanceText;
                 data.SubscribeMode = setting.SubscribeMode;
                 data.IsCommentEnable = setting.IsCommentEnable;
+                data.IsElasticsearchEnable = setting.IsElasticsearchEnable;
 
                 if (state == DbState.Update)
                 {
@@ -97,6 +98,7 @@ namespace Business.Services
                 data.MaintenanceText = setting.MaintenanceText;
                 data.SubscribeMode = setting.SubscribeMode;
                 data.IsCommentEnable = setting.IsCommentEnable;
+                data.IsElasticsearchEnable = setting.IsElasticsearchEnable;
 
                 if (state == DbState.Update)
                 {

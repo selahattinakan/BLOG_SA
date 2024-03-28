@@ -14,6 +14,7 @@ namespace DB_EFCore.Entity
         public string MaintenanceText { get; set; }
         public bool SubscribeMode { get; set; }
         public bool IsCommentEnable { get; set; }
+        public bool IsElasticsearchEnable { get; set; }
         public int AdminId { get; set; }
         public DateTime RegisterDate { get; set; }
         public int? UpdateAdminId { get; set; }
