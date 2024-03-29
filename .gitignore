@@ -372,3 +372,4 @@ FodyWeavers.xsd
 /Elasticsearch/blog_mapping.json
 /Elasticsearch/appsettings.json
 /BLOG_SA/appsettings.json
+/Elasticsearch/elasticappsettings.json
