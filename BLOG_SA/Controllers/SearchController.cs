@@ -36,21 +36,21 @@ namespace BLOG_SA.Controllers
             return View(articles.list);
         }
 
-        public async Task<IActionResult> ElasticDataInitial()
-        {
-            List<Article> currents = await _articleService.GetArticlesAsync();
-            currents.ForEach(async x =>
-            {
-                ES_Article article = new ES_Article()
-                {
-                    Content = x.IntroContent,
-                    Title = x.Title,
-                    Tags = string.Empty
-                };
-                var result = await _elasticsearch.SaveAsync(article, x.Id);
-            });
+        //public async Task<IActionResult> ElasticDataInitial()
+        //{
+        //    List<Article> currents = await _articleService.GetArticlesAsync();
+        //    currents.ForEach(async x =>
+        //    {
+        //        ES_Article article = new ES_Article()
+        //        {
+        //            Content = x.IntroContent,
+        //            Title = x.Title,
+        //            Tags = string.Empty
+        //        };
+        //        var result = await _elasticsearch.SaveAsync(article, x.Id);
+        //    });
 
-            return Content("Ok");
-        }
+        //    return Content("Ok");
+        //}
     }
 }

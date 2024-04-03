@@ -111,7 +111,10 @@
             <div id="navigation" class="collapse navbar-collapse flex-column">
                 <div class="profile-section pt-3 pt-lg-0">
                     <img class="profile-image mb-3 mx-auto" src="~/img/dev_icon.png" alt="image">
-                    <div class="bio mb-3">Merhaba, ben Selahattin Akan.<br /> Güncel backend teknolojileri hakkında öğrendiklerimi deneyimlemek için bu blog siteyi yarattım. Amacım makale yayınlamak değil öğrendiklerimi uygulayabilmek! Önceliğim backend olduğu için frontend tarafında tasarım, performans, güvenlik vb. konulara çok odaklanmadım, şimdilik.  </div><!--//bio-->
+                    <div class="bio mb-3">
+                   @*      Merhaba, ben Selahattin Akan.<br /> Güncel backend teknolojileri hakkında öğrendiklerimi deneyimlemek için bu blog siteyi yarattım. Amacım makale yayınlamak değil öğrendiklerimi uygulayabilmek! Önceliğim backend olduğu için frontend tarafında tasarım, performans, güvenlik vb. konulara çok odaklanmadım, şimdilik.  *@
+                        @Html.Raw(ViewBag.Bio)
+                        </div><!--//bio-->
                     <ul class="social-list list-inline py-3 mx-auto">
                         <li title="Linkedin" class="list-inline-item"><a href="https://www.linkedin.com/in/selahattin-akan-80697014a/" target="_blank"><i class="fab fa-linkedin-in fa-fw"></i></a></li>
                         <li title="GitHub" class="list-inline-item"><a href="https://github.com/selahattinakan" target="_blank"><i class="fab fa-github-alt fa-fw"></i></a></li>

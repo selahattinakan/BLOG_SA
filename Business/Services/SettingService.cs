@@ -16,10 +16,12 @@ namespace Business.Services
     {
         private readonly AppDbContext _context;
         private readonly IService _service;
-        public SettingService(AppDbContext context, IService service)
+        private readonly IRedisService _redisService;
+        public SettingService(AppDbContext context, IService service, IRedisService redisService)
         {
             _context = context;
             _service = service;
+            _redisService = redisService;
         }
         public Setting? GetSetting()
         {
@@ -28,7 +30,8 @@ namespace Business.Services
 
         public async Task<Setting?> GetSettingAsync()
         {
-            return await _context.Setting.FirstOrDefaultAsync();
+            Setting? setting = await _redisService.GetSettingFromCache(1);
+            return setting != null ? setting : await _context.Setting.FirstOrDefaultAsync();
         }
 
         public ResultSet SaveSetting(Setting setting)
@@ -81,6 +84,7 @@ namespace Business.Services
             return result;
         }
 
+        //design pattern'e göre redis ve ayarlar ayrılacak ya da başka bir servis çalışacak SettingWithRedis.cs gibi
         public async Task<ResultSet> SaveSettingAsync(Setting setting)
         {
             ResultSet result = new ResultSet();
@@ -96,9 +100,11 @@ namespace Business.Services
                 data.MaintenanceMode = setting.MaintenanceMode;
                 data.MaintenanceImgPath = setting.MaintenanceImgPath;
                 data.MaintenanceText = setting.MaintenanceText;
+                data.BioText= setting.BioText;
                 data.SubscribeMode = setting.SubscribeMode;
                 data.IsCommentEnable = setting.IsCommentEnable;
                 data.IsElasticsearchEnable = setting.IsElasticsearchEnable;
+                data.IsRedisEnable = setting.IsRedisEnable;
 
                 if (state == DbState.Update)
                 {
@@ -116,6 +122,10 @@ namespace Business.Services
                 if (count > 0)
                 {
                     result.Id = data.Id;
+                    if (setting.IsRedisEnable)
+                    {
+                        await _redisService.CreateSettingCache(setting); 
+                    }
                 }
                 else
                 {

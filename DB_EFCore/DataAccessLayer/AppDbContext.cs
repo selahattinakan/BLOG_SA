@@ -41,16 +41,13 @@ namespace DB_EFCore.DataAccessLayer
         {
             Initilazier.Build();
 
-            if (Debugger.IsAttached)
-            {
-                optionsBuilder.UseSqlServer(Initilazier.Configuration.GetConnectionString("SqlConDebug"));
-                optionsBuilder.LogTo(s => System.Diagnostics.Debug.WriteLine(s)); //ef core'un hazırladığı sorgular
+#if DEBUG
+            optionsBuilder.UseSqlServer(Initilazier.Configuration.GetConnectionString("SqlConDebug"));
+            optionsBuilder.LogTo(s => System.Diagnostics.Debug.WriteLine(s)); //ef core'un hazırladığı sorgular
                                                                                   //optionsBuilder.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information); 
-            }
-            else
-            {
-                optionsBuilder.UseSqlServer(Initilazier.Configuration.GetConnectionString("SqlCon"));
-            }
+#else
+            optionsBuilder.UseSqlServer(Initilazier.Configuration.GetConnectionString("SqlCon"));
+#endif
 
         }
 

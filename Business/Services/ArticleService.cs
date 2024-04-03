@@ -18,6 +18,8 @@ using Elasticsearch.Models;
 namespace Business.Services
 {
     //db işlemleri reposityor altına alınacak, reposityr dönüşlerine göre elastic search eklenecek, yani elastic ile main db işlemleri tamamen ayrı katmanlarda olup aynı katman altında sıralı işlem yapacak
+
+    //decorator design pattern uygulanacak
     public class ArticleService : IArticleService
     {
         private readonly AppDbContext _context;

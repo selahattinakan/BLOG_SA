@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Business", "Business\Busine
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Constants", "Constants\Constants.csproj", "{7ADE998B-52C8-4CA5-801A-4A992A3779F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elasticsearch", "Elasticsearch\Elasticsearch.csproj", "{D946D9AB-FBA2-49B8-BD9A-EF4340AD53AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elasticsearch", "Elasticsearch\Elasticsearch.csproj", "{D946D9AB-FBA2-49B8-BD9A-EF4340AD53AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redis", "Redis\Redis.csproj", "{D415EF7A-C679-4084-9F81-D8FAC724F0C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{D946D9AB-FBA2-49B8-BD9A-EF4340AD53AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D946D9AB-FBA2-49B8-BD9A-EF4340AD53AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D946D9AB-FBA2-49B8-BD9A-EF4340AD53AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D415EF7A-C679-4084-9F81-D8FAC724F0C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D415EF7A-C679-4084-9F81-D8FAC724F0C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D415EF7A-C679-4084-9F81-D8FAC724F0C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D415EF7A-C679-4084-9F81-D8FAC724F0C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -10,6 +10,7 @@
     <ProjectReference Include="..\Business\Business.csproj" />
     <ProjectReference Include="..\DB_EFCore\DB_EFCore.csproj" />
     <ProjectReference Include="..\Elasticsearch\Elasticsearch.csproj" />
+    <ProjectReference Include="..\Redis\Redis.csproj" />
   </ItemGroup>
 
   <ItemGroup>

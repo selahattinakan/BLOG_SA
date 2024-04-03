@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Builder;
 using System.Security.Principal;
 using Elasticsearch.Extensions;
 using Elasticsearch.Repositories;
+using Redis.Extensions;
+using Redis.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +34,10 @@ builder.Services.AddTransient<ISubscriberService, SubscriberService>();
 builder.Services.AddElastic(builder.Configuration);
 builder.Services.AddScoped<ArticleRepository>();
 builder.Services.AddScoped<IElasticsearch, ElasticsearchService>();
+
+builder.Services.AddStackExchangeRedis(builder.Configuration);
+builder.Services.AddSingleton<RedisRepository>();
+builder.Services.AddSingleton<IRedisService, RedisService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<IPrincipal>(
