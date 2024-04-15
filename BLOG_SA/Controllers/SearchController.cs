@@ -9,12 +9,13 @@ namespace BLOG_SA.Controllers
     {
         private readonly IElasticsearch _elasticsearch;
         private readonly IArticleService _articleService;
+        private readonly ISettingService _settingService;
 
-        public SearchController(IElasticsearch elasticsearch, IArticleService articleService)
+        public SearchController(IElasticsearch elasticsearch, IArticleService articleService, ISettingService settingService)
         {
             _elasticsearch = elasticsearch;
             _articleService = articleService;
-
+            _settingService = settingService;
         }
         public async Task<IActionResult> IndexAsync(int page = 1, int pageSize = 5, string searchText = "")
         {
@@ -22,6 +23,8 @@ namespace BLOG_SA.Controllers
             ViewBag.FirstPage = false;
             ViewBag.LastPage = false;
             ViewBag.SearchText = searchText;
+            Setting? setting = await _settingService.GetSettingAsync();
+            ViewBag.Bio = setting?.BioText;
             var articles = await _elasticsearch.SearchAsync(searchText, page, pageSize);
 
             long totalCount = articles.totalCount;
