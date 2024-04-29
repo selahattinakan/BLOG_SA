@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System.Text.RegularExpressions;
 
 namespace BLOG_SA.Hubs
 {
@@ -21,6 +22,15 @@ namespace BLOG_SA.Hubs
 
         public async Task AddGroup(string groupName, string nickName)
         {
+            Regex rRemScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
+            nickName = rRemScript.Replace(nickName, "");
+            nickName = Regex.Replace(
+                nickName,
+                @"</?(?i:script|embed|object|frameset|frame|iframe|meta|link|style)(.|\n|\s)*?>",
+                string.Empty,
+                RegexOptions.Singleline | RegexOptions.IgnoreCase
+            );
+
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
             await Clients.Group(groupName).ReceiveMessageForGroupClients($"{nickName} sohbete katıldı", "Admin");
@@ -28,6 +38,23 @@ namespace BLOG_SA.Hubs
 
         public async Task BroadcastMessageToGroupClient(string groupName, string message, string nickName)
         {
+            Regex rRemScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
+            nickName = rRemScript.Replace(nickName, "");
+            nickName = Regex.Replace(
+                nickName,
+                @"</?(?i:script|embed|object|frameset|frame|iframe|meta|link|style)(.|\n|\s)*?>",
+                string.Empty,
+                RegexOptions.Singleline | RegexOptions.IgnoreCase
+            );
+
+            message = rRemScript.Replace(message, "");
+            message = Regex.Replace(
+                message,
+                @"</?(?i:script|embed|object|frameset|frame|iframe|meta|link|style)(.|\n|\s)*?>",
+                string.Empty,
+                RegexOptions.Singleline | RegexOptions.IgnoreCase
+            );
+
             await Clients.Group(groupName).ReceiveMessageForGroupClients(message, nickName);
         }
     }

@@ -70,8 +70,7 @@ $(document).ready(function () {
     $("#message-input").keypress(function (e) {
 
         var key = e.which;
-        if (key == 13)
-        {
+        if (key == 13) {
             const message = $("#message-input").val();
 
             if (!message) return false;
@@ -81,13 +80,16 @@ $(document).ready(function () {
         }
     });
 
-    connection.on(receiveMessageForGroupClients, (message, nickName) => {
+    connection.on(receiveMessageForGroupClients, (message, _nickName) => {
         if (!message) return;
-
-        $("#chat-messages").append(`${nickName} : ${message} <br />`);
+        const txtMessage = convertHtmlToText(message);
+        const txtNickName = convertHtmlToText(_nickName);
+        $("#chat-messages").append(txtNickName + " : " + txtMessage + "<br />");
         $("#chat-messages").scrollTop($('#chat-messages')[0].scrollHeight);
-        $("#message-input").val("");
         $("#message-input").focus();
+        if (_nickName == nickName)
+            $("#message-input").val("");
+
 
     });
     //group end

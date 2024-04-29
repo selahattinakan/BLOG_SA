@@ -26,3 +26,9 @@ function getCookie(cname) {
     }
     return "";
 }
+
+function convertHtmlToText(str)
+{
+    str = str.toString();
+    return str.replace(/<[^>]*(>|$)|&nbsp;|&zwnj;|&raquo;|&laquo;|&gt;/g, '');
+}
