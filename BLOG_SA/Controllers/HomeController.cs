@@ -160,6 +160,13 @@ namespace BLOG_SA.Controllers
         {
             return View();
         }
+
+        public async Task<IActionResult> Chat()
+        {
+            Setting? setting = await _settingService.GetSettingAsync();
+            ViewBag.Bio = setting?.BioText;
+            return View();
+        }
         #endregion
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -8,6 +8,7 @@ using Elasticsearch.Extensions;
 using Elasticsearch.Repositories;
 using Redis.Extensions;
 using Redis.Repositories;
+using BLOG_SA.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.WebHost.ConfigureKestrel(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<AppDbContext>();
 
@@ -62,6 +64,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.UseRouting();
 app.UseAuthentication();

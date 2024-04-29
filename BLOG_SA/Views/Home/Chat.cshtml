@@ -1,0 +1,76 @@
+﻿@{
+    ViewData["Title"] = "Chat";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts
+{
+    <script>
+        
+        $(document).ready(function () {
+            $(".nav-item").removeClass("active");
+            $("#chatLi").addClass("active");
+        });
+
+    </script>
+
+    <script src="~/js/signalr-chat.js"></script>
+}
+
+
+<div class="container">
+    <div class="chat-container" style="display:none">
+        <div class="chat-messages" id="chat-messages">
+            <!-- Mesajlar buraya eklenecek -->
+        </div>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" id="message-input" placeholder="Mesajınızı yazın..." autofocus>
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button" id="send-message">Gönder</button>
+            </div>
+        </div>
+        <div>
+            <label>Kişi Sayısı <span id="span-connected-count"></span></label>
+        </div>
+    </div>
+    <div class="nick-container">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" id="nick-input" placeholder="Nick name giriniz...">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button" id="btn-open-chat">Giriş Yap</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .nick-container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-messages {
+        height: 410px;
+        overflow-y: auto;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+        word-wrap: break-word;
+    }
+</style>
