@@ -28,7 +28,8 @@ namespace BLOG_SA.Controllers
                     ViewBag.Message = "Error!";
                     break;
             }
-            _logger.LogError("Status Code :{statusCode}, Request Path: {path}", statusCode, statusCodeData.OriginalPath);
+            //log şişmesin - sunucu :(
+            //_logger.LogError("Status Code :{statusCode}, Request Path: {path}", statusCode, statusCodeData.OriginalPath);
             return View();
         }
     }

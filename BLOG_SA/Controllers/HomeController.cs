@@ -53,6 +53,7 @@ namespace BLOG_SA.Controllers
             {
                 ViewBag.LastPage = true;
             }
+            _logger.LogInformation("Anasayfa açýlýyor");
             return View(articles);
         }
 
@@ -87,6 +88,7 @@ namespace BLOG_SA.Controllers
                 ViewBag.NextArticle = articleIds[index + 1];
             }
 
+            _logger.LogInformation("Makale açýlýyor");
             return View(article);
         }
 
@@ -102,6 +104,8 @@ namespace BLOG_SA.Controllers
                 result.Result = Result.Fail;
                 result.Message = "Lütfen tüm alanlarý geçerli bir þekilde doldurunuz";
             }
+
+            _logger.LogInformation("Yorum kaydetme iþlemi");
             return Json(result);
         }
 
@@ -117,6 +121,8 @@ namespace BLOG_SA.Controllers
                 result.Result = Result.Fail;
                 result.Message = "Lütfen tüm alanlarý geçerli bir þekilde doldurunuz";
             }
+
+            _logger.LogInformation("Abone kaydetme iþlemi");
             return Json(result);
         }
 
@@ -137,6 +143,8 @@ namespace BLOG_SA.Controllers
             {
                 TempData["PostMessage"] = "Lütfen tüm alanlarý doðru formatta doldurunuz.";
             }
+
+            _logger.LogInformation("Ýletiþim kaydetme iþlemi");
             return RedirectToAction("Contact");
         }
 
@@ -148,16 +156,20 @@ namespace BLOG_SA.Controllers
             var siteKey = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("Google")["RecaptchaV3SiteKey"];
             ViewBag.CaptchaKey = siteKey;
             ViewBag.Message = TempData["PostMessage"]?.ToString();
+
+            _logger.LogInformation("Ýletiþim sayfasý açýlýyor");
             return View();
         }
 
         public IActionResult RSS()
         {
+            _logger.LogInformation("Rss sayfasý açýlýyor");
             return View();
         }
 
         public IActionResult Subscribe()
         {
+            _logger.LogInformation("Abone sayfasý açýlýyor");
             return View();
         }
 
@@ -165,6 +177,8 @@ namespace BLOG_SA.Controllers
         {
             Setting? setting = await _settingService.GetSettingAsync();
             ViewBag.Bio = setting?.BioText;
+
+            _logger.LogInformation("Chat sayfasý açýlýyor");
             return View();
         }
         #endregion

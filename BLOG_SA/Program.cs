@@ -9,6 +9,7 @@ using Elasticsearch.Repositories;
 using Redis.Extensions;
 using Redis.Repositories;
 using BLOG_SA.Hubs;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +53,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     }
 );
 
+//Add support to logging with SERILOG
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -66,6 +71,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.MapHub<ChatHub>("/chatHub");
+
+//Add support to logging request with SERILOG
+app.UseSerilogRequestLogging();
 
 app.UseRouting();
 app.UseAuthentication();
