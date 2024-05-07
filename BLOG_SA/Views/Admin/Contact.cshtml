@@ -4,60 +4,66 @@
     Layout = "_LayoutAdmin";
 }
 
-<script>
-    var dTable;
-    $(document).ready(function () {
-        RenderTable(true);
-        $("#contactLink").addClass("active");
-    });
+@section Scripts {
 
-    function RenderTable(firstTime) {
-        $.ajax({
-            type: "POST",
-            url: "/Admin/GetContacts",
-            data: '{}',
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: OnSuccess,
-            failure: function (response) {
-                alert(response.d);
-            },
-            error: function (response) {
-                alert(response.d);
-            }
+
+    <script>
+        var dTable;
+        $(document).ready(function () {
+            RenderTable(true);
+            $("#contactLink").addClass("active");
         });
-    }
 
-    function OnSuccess(response) {
-        dTable = $("#dataTable").DataTable(
-            {
-                bLengthChange: true,
-                lengthMenu: [[10, 20, -1], [10, 20, "All"]],
-                bFilter: true,
-                bSort: true,
-                bPaginate: true,
-                bSelectedOnly: true,
-                select: true,
-                data: response,
-                columns: [
-                    { data: "fullName", name: "Adı Soyadı" },
-                    { data: "mail", name: "Mail" },
-                    { data: "subject", name: "Konu" },
-                    { data: "message", name: "Mesaj" },
-                    { data: "isAnswered", name: "Cevaplandı Mı" },
-                    {
-                        data: "registerDate", name: "Kayıt Tarihi", render: function (data, type, row) {
-                            if (type === "sort" || type === "type") {
-                                return data;
-                            }
-                            return moment(data).format("DD.MM.YYYY HH:mm");
-                        }
-                    }
-                ]
+        function RenderTable(firstTime) {
+            $.ajax({
+                type: "POST",
+                url: "/Admin/GetContacts",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: OnSuccess,
+                failure: function (response) {
+                    alert(response.d);
+                },
+                error: function (response) {
+                    alert(response.d);
+                }
             });
-    }
+        }
 
-</script>
+        function OnSuccess(response) {
+            dTable = $("#dataTable").DataTable(
+                {
+                    bLengthChange: true,
+                    lengthMenu: [[10, 20, -1], [10, 20, "All"]],
+                    bFilter: true,
+                    bSort: true,
+                    bPaginate: true,
+                    bSelectedOnly: true,
+                    select: true,
+                    data: response,
+                    columns: [
+                        { data: "fullName", name: "Adı Soyadı" },
+                        { data: "mail", name: "Mail" },
+                        { data: "subject", name: "Konu" },
+                        { data: "message", name: "Mesaj" },
+                        { data: "isAnswered", name: "Cevaplandı Mı" },
+                        {
+                            data: "registerDate", name: "Kayıt Tarihi", render: function (data, type, row) {
+                                if (type === "sort" || type === "type") {
+                                    return data;
+                                }
+                                return moment(data).format("DD.MM.YYYY HH:mm");
+                            }
+                        }
+                    ]
+                });
+        }
+
+    </script>
+
+}
+
 
 <div style="margin-top:30px;">
     <table id="dataTable" class="display">

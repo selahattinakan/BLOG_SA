@@ -3,19 +3,23 @@
     ViewData["Title"] = "Arama Sonucu";
 }
 
-<script>
-    function NextPageClick() {
-        $('#page').val(parseInt($('#page').val()) + 1);
-        $('#listForm').submit();
-    }
+@section Scripts {
 
-    function PrevPageClick() {
-        $('#page').val(parseInt($('#page').val()) - 1);
-        if ($('#page').val() < 1) //ilk sayfada ise geri gidememeli
-            return;
-        $('#listForm').submit();
-    }
-</script>
+    <script>
+        function NextPageClick() {
+            $('#page').val(parseInt($('#page').val()) + 1);
+            $('#listForm').submit();
+        }
+
+        function PrevPageClick() {
+            $('#page').val(parseInt($('#page').val()) - 1);
+            if ($('#page').val() < 1) //ilk sayfada ise geri gidememeli
+                return;
+            $('#listForm').submit();
+        }
+    </script>
+
+}
 
 @* Arama *@
 <section class="cta-section theme-bg-light py-5">

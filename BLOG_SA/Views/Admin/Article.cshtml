@@ -4,184 +4,37 @@
     Layout = "_LayoutAdmin";
 }
 
-<link href="~/lib/quill/quill.snow.css" rel="stylesheet" />
-<script src="~/lib/quill/quill.js"></script>
+@section Scripts {
 
 
-<script>
-    var dTable;
-    $(document).ready(function () {
-        RenderTable(true);
-        $("#articleLink").addClass("active");
-        $('#PublishDate').datepicker({
-            dateFormat: 'dd.mm.yy'
-        });
-        PhotoChange();
-    });
+    <link href="~/lib/quill/quill.snow.css" rel="stylesheet" />
+    <script src="~/lib/quill/quill.js"></script>
 
-    function RenderTable(firstTime) {
-        if (!firstTime) {
-            dTable.clear().draw();
-            $.ajax({
-                type: "POST",
-                url: "/Admin/GetArticles",
-                data: '{}',
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (result) {
-                    dTable.rows.add(result);
-                    dTable.draw();
-                    CreateSelectedEvent();
-                },
-                failure: function (response) {
-                    alert(response.d);
-                },
-                error: function (response) {
-                    alert(response.d);
-                }
+
+    <script>
+        var dTable;
+        $(document).ready(function () {
+            RenderTable(true);
+            $("#articleLink").addClass("active");
+            $('#PublishDate').datepicker({
+                dateFormat: 'dd.mm.yy'
             });
-        }
-        else {
-            $.ajax({
-                type: "POST",
-                url: "/Admin/GetArticles",
-                data: '{}',
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: OnSuccess,
-                failure: function (response) {
-                    alert(response.d);
-                },
-                error: function (response) {
-                    alert(response.d);
-                }
-            });
-        }
-
-        CreateSelectedEvent();
-
-    }
-
-    function OnSuccess(response) {
-        dTable = $("#dataTable").DataTable(
-            {
-                bLengthChange: true,
-                lengthMenu: [[10, 20, -1], [10, 20, "All"]],
-                bFilter: true,
-                bSort: true,
-                bPaginate: true,
-                bSelectedOnly: true,
-                select: true,
-                data: response,
-                columns: [
-                    { data: "id", name: "Id", visible: false },
-                    { data: "content", name: "Content", visible: false },
-                    { data: "title", name: "Başlık" },
-                    {
-                        data: "enable", name: "Aktif Mi", render: function (data, type, row) {
-                            return data == true ? "Evet" : "Hayır";
-                        }
-                    },
-                    { data: "photoIndex", name: "Foto", visible: false },
-                    {
-                        data: "publishDate", name: "Yayın Tarihi", render: function (data, type, row) {
-                            if (type === "sort" || type === "type") {
-                                return data;
-                            }
-                            return moment(data).format("DD.MM.YYYY");
-                        }
-                    },
-                    {
-                        data: "registerDate", name: "Kayıt Tarihi", render: function (data, type, row) {
-                            if (type === "sort" || type === "type") {
-                                return data;
-                            }
-                            return moment(data).format("DD.MM.YYYY HH:mm");
-                        }
-                    }
-                ]
-            });
-    }
-
-    function CreateSelectedEvent() {
-        $('#dataTable tbody').on('click', 'tr', function () {
-            if ($(this).hasClass('selected')) {
-                ClearForm();
-                $(this).removeClass('selected');
-            }
-            else {
-                dTable.$('tr.selected').removeClass('selected');
-                $(this).addClass('selected');
-                $("#Id").val(dTable.row(this).data().id);
-                $("#Title").val(dTable.row(this).data().title);
-                $("#PublishDate").val(new Date(dTable.row(this).data().publishDate).toLocaleDateString());
-                $("#Enable").prop('checked', dTable.row(this).data().enable);
-                quill.setContents(JSON.parse(dTable.row(this).data().content));
-                $("#PhotoIndex").val(dTable.row(this).data().photoIndex);
-                PhotoChange();
-            }
+            PhotoChange();
         });
-    }
 
-    function ClearForm() {
-        $("form input").val('');
-        $("#Enable").prop('checked', false);
-        $("#imgThmb").attr("src", "");
-        $("#Photo").val('');
-        quill.setText('');
-    }
-
-    function NewClick() {
-        ClearForm();
-        dTable.$('tr.selected').removeClass('selected');
-    }
-
-    function SaveClick() {
-        var data = {
-            Id: $("#Id").val(),
-            Title: $("#Title").val(),
-            PublishDate: DateFormatConvert($("#PublishDate").val()),
-            Enable: $("#Enable").is(":checked"),
-            Content: JSON.stringify(quill.getContents()),
-            PhotoIndex: $("#PhotoIndex").val(),
-            IntroContent: quill.getText()
-        };
-        $.ajax({
-            type: "POST",
-            url: "/Admin/SaveArticle",
-            data: data,
-            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-            success: function (result) {
-                if (result.Result == @((int)Result.Success)) {
-                    ClearForm();
-                    RenderTable(false);
-                }
-                alert(result.Message);
-            },
-            failure: function (response) {
-                alert(response.d);
-            },
-            error: function (response) {
-                alert(response.d);
-            }
-        });
-    }
-
-    function DeleteClick() {
-        if (dTable.row('.selected').count() > 0 && parseInt(dTable.row('.selected').data().id) > 0) {
-            var id = parseInt(dTable.row('.selected').data().id);
-            if (confirm("Silme işlemini onaylıyor musunuz?")) {
+        function RenderTable(firstTime) {
+            if (!firstTime) {
+                dTable.clear().draw();
                 $.ajax({
                     type: "POST",
-                    url: "/Admin/DeleteArticle",
-                    data: "id=" + id,
-                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    url: "/Admin/GetArticles",
+                    data: '{}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
                     success: function (result) {
-                        if (result.Result == @((int)Result.Success)) {
-                            ClearForm();
-                            RenderTable(false);
-                        }
-                        alert(result.Message);
+                        dTable.rows.add(result);
+                        dTable.draw();
+                        CreateSelectedEvent();
                     },
                     failure: function (response) {
                         alert(response.d);
@@ -191,35 +44,221 @@
                     }
                 });
             }
-        }
-        else {
-            alert("Lütfen bir kayıt seçiniz");
-        }
-    }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/GetArticles",
+                    data: '{}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: OnSuccess,
+                    failure: function (response) {
+                        alert(response.d);
+                    },
+                    error: function (response) {
+                        alert(response.d);
+                    }
+                });
+            }
 
-    function CommentClick() {
-        if (parseInt($("#Id").val()) > 0) {
-            $("form").trigger("submit");
-        }
-        else {
-            alert("Lütfen bir kayıt seçiniz");
-        }
-    }
+            CreateSelectedEvent();
 
-    function PhotoChange() {
-        $("#imgThmb").attr("src", "/img/sample_thumb_" + $("#PhotoIndex").val() + ".jpg");
-    }
+        }
 
-    function DateFormatConvert(date){
-        try {
-            var arr = date.split(".");
-            return arr[2] + "." + arr[1] + "." + arr[0];
+        function OnSuccess(response) {
+            dTable = $("#dataTable").DataTable(
+                {
+                    bLengthChange: true,
+                    lengthMenu: [[10, 20, -1], [10, 20, "All"]],
+                    bFilter: true,
+                    bSort: true,
+                    bPaginate: true,
+                    bSelectedOnly: true,
+                    select: true,
+                    data: response,
+                    columns: [
+                        { data: "id", name: "Id", visible: false },
+                        { data: "content", name: "Content", visible: false },
+                        { data: "title", name: "Başlık" },
+                        {
+                            data: "enable", name: "Aktif Mi", render: function (data, type, row) {
+                                return data == true ? "Evet" : "Hayır";
+                            }
+                        },
+                        { data: "photoIndex", name: "Foto", visible: false },
+                        {
+                            data: "publishDate", name: "Yayın Tarihi", render: function (data, type, row) {
+                                if (type === "sort" || type === "type") {
+                                    return data;
+                                }
+                                return moment(data).format("DD.MM.YYYY");
+                            }
+                        },
+                        {
+                            data: "registerDate", name: "Kayıt Tarihi", render: function (data, type, row) {
+                                if (type === "sort" || type === "type") {
+                                    return data;
+                                }
+                                return moment(data).format("DD.MM.YYYY HH:mm");
+                            }
+                        }
+                    ]
+                });
         }
-        catch (err) {
-            return date;
+
+        function CreateSelectedEvent() {
+            $('#dataTable tbody').on('click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    ClearForm();
+                    $(this).removeClass('selected');
+                }
+                else {
+                    dTable.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                    $("#Id").val(dTable.row(this).data().id);
+                    $("#Title").val(dTable.row(this).data().title);
+                    $("#PublishDate").val(new Date(dTable.row(this).data().publishDate).toLocaleDateString());
+                    $("#Enable").prop('checked', dTable.row(this).data().enable);
+                    quill.setContents(JSON.parse(dTable.row(this).data().content));
+                    $("#PhotoIndex").val(dTable.row(this).data().photoIndex);
+                    PhotoChange();
+                }
+            });
         }
-    }
-</script>
+
+        function ClearForm() {
+            $("form input").val('');
+            $("#Enable").prop('checked', false);
+            $("#imgThmb").attr("src", "");
+            $("#Photo").val('');
+            quill.setText('');
+        }
+
+        function NewClick() {
+            ClearForm();
+            dTable.$('tr.selected').removeClass('selected');
+        }
+
+        function SaveClick() {
+            var data = {
+                Id: $("#Id").val(),
+                Title: $("#Title").val(),
+                PublishDate: DateFormatConvert($("#PublishDate").val()),
+                Enable: $("#Enable").is(":checked"),
+                Content: JSON.stringify(quill.getContents()),
+                PhotoIndex: $("#PhotoIndex").val(),
+                IntroContent: quill.getText()
+            };
+            $.ajax({
+                type: "POST",
+                url: "/Admin/SaveArticle",
+                data: data,
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                success: function (result) {
+                    if (result.Result == @((int)Result.Success)) {
+                        ClearForm();
+                        RenderTable(false);
+                    }
+                    alert(result.Message);
+                },
+                failure: function (response) {
+                    alert(response.d);
+                },
+                error: function (response) {
+                    alert(response.d);
+                }
+            });
+        }
+
+        function DeleteClick() {
+            if (dTable.row('.selected').count() > 0 && parseInt(dTable.row('.selected').data().id) > 0) {
+                var id = parseInt(dTable.row('.selected').data().id);
+                if (confirm("Silme işlemini onaylıyor musunuz?")) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Admin/DeleteArticle",
+                        data: "id=" + id,
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        success: function (result) {
+                            if (result.Result == @((int)Result.Success)) {
+                                ClearForm();
+                                RenderTable(false);
+                            }
+                            alert(result.Message);
+                        },
+                        failure: function (response) {
+                            alert(response.d);
+                        },
+                        error: function (response) {
+                            alert(response.d);
+                        }
+                    });
+                }
+            }
+            else {
+                alert("Lütfen bir kayıt seçiniz");
+            }
+        }
+
+        function CommentClick() {
+            if (parseInt($("#Id").val()) > 0) {
+                $("form").trigger("submit");
+            }
+            else {
+                alert("Lütfen bir kayıt seçiniz");
+            }
+        }
+
+        function PhotoChange() {
+            $("#imgThmb").attr("src", "/img/sample_thumb_" + $("#PhotoIndex").val() + ".jpg");
+        }
+
+        function DateFormatConvert(date) {
+            try {
+                var arr = date.split(".");
+                return arr[2] + "." + arr[1] + "." + arr[0];
+            }
+            catch (err) {
+                return date;
+            }
+        }
+    </script>
+
+
+    <script>
+        const toolbarOptions = [
+            ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+            ['blockquote', 'code-block'],
+            ['link', 'image', 'video', 'formula'],
+
+            [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
+            [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
+            [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
+            [{ 'direction': 'rtl' }],                         // text direction
+
+            [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+            [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+            [{ 'font': [] }],
+            [{ 'align': [] }],
+
+            ['clean']                                         // remove formatting button
+        ];
+
+        const quill = new Quill('#editor', {
+            modules: {
+                //syntax: true,
+                toolbar: toolbarOptions
+            },
+            placeholder: 'İçerik Giriniz...',
+            theme: 'snow', // or 'bubble'
+        });
+    </script>
+
+}
+
 
 <form action="@Url.Action("ArticleComment", "Admin")" method="post">
     @Html.Hidden("Id")
@@ -302,35 +341,3 @@
     </tbody>
 </table>
 
-
-<script>
-    const toolbarOptions = [
-        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-        ['blockquote', 'code-block'],
-        ['link', 'image', 'video', 'formula'],
-
-        [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
-        [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
-        [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
-        [{ 'direction': 'rtl' }],                         // text direction
-
-        [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-
-        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-        [{ 'font': [] }],
-        [{ 'align': [] }],
-
-        ['clean']                                         // remove formatting button
-    ];
-
-    const quill = new Quill('#editor', {
-        modules: {
-            //syntax: true,
-            toolbar: toolbarOptions
-        },
-        placeholder: 'İçerik Giriniz...',
-        theme: 'snow', // or 'bubble'
-    });
-</script>

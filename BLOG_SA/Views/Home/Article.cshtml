@@ -4,14 +4,75 @@
     ViewData["Title"] = "Makale";
 }
 
-<link href="~/lib/highlight/atom-one-dark.min.css" rel="stylesheet" />
-<script src="~/lib/highlight/highlight.min.js"></script>
-<link href="~/lib/highlight/vs2015.css" rel="stylesheet" />
 
-<link href="~/lib/quill/quill.snow.css" rel="stylesheet" />
-<script src="~/lib/quill/quill.js"></script>
+@section Scripts {
 
+    <link href="~/lib/highlight/atom-one-dark.min.css" rel="stylesheet" />
+    <script src="~/lib/highlight/highlight.min.js"></script>
+    <link href="~/lib/highlight/vs2015.css" rel="stylesheet" />
 
+    <link href="~/lib/quill/quill.snow.css" rel="stylesheet" />
+    <script src="~/lib/quill/quill.js"></script>
+
+    <script>
+        const quill = new Quill('#editor', {
+            readOnly: true,
+            modules: {
+                syntax: true,
+                toolbar: "#quillToolbar"
+            },
+            theme: 'snow'
+        });
+
+        let toolbarLoaded = false;
+        quill.on('editor-change', (event) => {
+            if (!toolbarLoaded) {
+                toolbarLoaded = true;
+            }
+        });
+
+        const highlightedCode = hljs.highlight(
+            '',
+            { language: 'csharp' }
+        ).value
+
+        let contentJson = @Json.Serialize(Model.Content);
+        quill.setContents(JSON.parse(contentJson));
+
+        function SendComment() {
+            var data = $("#commentForm").serialize();
+            $.ajax({
+                type: "POST",
+                url: "/Home/SaveComment",
+                data: data,
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                success: function (result) {
+                    var msg = "";
+                    if (result.Result == @((int)Result.Success)) {
+                        ClearForm();
+                        msg = result.Message + " Yorumunuz onaylandıktan sonra yayınlanacaktır";
+                    }
+                    else {
+                        msg = result.Message;
+                    }
+                    alert(msg);
+                },
+                failure: function (response) {
+                    alert(response.d);
+                },
+                error: function (response) {
+                    alert(response.d);
+                }
+            });
+        }
+
+        function ClearForm() {
+            $("#commentForm input").val('');
+            $("#Content").val('');
+        }
+    </script>
+
+}
 
 <article class="blog-post px-3 py-5 p-md-5">
     <div class="container">
@@ -80,62 +141,3 @@
 
     </div>
 </article>
-
-
-<script>
-    const quill = new Quill('#editor', {
-        readOnly: true,
-        modules: {
-            syntax: true,
-            toolbar: "#quillToolbar"
-        },
-        theme: 'snow'
-    });
-
-    let toolbarLoaded = false;
-    quill.on('editor-change', (event) => {
-        if (!toolbarLoaded) {
-            toolbarLoaded = true;
-        }
-    });
-
-    const highlightedCode = hljs.highlight(
-        '',
-        { language: 'csharp' }
-    ).value
-
-    let contentJson = @Json.Serialize(Model.Content);
-    quill.setContents(JSON.parse(contentJson));
-
-    function SendComment() {
-        var data = $("#commentForm").serialize();
-        $.ajax({
-            type: "POST",
-            url: "/Home/SaveComment",
-            data: data,
-            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-            success: function (result) {
-                var msg = "";
-                if (result.Result == @((int)Result.Success)) {
-                    ClearForm();
-                    msg = result.Message + " Yorumunuz onaylandıktan sonra yayınlanacaktır";
-                }
-                else{
-                    msg = result.Message;
-                }
-                alert(msg);
-            },
-            failure: function (response) {
-                alert(response.d);
-            },
-            error: function (response) {
-                alert(response.d);
-            }
-        });
-    }
-
-    function ClearForm() {
-        $("#commentForm input").val('');
-        $("#Content").val('');
-    }
-</script>

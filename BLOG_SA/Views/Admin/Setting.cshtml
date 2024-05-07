@@ -5,43 +5,49 @@
     Layout = "_LayoutAdmin";
 }
 
-<script>
-    $(document).ready(function () {
-        $("#settingLink").addClass("active");
-    });
-    function SaveClick() {
-        var data = {
-            Id: $("#Id").val(),
-            MaintenanceImgPath: $("#MaintenanceImgPath").val(),
-            MaintenanceText: $("#MaintenanceText").val(),
-            BioText: $("#BioText").val(),
-            MaintenanceMode: $("#MaintenanceMode").is(":checked"),
-            SubscribeMode: $("#SubscribeMode").is(":checked"),
-            IsCommentEnable: $("#IsCommentEnable").is(":checked"),
-            IsElasticsearchEnable: $("#IsElasticsearchEnable").is(":checked"),
-            IsRedisEnable: $("#IsRedisEnable").is(":checked"),
-        };
-        // data += "&MaintenanceMode=" + $("#MaintenanceMode").is(":checked");
-        // data += "&SubscribeMode=" + $("#SubscribeMode").is(":checked");
-        // data += "&IsCommentEnable=" + $("#IsCommentEnable").is(":checked");
-         debugger;
-        $.ajax({
-            type: "POST",
-            url: "/Admin/SaveSetting",
-            data: data,
-            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-            success: function (result) {
-                alert(result.Message);
-            },
-            failure: function (response) {
-                alert(response.d);
-            },
-            error: function (response) {
-                alert(response.d);
-            }
+@section Scripts {
+
+
+    <script>
+        $(document).ready(function () {
+            $("#settingLink").addClass("active");
         });
-    }
-</script>
+        function SaveClick() {
+            var data = {
+                Id: $("#Id").val(),
+                MaintenanceImgPath: $("#MaintenanceImgPath").val(),
+                MaintenanceText: $("#MaintenanceText").val(),
+                BioText: $("#BioText").val(),
+                MaintenanceMode: $("#MaintenanceMode").is(":checked"),
+                SubscribeMode: $("#SubscribeMode").is(":checked"),
+                IsCommentEnable: $("#IsCommentEnable").is(":checked"),
+                IsElasticsearchEnable: $("#IsElasticsearchEnable").is(":checked"),
+                IsRedisEnable: $("#IsRedisEnable").is(":checked"),
+            };
+            // data += "&MaintenanceMode=" + $("#MaintenanceMode").is(":checked");
+            // data += "&SubscribeMode=" + $("#SubscribeMode").is(":checked");
+            // data += "&IsCommentEnable=" + $("#IsCommentEnable").is(":checked");
+            debugger;
+            $.ajax({
+                type: "POST",
+                url: "/Admin/SaveSetting",
+                data: data,
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                success: function (result) {
+                    alert(result.Message);
+                },
+                failure: function (response) {
+                    alert(response.d);
+                },
+                error: function (response) {
+                    alert(response.d);
+                }
+            });
+        }
+    </script>
+
+}
+
 
 <form>
     @Html.Hidden("Id",Model.Id)

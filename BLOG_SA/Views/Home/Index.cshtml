@@ -4,43 +4,49 @@
     ViewData["Title"] = "Anasayfa";
 }
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        $(".nav-item").removeClass("active");
-        $("#homeLi").addClass("active");
-    });
+@section Scripts {
 
-    function NextPageClick(){
-        $('#page').val(parseInt($('#page').val()) + 1);
-        $('#listForm').submit();
-    }
-
-    function PrevPageClick() {
-        $('#page').val(parseInt($('#page').val()) - 1);
-        if ($('#page').val() < 1) //ilk sayfada ise geri gidememeli
-            return;
-        $('#listForm').submit();
-    }
-
-    function Subs(){
-        $.ajax({
-            type: "POST",
-            url: "/Home/SaveSubscriber",
-            data: { subMail: $("#subMail").val() },
-            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-            success: function (result) {
-                $("#subMail").val('');
-                alert(result.Message);
-            },
-            failure: function (response) {
-                alert(response.d);
-            },
-            error: function (response) {
-                alert(response.d);
-            }
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            $(".nav-item").removeClass("active");
+            $("#homeLi").addClass("active");
         });
-    }
-</script>
+
+        function NextPageClick() {
+            $('#page').val(parseInt($('#page').val()) + 1);
+            $('#listForm').submit();
+        }
+
+        function PrevPageClick() {
+            $('#page').val(parseInt($('#page').val()) - 1);
+            if ($('#page').val() < 1) //ilk sayfada ise geri gidememeli
+                return;
+            $('#listForm').submit();
+        }
+
+        function Subs() {
+            $.ajax({
+                type: "POST",
+                url: "/Home/SaveSubscriber",
+                data: { subMail: $("#subMail").val() },
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                success: function (result) {
+                    $("#subMail").val('');
+                    alert(result.Message);
+                },
+                failure: function (response) {
+                    alert(response.d);
+                },
+                error: function (response) {
+                    alert(response.d);
+                }
+            });
+        }
+    </script>
+
+}
+
+
 
 @* Arama *@
 <section class="cta-section theme-bg-light py-5">

@@ -4,147 +4,29 @@
     Layout = "_LayoutAdmin";
 }
 
-<script>
-    var dTable;
-    $(document).ready(function () {
-        RenderTable(true);
-        $("#userLink").addClass("active");
-    });
+@section Scripts {
 
-    function RenderTable(firstTime) {
-        if (!firstTime) {
-            dTable.clear().draw();
-            $.ajax({
-                type: "POST",
-                url: "/Admin/GetAdmins",
-                data: '{}',
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (result) {
-                    dTable.rows.add(result);
-                    dTable.draw();
-                    CreateSelectedEvent();
-                },
-                failure: function (response) {
-                    alert(response.d);
-                },
-                error: function (response) {
-                    alert(response.d);
-                }
-            });
-        }
-        else {
-            $.ajax({
-                type: "POST",
-                url: "/Admin/GetAdmins",
-                data: '{}',
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: OnSuccess,
-                failure: function (response) {
-                    alert(response.d);
-                },
-                error: function (response) {
-                    alert(response.d);
-                }
-            });
-        }
 
-        CreateSelectedEvent();
-
-    }
-
-    function OnSuccess(response) {
-        dTable = $("#dataTable").DataTable(
-            {
-                bLengthChange: true,
-                lengthMenu: [[10, 20, -1], [10, 20, "All"]],
-                bFilter: true,
-                bSort: true,
-                bPaginate: true,
-                bSelectedOnly: true,
-                select: true,
-                data: response,
-                columns: [
-                    { data: "id", name: "Id", visible: false },
-                    { data: "fullName", name: "Adı Soyadı" },
-                    { data: "userName", name: "Kullanıcı Adı" },
-                    {
-                        data: "registerDate", name: "Kayıt Tarihi", render: function (data, type, row) {
-                            if (type === "sort" || type === "type") {
-                                return data;
-                            }
-                            return moment(data).format("DD.MM.YYYY HH:mm");
-                        }
-                    }
-                ]
-            });
-    }
-
-    function CreateSelectedEvent() {
-        $('#dataTable tbody').on('click', 'tr', function () {
-            if ($(this).hasClass('selected')) {
-                ClearForm();
-                $(this).removeClass('selected');
-            }
-            else {
-                dTable.$('tr.selected').removeClass('selected');
-                $(this).addClass('selected');
-                $("#Id").val(dTable.row(this).data().id);
-                $("#FullName").val(dTable.row(this).data().fullName);
-                $("#UserName").val(dTable.row(this).data().userName);
-                $("#Password").val(dTable.row(this).data().password);
-            }
+    <script>
+        var dTable;
+        $(document).ready(function () {
+            RenderTable(true);
+            $("#userLink").addClass("active");
         });
-    }
 
-    function ClearForm() {
-        $("form input").val('');
-    }
-
-    function NewClick() {
-        ClearForm();
-        dTable.$('tr.selected').removeClass('selected');
-    }
-
-    function SaveClick() {
-        var data = $("form").serialize();
-        $.ajax({
-            type: "POST",
-            url: "/Admin/SaveAdmin",
-            data: data,
-            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-            success: function (result) {
-                if (result.Result == @((int)Result.Success)) {
-                    ClearForm();
-                    RenderTable(false);
-                }
-                alert(result.Message);
-            },
-            failure: function (response) {
-                alert(response.d);
-            },
-            error: function (response) {
-                alert(response.d);
-            }
-        });
-    }
-
-    function DeleteClick() {
-        if (dTable.row('.selected').count() > 0 && parseInt(dTable.row('.selected').data().id) > 0) {
-            var id = parseInt(dTable.row('.selected').data().id);
-            if (confirm("Silme işlemini onaylıyor musunuz?")) {
+        function RenderTable(firstTime) {
+            if (!firstTime) {
+                dTable.clear().draw();
                 $.ajax({
                     type: "POST",
-                    url: "/Admin/DeleteAdmin",
-                    data: "id=" + id,
-                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    url: "/Admin/GetAdmins",
+                    data: '{}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
                     success: function (result) {
-                        if (result.Result == @((int)Result.Success)) {
-                            ClearForm();
-                            RenderTable(false);
-                        }
-                        alert(result.Message);
+                        dTable.rows.add(result);
+                        dTable.draw();
+                        CreateSelectedEvent();
                     },
                     failure: function (response) {
                         alert(response.d);
@@ -154,13 +36,137 @@
                     }
                 });
             }
-        }
-        else {
-            alert("Lütfen bir kayıt seçiniz");
-        }
-    }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/GetAdmins",
+                    data: '{}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: OnSuccess,
+                    failure: function (response) {
+                        alert(response.d);
+                    },
+                    error: function (response) {
+                        alert(response.d);
+                    }
+                });
+            }
 
-</script>
+            CreateSelectedEvent();
+
+        }
+
+        function OnSuccess(response) {
+            dTable = $("#dataTable").DataTable(
+                {
+                    bLengthChange: true,
+                    lengthMenu: [[10, 20, -1], [10, 20, "All"]],
+                    bFilter: true,
+                    bSort: true,
+                    bPaginate: true,
+                    bSelectedOnly: true,
+                    select: true,
+                    data: response,
+                    columns: [
+                        { data: "id", name: "Id", visible: false },
+                        { data: "fullName", name: "Adı Soyadı" },
+                        { data: "userName", name: "Kullanıcı Adı" },
+                        {
+                            data: "registerDate", name: "Kayıt Tarihi", render: function (data, type, row) {
+                                if (type === "sort" || type === "type") {
+                                    return data;
+                                }
+                                return moment(data).format("DD.MM.YYYY HH:mm");
+                            }
+                        }
+                    ]
+                });
+        }
+
+        function CreateSelectedEvent() {
+            $('#dataTable tbody').on('click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    ClearForm();
+                    $(this).removeClass('selected');
+                }
+                else {
+                    dTable.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                    $("#Id").val(dTable.row(this).data().id);
+                    $("#FullName").val(dTable.row(this).data().fullName);
+                    $("#UserName").val(dTable.row(this).data().userName);
+                    $("#Password").val(dTable.row(this).data().password);
+                }
+            });
+        }
+
+        function ClearForm() {
+            $("form input").val('');
+        }
+
+        function NewClick() {
+            ClearForm();
+            dTable.$('tr.selected').removeClass('selected');
+        }
+
+        function SaveClick() {
+            var data = $("form").serialize();
+            $.ajax({
+                type: "POST",
+                url: "/Admin/SaveAdmin",
+                data: data,
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                success: function (result) {
+                    if (result.Result == @((int)Result.Success)) {
+                        ClearForm();
+                        RenderTable(false);
+                    }
+                    alert(result.Message);
+                },
+                failure: function (response) {
+                    alert(response.d);
+                },
+                error: function (response) {
+                    alert(response.d);
+                }
+            });
+        }
+
+        function DeleteClick() {
+            if (dTable.row('.selected').count() > 0 && parseInt(dTable.row('.selected').data().id) > 0) {
+                var id = parseInt(dTable.row('.selected').data().id);
+                if (confirm("Silme işlemini onaylıyor musunuz?")) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Admin/DeleteAdmin",
+                        data: "id=" + id,
+                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                        success: function (result) {
+                            if (result.Result == @((int)Result.Success)) {
+                                ClearForm();
+                                RenderTable(false);
+                            }
+                            alert(result.Message);
+                        },
+                        failure: function (response) {
+                            alert(response.d);
+                        },
+                        error: function (response) {
+                            alert(response.d);
+                        }
+                    });
+                }
+            }
+            else {
+                alert("Lütfen bir kayıt seçiniz");
+            }
+        }
+
+    </script>
+
+}
+
 
 
 <form>
