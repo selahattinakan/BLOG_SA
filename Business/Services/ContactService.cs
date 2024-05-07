@@ -39,11 +39,20 @@ namespace Business.Services
             return await _context.Contact.ToListAsync();
         }
 
+        public async Task<int> GetContactsCount()
+        {
+            return (await _context.Contact.ToListAsync()).Count;
+        }
+
         public async Task<ResultSet> SaveContactAsync(Contact contact)
         {
             ResultSet result = new ResultSet();
             try
             {
+                if (await GetContactsCount() > 1000) //max 1000 iletişim olsun, captcha aşılıp saldırı olursa. ilerde ayarlar içine al
+                {
+                    throw new Exception("Max kayıt adedi aşıldı");
+                }
                 DbState state = DbState.Update;
                 Contact? data = await _context.Contact.FirstOrDefaultAsync(x => x.Id == contact.Id);
                 if (data == null)

@@ -15,5 +15,6 @@ namespace Business.Interfaces
         public List<Contact> GetContacts();
         public Task<List<Contact>> GetContactsAsync();
         public Task<ResultSet> SaveContactAsync(Contact contact);
+        public Task<int> GetContactsCount();
     }
 }

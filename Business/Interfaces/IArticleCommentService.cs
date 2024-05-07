@@ -20,5 +20,6 @@ namespace Business.Interfaces
         public Task<ResultSet> DeleteArticleCommentAsync(int id);
         public Task<ResultSet> SetConfirmAsync(int id, bool confirm);
         public Task<List<ArticleComment>> GetArticleCommentsAsync(int articleId);
+        public Task<int> GetCommentsCount();
     }
 }

@@ -91,6 +91,11 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
+                if (await GetCommentsCount() > 1000) //max 1000 olsun, saldırı olursa. ilerde ayarlar içine al
+                {
+                    throw new Exception("Max kayıt adedi aşıldı");
+                }
+
                 DbState state = DbState.Update;// _context changetracker'dan da bakılabilir
                 ArticleComment? data = await _context.ArticleComment.FirstOrDefaultAsync(x => x.Id == articleComment.Id);
                 if (data == null)
@@ -184,6 +189,11 @@ namespace Business.Services
         public async Task<List<ArticleComment>> GetArticleCommentsAsync(int articleId)
         {
             return await _context.ArticleComment.Where(x => x.ArticleId == articleId).ToListAsync();
+        }
+
+        public async Task<int> GetCommentsCount()
+        {
+            return (await _context.ArticleComment.ToListAsync()).Count;
         }
     }
 }
