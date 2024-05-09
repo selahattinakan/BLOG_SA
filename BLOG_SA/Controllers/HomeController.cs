@@ -178,7 +178,7 @@ namespace BLOG_SA.Controllers
             Setting? setting = await _settingService.GetSettingAsync();
             ViewBag.Bio = setting?.BioText;
 
-            _logger.LogInformation("Chat sayfasý açýlýyor");
+            _logger.LogInformation("Chat sayfasý açýlýyor..");
             return View();
         }
         #endregion
