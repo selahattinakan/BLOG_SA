@@ -36,7 +36,7 @@ builder.Services.AddTransient<ISubscriberService, SubscriberService>();
 
 builder.Services.AddElastic(builder.Configuration);
 builder.Services.AddScoped<ArticleRepository>();
-builder.Services.AddScoped<IElasticsearch, ElasticsearchService>();
+builder.Services.AddScoped<IElasticsearchService, ElasticsearchService>();
 
 builder.Services.AddStackExchangeRedis(builder.Configuration);
 builder.Services.AddSingleton<RedisRepository>();

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Business.Interfaces
 {
-    public interface IElasticsearch
+    public interface IElasticsearchService
     {
         public bool Save(ES_Article article, int articleId);
         public bool Update(ES_Article article, int articleId);

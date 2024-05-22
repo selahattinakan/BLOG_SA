@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Business.Services
 {
-    public class ElasticsearchService : IElasticsearch
+    public class ElasticsearchService : IElasticsearchService
     {
         private readonly ArticleRepository _articleRepository;
 

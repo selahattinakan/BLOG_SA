@@ -7,11 +7,11 @@ namespace BLOG_SA.Controllers
 {
     public class SearchController : Controller
     {
-        private readonly IElasticsearch _elasticsearch;
+        private readonly IElasticsearchService _elasticsearch;
         private readonly IArticleService _articleService;
         private readonly ISettingService _settingService;
 
-        public SearchController(IElasticsearch elasticsearch, IArticleService articleService, ISettingService settingService)
+        public SearchController(IElasticsearchService elasticsearch, IArticleService articleService, ISettingService settingService)
         {
             _elasticsearch = elasticsearch;
             _articleService = articleService;

@@ -24,9 +24,9 @@ namespace Business.Services
     {
         private readonly AppDbContext _context;
         private readonly IService _service;
-        private readonly IElasticsearch _elasticsearch;
+        private readonly IElasticsearchService _elasticsearch;
         private readonly ISettingService _settingService;
-        public ArticleService(AppDbContext context, IService service, IElasticsearch elasticsearch, ISettingService settingService)
+        public ArticleService(AppDbContext context, IService service, IElasticsearchService elasticsearch, ISettingService settingService)
         {
             _context = context;
             _service = service;
