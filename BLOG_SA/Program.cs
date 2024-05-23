@@ -10,6 +10,8 @@ using Redis.Extensions;
 using Redis.Repositories;
 using BLOG_SA.Hubs;
 using Serilog;
+using DB_EFCore.Repositories.Interfaces;
+using DB_EFCore.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,20 +26,30 @@ builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<AppDbContext>();
 
-builder.Services.AddTransient<IAdminService, AdminService>();
-builder.Services.AddTransient<IArticleService, ArticleService>();
-builder.Services.AddTransient<IArticleCommentService, ArticleCommentService>();
-builder.Services.AddTransient<IChatService, ChatService>();
-builder.Services.AddTransient<IContactService, ContactService>();
-builder.Services.AddTransient<ILogService, LogService>();
-builder.Services.AddTransient<IService, Service>();
-builder.Services.AddTransient<ISettingService, SettingService>();
-builder.Services.AddTransient<ISubscriberService, SubscriberService>();
+//services
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IArticleService, ArticleService>();
+builder.Services.AddScoped<IArticleCommentService, ArticleCommentService>();
+builder.Services.AddScoped<IContactService, ContactService>();
+builder.Services.AddScoped<IService, Service>();
+builder.Services.AddScoped<ISettingService, SettingService>();
+builder.Services.AddScoped<ISubscriberService, SubscriberService>();
 
+//repositories
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IArticleRepository, DB_EFCore.Repositories.ArticleRepository>();
+builder.Services.AddScoped<IArticleCommentRepository, ArticleCommentRepository>();
+builder.Services.AddScoped<IContactRepository, ContactRepository>();
+builder.Services.AddScoped<ISettingRepository, SettingRepository>();
+builder.Services.AddScoped<ISubscriberRepository, SubscriberRepository>();
+
+
+//elasticsearch
 builder.Services.AddElastic(builder.Configuration);
-builder.Services.AddScoped<ArticleRepository>();
+builder.Services.AddScoped<Elasticsearch.Repositories.ArticleRepository>();
 builder.Services.AddScoped<IElasticsearchService, ElasticsearchService>();
 
+//redis
 builder.Services.AddStackExchangeRedis(builder.Configuration);
 builder.Services.AddSingleton<RedisRepository>();
 builder.Services.AddSingleton<IRedisService, RedisService>();

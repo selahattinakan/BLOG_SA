@@ -1,75 +1,65 @@
-﻿using Business.Helpers;
-using Business.Interfaces;
+﻿using Business.Interfaces;
 using Constants;
 using Constants.Enums;
-using DB_EFCore.DataAccessLayer;
 using DB_EFCore.Entity;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using DB_EFCore.Repositories.Interfaces;
 
 namespace Business.Services
 {
-    //repositories burdan ayrılabilir
+
     public class AdminService : IAdminService
     {
-        private readonly AppDbContext _context;
+        private readonly IAdminRepository _repository;
         private readonly IService _service;
-        public AdminService(AppDbContext context, IService service)
+
+        public AdminService(IAdminRepository repository, IService service)
         {
-            _context = context;
+            _repository = repository;
             _service = service;
         }
+
 
         // Şifre kayıt ve gösterme işlemleri encrytion sınıfı ile yapılacak
         #region LogIn
         public bool LogInControl(string userName, string password)
         {
-            Admin? admin = _context.Admin.FirstOrDefault(x => x.UserName == userName && x.Password == password);
-            if (admin != null)
-            {
-                return true;
-            }
-            return false;
+            return _repository.LogInControl(userName, password);
         }
 
         public async Task<Admin> LogInControlAsync(string userName, string password)
         {
-            return await _context.Admin.FirstOrDefaultAsync(x => x.UserName == userName && x.Password == password);
+            return await _repository.LogInControlAsync(userName, password);
         }
         #endregion
 
         public Admin? GetAdmin(int id)
         {
-            return _context.Admin.Find(id);
+            return _repository.GetAdmin(id);
         }
 
         public async Task<Admin?> GetAdminAsync(int id)
         {
-            return await _context.Admin.FindAsync(id);
+            return await _repository.GetAdminAsync(id);
         }
 
         public List<Admin> GetAdmins()
         {
-            return _context.Admin.ToList();
+            return _repository.GetAdmins();
         }
 
         public async Task<List<Admin>> GetAdminsAsync()
         {
-            return await _context.Admin.ToListAsync();
+            return await _repository.GetAdminsAsync();
         }
+
 
         public ResultSet SaveAdmin(Admin admin)
         {
             ResultSet result = new ResultSet();
             try
             {
-                DbState state = DbState.Update;// context changetracker'dan da bakılabilir
-                Admin? data = _context.Admin.FirstOrDefault(x => x.Id == admin.Id);
+                DbState state = DbState.Update;
+                Admin? data = GetAdmin(admin.Id);
                 if (data == null)
                 {
                     data = new Admin();
@@ -83,23 +73,13 @@ namespace Business.Services
                 {
                     data.LastUpdateDate = DateTime.Now;
                     data.UpdateAdminId = _service.GetActiveUserId();
+                    result = _repository.UpdateAdmin(data);
                 }
                 else
                 {
                     data.RegisterDate = DateTime.Now;
                     data.RegisterId = _service.GetActiveUserId();
-                    _context.Add(data);
-                }
-
-                int count = _context.SaveChanges();
-                if (count > 0)
-                {
-                    result.Id = data.Id;
-                }
-                else
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Db işlemi başarısız";
+                    result = _repository.SaveAdmin(data);
                 }
             }
             catch (Exception ex)
@@ -116,7 +96,7 @@ namespace Business.Services
             try
             {
                 DbState state = DbState.Update;
-                Admin? data = await _context.Admin.FirstOrDefaultAsync(x => x.Id == admin.Id);
+                Admin? data = await GetAdminAsync(admin.Id);
                 if (data == null)
                 {
                     data = new Admin();
@@ -126,28 +106,17 @@ namespace Business.Services
                 data.Password = admin.Password;
                 data.FullName = admin.FullName;
 
-
                 if (state == DbState.Update)
                 {
                     data.LastUpdateDate = DateTime.Now;
                     data.UpdateAdminId = _service.GetActiveUserId();
+                    result = await _repository.UpdateAdminAsync(data);
                 }
                 else
                 {
                     data.RegisterDate = DateTime.Now;
                     data.RegisterId = _service.GetActiveUserId();
-                    await _context.AddAsync(data);
-                }
-
-                int count = await _context.SaveChangesAsync();
-                if (count > 0)
-                {
-                    result.Id = data.Id;
-                }
-                else
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Db işlemi başarısız";
+                    result = await _repository.SaveAdminAsync(data);
                 }
             }
             catch (Exception ex)
@@ -161,16 +130,10 @@ namespace Business.Services
         public ResultSet DeleteAdmin(int id)
         {
             ResultSet result = new ResultSet();
-            Admin? admin = _context.Admin.FirstOrDefault(x => x.Id == id);
+            Admin? admin = _repository.GetAdmin(id);
             if (admin != null)
             {
-                _context.Remove(admin);
-                int count = _context.SaveChanges();
-                if (count <= 0)
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Silme işlemi başarısız";
-                }
+                result = _repository.DeleteAdmin(admin);
             }
             return result;
         }
@@ -178,30 +141,17 @@ namespace Business.Services
         public async Task<ResultSet> DeleteAdminAsync(int id)
         {
             ResultSet result = new ResultSet();
-            Admin? admin = await _context.Admin.FirstOrDefaultAsync(x => x.Id == id);
+            Admin? admin = await _repository.GetAdminAsync(id);
             if (admin != null)
             {
-                _context.Remove(admin);
-                int count = await _context.SaveChangesAsync();
-                if (count <= 0)
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Silme işlemi başarısız";
-                }
+                result = await _repository.DeleteAdminAsync(admin);
             }
             return result;
         }
 
         public void SP_FN_Test()
         {
-            string userName = "SAKAN";
-            var admin = _context.Admin.FromSql($"GetAdminEncrypt {userName}").ToList();// entity doldurur
-
-
-            var param = new Dictionary<string, string>();
-            param.Add("@UserName", "SAKAN");
-            var spTest = _context.GetDataTableFromSP("GetAdminFullName", param);
-
+            _repository.SP_FN_Test();
         }
     }
 }
