@@ -1,5 +1,5 @@
 using BLOG_SA.Models;
-using Business.DTOs;
+using Constants.DTOs;
 using Business.Helpers;
 using Business.Interfaces;
 using Business.Services;
