@@ -8,10 +8,8 @@ using System.Threading.Tasks;
 
 namespace Business.Interfaces
 {
-    public interface ISettingService : ISettingSave
+    public interface ISettingSave
     {
-        public Setting? GetSetting();
-        public Task<Setting?> GetSettingAsync();
-        public ResultSet SaveSetting(Setting setting);
+        public Task<ResultSet> SaveSettingAsync(Setting setting);
     }
 }

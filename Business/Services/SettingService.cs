@@ -102,14 +102,16 @@ namespace Business.Services
                     data.AdminId = _service.GetActiveUserId();
                     result = await _repository.SaveSettingAsync(data);
                 }
+                result.Object = data;
+
                 //design patterna göre ayrılacak
-                if (result.Result == Result.Success)
-                {
-                    if (setting.IsRedisEnable)
-                    {
-                        await _redisService.CreateSettingCache(data);
-                    }
-                }
+                //if (result.Result == Result.Success)
+                //{
+                //    if (setting.IsRedisEnable)
+                //    {
+                //        await _redisService.CreateSettingCache(data);
+                //    }
+                //}
             }
             catch (Exception ex)
             {

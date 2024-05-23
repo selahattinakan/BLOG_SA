@@ -13,5 +13,8 @@ namespace Constants
 
         [JsonPropertyName("Id")]
         public int? Id { get; set; }
+
+        [JsonPropertyName("Object")]
+        public object Object { get; set; }
     }
 }

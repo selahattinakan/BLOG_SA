@@ -12,6 +12,7 @@ using BLOG_SA.Hubs;
 using Serilog;
 using DB_EFCore.Repositories.Interfaces;
 using DB_EFCore.Repositories;
+using Business.Decorators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +54,18 @@ builder.Services.AddScoped<IElasticsearchService, ElasticsearchService>();
 builder.Services.AddStackExchangeRedis(builder.Configuration);
 builder.Services.AddSingleton<RedisRepository>();
 builder.Services.AddSingleton<IRedisService, RedisService>();
+
+//decorator design pattern
+builder.Services.AddScoped<ISettingSave>(sp =>
+{
+    var settingService = sp.GetRequiredService<ISettingService>();
+    var _service = sp.GetRequiredService<IService>();
+    var redisService = sp.GetRequiredService<IRedisService>();
+
+    var redisDecorator = new SettingRedisDecorator(settingService, _service, redisService);
+
+    return redisDecorator;
+});
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<IPrincipal>(

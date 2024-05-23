@@ -19,10 +19,11 @@ namespace BLOG_SA.Controllers
         private readonly IArticleCommentService _articleCommentService;
         private readonly IContactService _contactService;
         private readonly ISettingService _settingService;
+        private readonly ISettingSave _settingSave;
         private readonly ISubscriberService _subscriberService;
         private readonly IService _service;
 
-        public AdminController(IArticleService articleService, IAdminService adminService, IArticleCommentService articleCommentService, IContactService contactService, ISettingService settingService, ISubscriberService subscriberService, IService service)
+        public AdminController(IArticleService articleService, IAdminService adminService, IArticleCommentService articleCommentService, IContactService contactService, ISettingService settingService, ISubscriberService subscriberService, IService service, ISettingSave settingSave)
         {
             _articleService = articleService;
             _adminService = adminService;
@@ -31,6 +32,7 @@ namespace BLOG_SA.Controllers
             _settingService = settingService;
             _subscriberService = subscriberService;
             _service = service;
+            _settingSave = settingSave;
         }
 
         public IActionResult Index()
@@ -102,7 +104,8 @@ namespace BLOG_SA.Controllers
         public async Task<IActionResult> SaveSetting(Setting setting)
         {
             //SettingService settingService = new SettingService();
-            ResultSet result = await _settingService.SaveSettingAsync(setting);
+            ResultSet result = await _settingSave.SaveSettingAsync(setting); // decorator design pattern
+            //ResultSet result = await _settingService.SaveSettingAsync(setting);
             return Json(result);
         }
         #endregion
