@@ -22,6 +22,7 @@ namespace BLOG_SA.Hubs
 
         public async Task AddGroup(string groupName, string nickName)
         {
+            #region xsrf/csrf security
             Regex rRemScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
             nickName = rRemScript.Replace(nickName, "");
             nickName = Regex.Replace(
@@ -29,7 +30,8 @@ namespace BLOG_SA.Hubs
                 @"</?(?i:script|embed|object|frameset|frame|iframe|meta|link|style)(.|\n|\s)*?>",
                 string.Empty,
                 RegexOptions.Singleline | RegexOptions.IgnoreCase
-            );
+            ); 
+            #endregion
 
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
@@ -38,6 +40,7 @@ namespace BLOG_SA.Hubs
 
         public async Task BroadcastMessageToGroupClient(string groupName, string message, string nickName)
         {
+            #region xsrf/csrf security
             Regex rRemScript = new Regex(@"<script[^>]*>[\s\S]*?</script>");
             nickName = rRemScript.Replace(nickName, "");
             nickName = Regex.Replace(
@@ -53,7 +56,8 @@ namespace BLOG_SA.Hubs
                 @"</?(?i:script|embed|object|frameset|frame|iframe|meta|link|style)(.|\n|\s)*?>",
                 string.Empty,
                 RegexOptions.Singleline | RegexOptions.IgnoreCase
-            );
+            ); 
+            #endregion
 
             await Clients.Group(groupName).ReceiveMessageForGroupClients(message, nickName);
         }

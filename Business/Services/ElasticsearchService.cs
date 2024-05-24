@@ -1,18 +1,10 @@
 ﻿using Business.Interfaces;
-using DB_EFCore.Entity;
-using Elastic.Clients.Elasticsearch;
 using Elasticsearch.Models;
 using Elasticsearch.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.Services
 {
-    public class ElasticsearchService : IElasticsearch
+    public class ElasticsearchService : IElasticsearchService
     {
         private readonly ArticleRepository _articleRepository;
 

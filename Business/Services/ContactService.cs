@@ -1,47 +1,41 @@
 ﻿using Business.Interfaces;
-using Constants.Enums;
 using Constants;
-using DB_EFCore.DataAccessLayer;
+using Constants.Enums;
 using DB_EFCore.Entity;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DB_EFCore.Repositories.Interfaces;
 
 namespace Business.Services
 {
     public class ContactService : IContactService
     {
-        private readonly AppDbContext _context;
-        public ContactService(AppDbContext context)
+        private readonly IContactRepository _repository;
+        public ContactService(IContactRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
         public Contact? GetContact(int id)
         {
-            return _context.Contact.Find(id);
+            return _repository.GetContact(id);
         }
 
         public async Task<Contact?> GetContactAsync(int id)
         {
-            return await _context.Contact.FindAsync(id);
+            return await _repository.GetContactAsync(id);
         }
 
         public List<Contact> GetContacts()
         {
-            return _context.Contact.ToList();
+            return _repository.GetContacts();
         }
 
         public async Task<List<Contact>> GetContactsAsync()
         {
-            return await _context.Contact.ToListAsync();
+            return await _repository.GetContactsAsync();
         }
 
         public async Task<int> GetContactsCount()
         {
-            return (await _context.Contact.ToListAsync()).Count;
+            return await _repository.GetContactsCount();
         }
 
         public async Task<ResultSet> SaveContactAsync(Contact contact)
@@ -49,12 +43,12 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                if (await GetContactsCount() > 1000) //max 1000 iletişim olsun, captcha aşılıp saldırı olursa. ilerde ayarlar içine al
+                if (await _repository.GetContactsCount() > 1000) //max 1000 iletişim olsun, captcha aşılıp saldırı olursa. ilerde ayarlar içine al
                 {
                     throw new Exception("Max kayıt adedi aşıldı");
                 }
                 DbState state = DbState.Update;
-                Contact? data = await _context.Contact.FirstOrDefaultAsync(x => x.Id == contact.Id);
+                Contact? data = await _repository.GetContactAsync(contact.Id);
                 if (data == null)
                 {
                     data = new Contact();
@@ -69,18 +63,7 @@ namespace Business.Services
                 if (state == DbState.Insert)
                 {
                     data.RegisterDate = DateTime.Now;
-                    await _context.AddAsync(data);
-                }
-
-                int count = await _context.SaveChangesAsync();
-                if (count > 0)
-                {
-                    result.Id = data.Id;
-                }
-                else
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Db işlemi başarısız";
+                    result = await _repository.SaveContactAsync(data);
                 }
             }
             catch (Exception ex)

@@ -1,37 +1,28 @@
-﻿using Constants.Enums;
+﻿using Business.Interfaces;
 using Constants;
-using DB_EFCore.DataAccessLayer;
+using Constants.Enums;
 using DB_EFCore.Entity;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Business.Interfaces;
+using DB_EFCore.Repositories.Interfaces;
 
 namespace Business.Services
 {
     public class SettingService : ISettingService
     {
-        private readonly AppDbContext _context;
+        private readonly ISettingRepository _repository;
         private readonly IService _service;
-        private readonly IRedisService _redisService;
-        public SettingService(AppDbContext context, IService service, IRedisService redisService)
+        public SettingService(ISettingRepository repository, IService service)
         {
-            _context = context;
+            _repository = repository;
             _service = service;
-            _redisService = redisService;
         }
         public Setting? GetSetting()
         {
-            return _context.Setting.FirstOrDefault();
+            return _repository.GetSetting();
         }
 
         public async Task<Setting?> GetSettingAsync()
         {
-            Setting? setting = await _redisService.GetSettingFromCache(1);
-            return setting != null ? setting : await _context.Setting.FirstOrDefaultAsync();
+            return await _repository.GetSettingAsync();
         }
 
         public ResultSet SaveSetting(Setting setting)
@@ -40,7 +31,7 @@ namespace Business.Services
             try
             {
                 DbState state = DbState.Update;
-                Setting? data = _context.Setting.FirstOrDefault(x => x.Id == setting.Id);
+                Setting? data = _repository.GetSetting(setting.Id);
                 if (data == null)
                 {
                     data = new Setting();
@@ -57,23 +48,13 @@ namespace Business.Services
                 {
                     data.LastUpdateDate = DateTime.Now;
                     data.UpdateAdminId = _service.GetActiveUserId();
+                    result = _repository.UpdateSetting(data);
                 }
                 else
                 {
                     data.RegisterDate = DateTime.Now;
                     data.AdminId = _service.GetActiveUserId();
-                    _context.Add(data);
-                }
-
-                int count = _context.SaveChanges();
-                if (count > 0)
-                {
-                    result.Id = data.Id;
-                }
-                else
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Db işlemi başarısız";
+                    result = _repository.SaveSetting(data);
                 }
             }
             catch (Exception ex)
@@ -84,14 +65,14 @@ namespace Business.Services
             return result;
         }
 
-        //design pattern'e göre redis ve ayarlar ayrılacak ya da başka bir servis çalışacak SettingWithRedis.cs gibi
+
         public async Task<ResultSet> SaveSettingAsync(Setting setting)
         {
             ResultSet result = new ResultSet();
             try
             {
-                DbState state = DbState.Update;// _context changetracker'dan da bakılabilir
-                Setting? data = await _context.Setting.FirstOrDefaultAsync(x => x.Id == setting.Id);
+                DbState state = DbState.Update;
+                Setting? data = await _repository.GetSettingAsync(setting.Id);
                 if (data == null)
                 {
                     data = new Setting();
@@ -100,7 +81,7 @@ namespace Business.Services
                 data.MaintenanceMode = setting.MaintenanceMode;
                 data.MaintenanceImgPath = setting.MaintenanceImgPath;
                 data.MaintenanceText = setting.MaintenanceText;
-                data.BioText= setting.BioText;
+                data.BioText = setting.BioText;
                 data.SubscribeMode = setting.SubscribeMode;
                 data.IsCommentEnable = setting.IsCommentEnable;
                 data.IsElasticsearchEnable = setting.IsElasticsearchEnable;
@@ -110,28 +91,16 @@ namespace Business.Services
                 {
                     data.LastUpdateDate = DateTime.Now;
                     data.UpdateAdminId = _service.GetActiveUserId();
+                    result = await _repository.UpdateSettingAsync(data);
                 }
                 else
                 {
                     data.RegisterDate = DateTime.Now;
                     data.AdminId = _service.GetActiveUserId();
-                    await _context.AddAsync(data);
+                    result = await _repository.SaveSettingAsync(data);
                 }
+                result.Object = data;
 
-                int count = await _context.SaveChangesAsync();
-                if (count > 0)
-                {
-                    result.Id = data.Id;
-                    if (setting.IsRedisEnable)
-                    {
-                        await _redisService.CreateSettingCache(setting); 
-                    }
-                }
-                else
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Db işlemi başarısız";
-                }
             }
             catch (Exception ex)
             {

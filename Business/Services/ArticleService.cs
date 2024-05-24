@@ -1,104 +1,80 @@
-﻿using Constants.Enums;
+﻿using Business.Interfaces;
 using Constants;
-using DB_EFCore.DataAccessLayer;
+using Constants.DTOs;
+using Constants.Enums;
 using DB_EFCore.Entity;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Business.Interfaces;
-using Business.DTOs;
-using System.Data;
-using System.Reflection;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using DB_EFCore.Repositories.Interfaces;
 using Elasticsearch.Models;
 
 namespace Business.Services
 {
-    //db işlemleri reposityor altına alınacak, reposityr dönüşlerine göre elastic search eklenecek, yani elastic ile main db işlemleri tamamen ayrı katmanlarda olup aynı katman altında sıralı işlem yapacak
-
-    //decorator design pattern uygulanacak
     public class ArticleService : IArticleService
     {
-        private readonly AppDbContext _context;
+        private readonly IArticleRepository _repository;
         private readonly IService _service;
-        private readonly IElasticsearch _elasticsearch;
         private readonly ISettingService _settingService;
-        public ArticleService(AppDbContext context, IService service, IElasticsearch elasticsearch, ISettingService settingService)
+
+        public ArticleService(IArticleRepository repository, IService service, ISettingService settingService)
         {
-            _context = context;
+            _repository = repository;
             _service = service;
-            _elasticsearch = elasticsearch;
             _settingService = settingService;
         }
+
         public Article? GetArticle(int id)
         {
-            return _context.Article.Find(id);
+            return _repository.GetArticle(id);
         }
 
         public async Task<Article?> GetArticleAsync(int id)
-        { // find faster than firstordefault
-            return await _context.Article.FindAsync(id);
+        {
+            return await _repository.GetArticleAsync(id);
         }
 
         public List<Article> GetArticles()
         {
-            return _context.Article.IgnoreQueryFilters().ToList();
+            return _repository.GetArticles();
         }
 
         public async Task<List<Article>> GetArticlesAsync()
-        {//admin tarafında tüm kayıtları çekiyor
-            return await _context.Article.IgnoreQueryFilters().ToListAsync();
+        {
+            return await _repository.GetArticlesAsync();
         }
 
         public async Task<List<Article>> GetArticlesForRssAsync()
         {
-            return await _context.Article.AsNoTracking().ToListAsync();
+            return await _repository.GetArticlesForRssAsync();
         }
 
         public List<Article> GetArticlesNoTracking()
         {// as no tracking ile her bir kayıt için state durumu tutulmuyor(flagler) ve performans artıyor. bu sorgu sonucu 1m kayıt dönseydi 1m flag ramde tutulacaktı
          // bu kayıtlardan birinde update,insert gibi bir işlem yapılacaksa flagler takip edilmediği için savechanges öncesi manuel işlemler yapılması gerekir
-            return _context.Article.AsNoTracking().IgnoreQueryFilters().ToList();
+            return _repository.GetArticlesNoTracking();
         }
 
         public async Task<Article> GetArticleWithCommentsAsync(int id)
         {
-            return await _context.Article.Include(x => x.ArticleComments.Where(x => x.IsConfirm)).FirstOrDefaultAsync(x => x.Id == id);
+            return await _repository.GetArticleWithCommentsAsync(id);
         }
 
         public async Task<List<Article>> GetArticlesWithCommentsAsync()
         {
-            return await _context.Article.Include(x => x.ArticleComments).ToListAsync();
+            return await _repository.GetArticlesWithCommentsAsync();
         }
 
         public List<int> GetArticleIds()
         {
-            var dataTable = _context.GetDataTableFromSP($"SP_GetArticleIds");
-            return dataTable.Rows.OfType<DataRow>().Select(dr => dr.Field<int>("Id")).ToList();
+            return _repository.GetArticleIds();
         }
 
         public async Task<List<ArticleDto>> GetArticlesWithCommentCountsAsync(int page, int pageSize)
         {
-            var articles = await _context.Article.Select(x => new ArticleDto
-            {
-                Id = x.Id,
-                PhotoIndex = x.PhotoIndex,
-                Title = x.Title,
-                PublishDate = x.PublishDate,
-                ReadMinute = x.ReadMinute,
-                CommentCounts = x.ArticleComments.Where(x => x.IsConfirm).Count(),
-                IntroContent = x.IntroContent,
-                Enable = x.Enable
-            }).OrderByDescending(x => x.PublishDate).ThenByDescending(x => x.Id).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-            return articles;
+            return await _repository.GetArticlesWithCommentCountsAsync(page, pageSize);
         }
 
         public async Task<int> GetArticleCountAsync(bool enabled)
         {
-            return await _context.Article.CountAsync();
+            return await _repository.GetArticleCountAsync(enabled);
         }
 
         public ResultSet SaveArticle(Article article)
@@ -107,7 +83,7 @@ namespace Business.Services
             try
             {
                 DbState state = DbState.Update;
-                Article? data = _context.Article.IgnoreQueryFilters().FirstOrDefault(x => x.Id == article.Id);
+                Article? data = _repository.GetArticleAsNoTracking(article.Id);
                 if (data == null)
                 {
                     data = new Article();
@@ -124,50 +100,17 @@ namespace Business.Services
                 {
                     data.LastUpdateDate = DateTime.Now;
                     data.UpdateAdminId = _service.GetActiveUserId();
+                    result = _repository.UpdateArticle(data);
                 }
                 else
                 {
                     data.RegisterDate = DateTime.Now;
                     data.AdminId = _service.GetActiveUserId();
-                    _context.Add(data);
+                    result = _repository.SaveArticle(data);
                 }
 
-                int count = _context.SaveChanges();
-                if (count > 0)
-                {
-                    result.Id = data.Id;
-                    var setting = _settingService.GetSetting();
-                    if (setting.IsElasticsearchEnable)
-                    {
-                        if (state == DbState.Insert)
-                        {
-                            ES_Article es_article = new ES_Article()
-                            {
-                                Content = data.IntroContent,
-                                Title = data.Title,
-                                Tags = string.Empty
-                            };
-                            var resultElastic = _elasticsearch.Save(es_article, data.Id);
-                            if (!resultElastic) throw new Exception("Elasticsearch kayıt işlemi başarısız");
-                        }
-                        else
-                        {
-                            ES_Article es_article = new ES_Article()
-                            {
-                                Content = data.IntroContent,
-                                Title = data.Title,
-                                Tags = string.Empty
-                            };
-                            var resultElastic = _elasticsearch.Update(es_article, data.Id);
-                            if (!resultElastic) throw new Exception("Elasticsearch güncelleme işlemi başarısız");
-                        } 
-                    }
-                }
-                else
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Db işlemi başarısız";
-                }
+                result.Object = data;
+                result.TempData = state;
             }
             catch (Exception ex)
             {
@@ -183,7 +126,7 @@ namespace Business.Services
             try
             {
                 DbState state = DbState.Update;// _context changetracker'dan da bakılabilir
-                Article? data = await _context.Article.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == article.Id);
+                Article? data = await _repository.GetArticleAsNoTrackingAsync(article.Id);
                 if (data == null)
                 {
                     data = new Article();
@@ -200,50 +143,17 @@ namespace Business.Services
                 {
                     data.LastUpdateDate = DateTime.Now;
                     data.UpdateAdminId = _service.GetActiveUserId();
+                    result = await _repository.UpdateArticleAsync(data);
                 }
                 else
                 {
                     data.RegisterDate = DateTime.Now;
                     data.AdminId = _service.GetActiveUserId();
-                    await _context.AddAsync(data);
+                    result = await _repository.SaveArticleAsync(data);
                 }
 
-                int count = await _context.SaveChangesAsync();
-                if (count > 0)
-                {
-                    result.Id = data.Id;
-                    var setting = await _settingService.GetSettingAsync();
-                    if (setting.IsElasticsearchEnable)
-                    {
-                        if (state == DbState.Insert)
-                        {
-                            ES_Article es_article = new ES_Article()
-                            {
-                                Content = data.IntroContent,
-                                Title = data.Title,
-                                Tags = string.Empty
-                            };
-                            var resultElastic = await _elasticsearch.SaveAsync(es_article, data.Id);
-                            if (!resultElastic) throw new Exception("Elasticsearch kayıt işlemi başarısız");
-                        }
-                        else
-                        {
-                            ES_Article es_article = new ES_Article()
-                            {
-                                Content = data.IntroContent,
-                                Title = data.Title,
-                                Tags = string.Empty
-                            };
-                            var resultElastic = await _elasticsearch.UpdateAsync(es_article, data.Id);
-                            if (!resultElastic) throw new Exception("Elasticsearch güncelleme işlemi başarısız");
-                        } 
-                    }
-                }
-                else
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Db işlemi başarısız";
-                }
+                result.Object = data;
+                result.TempData = state;
             }
             catch (Exception ex)
             {
@@ -256,25 +166,10 @@ namespace Business.Services
         public ResultSet DeleteArticle(int id)
         {
             ResultSet result = new ResultSet();
-            Article? article = _context.Article.IgnoreQueryFilters().FirstOrDefault(x => x.Id == id);
+            Article? article = _repository.GetArticle(id);
             if (article != null)
             {
-                _context.Remove(article);
-                int count = _context.SaveChanges();
-                if (count <= 0)
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Silme işlemi başarısız";
-                }
-                else
-                {
-                    var setting = _settingService.GetSetting();
-                    if (setting.IsElasticsearchEnable)
-                    {
-                        var resultElastic = _elasticsearch.Delete(id);
-                        if (!resultElastic) throw new Exception("Elasticsearch silme işlemi başarısız"); 
-                    }
-                }
+                result = _repository.DeleteArticle(article);
             }
             return result;
         }
@@ -287,25 +182,10 @@ namespace Business.Services
         public async Task<ResultSet> DeleteArticleAsync(int id)
         {
             ResultSet result = new ResultSet();
-            Article? article = await _context.Article.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id);
+            Article? article = await _repository.GetArticleAsync(id);
             if (article != null)
             {
-                _context.Remove(article);
-                int count = await _context.SaveChangesAsync();
-                if (count <= 0)
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Silme işlemi başarısız";
-                }
-                else
-                {
-                    var setting = await _settingService.GetSettingAsync();
-                    if (setting.IsElasticsearchEnable)
-                    {
-                        var resultElastic = await _elasticsearch.DeleteAsync(id);
-                        if (!resultElastic) throw new Exception("Elasticsearch silme işlemi başarısız"); 
-                    }
-                }
+                result = await _repository.DeleteArticleAsync(article);
             }
             return result;
         }

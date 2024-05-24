@@ -1,43 +1,38 @@
 ﻿using Business.Interfaces;
-using Constants.Enums;
 using Constants;
-using DB_EFCore.DataAccessLayer;
+using Constants.Enums;
 using DB_EFCore.Entity;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using DB_EFCore.Repositories.Interfaces;
 
 namespace Business.Services
 {
     public class SubscriberService : ISubscriberService
     {
-        private readonly AppDbContext _context;
-        public SubscriberService(AppDbContext context)
+        private readonly ISubscriberRepository _repository;
+
+        public SubscriberService(ISubscriberRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
+
         public Subscriber? GetSubscriber(int id)
         {
-            return _context.Subscriber.Find(id);
+            return _repository.GetSubscriber(id);
         }
 
         public async Task<Subscriber?> GetSubscriberAsync(int id)
         {
-            return await _context.Subscriber.FindAsync(id);
+            return await _repository.GetSubscriberAsync(id);
         }
 
         public List<Subscriber> GetSubscribers()
         {
-            return _context.Subscriber.ToList();
+            return _repository.GetSubscribers();
         }
 
         public async Task<List<Subscriber>> GetSubscribersAsync()
         {
-            return await _context.Subscriber.ToListAsync();
+            return await _repository.GetSubscribersAsync();
         }
 
         public async Task<ResultSet> SaveSubscriberAsync(string subMail)
@@ -45,7 +40,7 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                Subscriber sub = await _context.Subscriber.FirstOrDefaultAsync(x => x.Mail == subMail);
+                Subscriber? sub = await _repository.GetSubscriberAsync(subMail);
                 if (sub != null)
                 {
                     result.Result = Result.Fail;
@@ -56,17 +51,7 @@ namespace Business.Services
                     sub = new Subscriber();
                     sub.Mail = subMail;
                     sub.RegisterDate = DateTime.Now;
-                    await _context.AddAsync(sub);
-                    int count = await _context.SaveChangesAsync();
-                    if (count > 0)
-                    {
-                        result.Id = sub.Id;
-                    }
-                    else
-                    {
-                        result.Result = Result.Fail;
-                        result.Message = "Db işlemi başarısız";
-                    }
+                    result = await _repository.SaveSubscriberAsync(sub);
                 }
             }
             catch (Exception ex)

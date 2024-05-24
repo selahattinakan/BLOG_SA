@@ -1,44 +1,38 @@
-﻿using Constants.Enums;
+﻿using Business.Interfaces;
 using Constants;
-using DB_EFCore.DataAccessLayer;
+using Constants.Enums;
 using DB_EFCore.Entity;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Business.Interfaces;
+using DB_EFCore.Repositories.Interfaces;
 
 namespace Business.Services
 {
     public class ArticleCommentService : IArticleCommentService
     {
-        private readonly AppDbContext _context;
-        public ArticleCommentService(AppDbContext context)
+        private readonly IArticleCommentRepository _repository;
+
+        public ArticleCommentService(IArticleCommentRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         public ArticleComment? GetArticleComment(int id)
         {
-            return _context.ArticleComment.Find(id);
+            return _repository.GetArticleComment(id);
         }
 
         public async Task<ArticleComment?> GetArticleCommentAsync(int id)
         {
-            return await _context.ArticleComment.FindAsync(id);
+            return await _repository.GetArticleCommentAsync(id);
         }
 
         public List<ArticleComment> GetArticleComments()
         {
-            return _context.ArticleComment.ToList();
+            return _repository.GetArticleComments();
         }
 
         public async Task<List<ArticleComment>> GetArticleCommentsAsync()
         {
-            return await _context.ArticleComment.ToListAsync();
+            return await _repository.GetArticleCommentsAsync();
         }
 
         public ResultSet SaveArticleComment(ArticleComment articleComment)
@@ -47,7 +41,7 @@ namespace Business.Services
             try
             {
                 DbState state = DbState.Update;
-                ArticleComment? data = _context.ArticleComment.FirstOrDefault(x => x.Id == articleComment.Id);
+                ArticleComment? data = _repository.GetArticleComment(articleComment.Id);
                 if (data == null)
                 {
                     data = new ArticleComment();
@@ -64,18 +58,7 @@ namespace Business.Services
                 if (state == DbState.Insert)
                 {
                     data.RegisterDate = DateTime.Now;
-                    _context.Add(data);
-                }
-
-                int count = _context.SaveChanges();
-                if (count > 0)
-                {
-                    result.Id = data.Id;
-                }
-                else
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Db işlemi başarısız";
+                    result = _repository.SaveArticleComment(data);
                 }
             }
             catch (Exception ex)
@@ -91,13 +74,13 @@ namespace Business.Services
             ResultSet result = new ResultSet();
             try
             {
-                if (await GetCommentsCount() > 1000) //max 1000 olsun, saldırı olursa. ilerde ayarlar içine al
+                if (await _repository.GetCommentsCount() > 1000) //max 1000 olsun, saldırı olursa. ilerde ayarlar içine al
                 {
                     throw new Exception("Max kayıt adedi aşıldı");
                 }
 
                 DbState state = DbState.Update;// _context changetracker'dan da bakılabilir
-                ArticleComment? data = await _context.ArticleComment.FirstOrDefaultAsync(x => x.Id == articleComment.Id);
+                ArticleComment? data = await _repository.GetArticleCommentAsync(articleComment.Id);
                 if (data == null)
                 {
                     data = new ArticleComment();
@@ -113,18 +96,7 @@ namespace Business.Services
                 if (state == DbState.Insert)
                 {
                     data.RegisterDate = DateTime.Now;
-                    await _context.AddAsync(data);
-                }
-
-                int count = await _context.SaveChangesAsync();
-                if (count > 0)
-                {
-                    result.Id = data.Id;
-                }
-                else
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Db işlemi başarısız";
+                    result = await _repository.SaveArticleCommentAsync(data);
                 }
             }
             catch (Exception ex)
@@ -138,16 +110,10 @@ namespace Business.Services
         public ResultSet DeleteArticleComment(int id)
         {
             ResultSet result = new ResultSet();
-            ArticleComment? articleComment = _context.ArticleComment.FirstOrDefault(x => x.Id == id);
+            ArticleComment? articleComment = _repository.GetArticleComment(id);
             if (articleComment != null)
             {
-                _context.Remove(articleComment);
-                int count = _context.SaveChanges();
-                if (count <= 0)
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Silme işlemi başarısız";
-                }
+                result = _repository.DeleteArticleComment(articleComment);
             }
             return result;
         }
@@ -155,16 +121,10 @@ namespace Business.Services
         public async Task<ResultSet> DeleteArticleCommentAsync(int id)
         {
             ResultSet result = new ResultSet();
-            ArticleComment? articleComment = await _context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
+            ArticleComment? articleComment = await _repository.GetArticleCommentAsync(id);
             if (articleComment != null)
             {
-                _context.Remove(articleComment);
-                int count = await _context.SaveChangesAsync();
-                if (count <= 0)
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Silme işlemi başarısız";
-                }
+                result = await _repository.DeleteArticleCommentAsync(articleComment);
             }
             return result;
         }
@@ -172,28 +132,22 @@ namespace Business.Services
         public async Task<ResultSet> SetConfirmAsync(int id, bool confirm)
         {
             ResultSet result = new ResultSet();
-            ArticleComment? articleComment = await _context.ArticleComment.FirstOrDefaultAsync(x => x.Id == id);
+            ArticleComment? articleComment = await _repository.GetArticleCommentAsync(id);
             if (articleComment != null)
             {
-                articleComment.IsConfirm = confirm;
-                int count = await _context.SaveChangesAsync();
-                if (count <= 0)
-                {
-                    result.Result = Result.Fail;
-                    result.Message = "Silme işlemi başarısız";
-                }
+                result = await _repository.SetConfirmAsync(articleComment, confirm);
             }
             return result;
         }
 
         public async Task<List<ArticleComment>> GetArticleCommentsAsync(int articleId)
         {
-            return await _context.ArticleComment.Where(x => x.ArticleId == articleId).ToListAsync();
+            return await _repository.GetArticleCommentsAsync(articleId);
         }
 
         public async Task<int> GetCommentsCount()
         {
-            return (await _context.ArticleComment.ToListAsync()).Count;
+            return await _repository.GetCommentsCount();
         }
     }
 }
