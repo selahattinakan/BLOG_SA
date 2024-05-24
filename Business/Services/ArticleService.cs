@@ -8,21 +8,16 @@ using Elasticsearch.Models;
 
 namespace Business.Services
 {
-    //db işlemleri reposityor altına alınacak, reposityr dönüşlerine göre elastic search eklenecek, yani elastic ile main db işlemleri tamamen ayrı katmanlarda olup aynı katman altında sıralı işlem yapacak
-
-    //decorator design pattern uygulanacak
     public class ArticleService : IArticleService
     {
         private readonly IArticleRepository _repository;
         private readonly IService _service;
-        private readonly IElasticsearchService _elasticsearch;
         private readonly ISettingService _settingService;
 
-        public ArticleService(IArticleRepository repository, IService service, IElasticsearchService elasticsearch, ISettingService settingService)
+        public ArticleService(IArticleRepository repository, IService service, ISettingService settingService)
         {
             _repository = repository;
             _service = service;
-            _elasticsearch = elasticsearch;
             _settingService = settingService;
         }
 
@@ -114,35 +109,8 @@ namespace Business.Services
                     result = _repository.SaveArticle(data);
                 }
 
-                if (result.Result == Result.Success)
-                {
-                    var setting = _settingService.GetSetting();
-                    if (setting.IsElasticsearchEnable)
-                    {
-                        if (state == DbState.Insert)
-                        {
-                            ES_Article es_article = new ES_Article()
-                            {
-                                Content = data.IntroContent,
-                                Title = data.Title,
-                                Tags = string.Empty
-                            };
-                            var resultElastic = _elasticsearch.Save(es_article, data.Id);
-                            if (!resultElastic) throw new Exception("Elasticsearch kayıt işlemi başarısız");
-                        }
-                        else
-                        {
-                            ES_Article es_article = new ES_Article()
-                            {
-                                Content = data.IntroContent,
-                                Title = data.Title,
-                                Tags = string.Empty
-                            };
-                            var resultElastic = _elasticsearch.Update(es_article, data.Id);
-                            if (!resultElastic) throw new Exception("Elasticsearch güncelleme işlemi başarısız");
-                        }
-                    }
-                }
+                result.Object = data;
+                result.TempData = state;
             }
             catch (Exception ex)
             {
@@ -184,35 +152,8 @@ namespace Business.Services
                     result = await _repository.SaveArticleAsync(data);
                 }
 
-                if (result.Result == Result.Success)
-                {
-                    var setting = await _settingService.GetSettingAsync();
-                    if (setting.IsElasticsearchEnable)
-                    {
-                        if (state == DbState.Insert)
-                        {
-                            ES_Article es_article = new ES_Article()
-                            {
-                                Content = data.IntroContent,
-                                Title = data.Title,
-                                Tags = string.Empty
-                            };
-                            var resultElastic = await _elasticsearch.SaveAsync(es_article, data.Id);
-                            if (!resultElastic) throw new Exception("Elasticsearch kayıt işlemi başarısız");
-                        }
-                        else
-                        {
-                            ES_Article es_article = new ES_Article()
-                            {
-                                Content = data.IntroContent,
-                                Title = data.Title,
-                                Tags = string.Empty
-                            };
-                            var resultElastic = await _elasticsearch.UpdateAsync(es_article, data.Id);
-                            if (!resultElastic) throw new Exception("Elasticsearch güncelleme işlemi başarısız");
-                        }
-                    }
-                }
+                result.Object = data;
+                result.TempData = state;
             }
             catch (Exception ex)
             {
@@ -229,16 +170,6 @@ namespace Business.Services
             if (article != null)
             {
                 result = _repository.DeleteArticle(article);
-
-                if (result.Result == Result.Success)
-                {
-                    var setting = _settingService.GetSetting();
-                    if (setting.IsElasticsearchEnable)
-                    {
-                        var resultElastic = _elasticsearch.Delete(id);
-                        if (!resultElastic) throw new Exception("Elasticsearch silme işlemi başarısız");
-                    }
-                }
             }
             return result;
         }
@@ -255,16 +186,6 @@ namespace Business.Services
             if (article != null)
             {
                 result = await _repository.DeleteArticleAsync(article);
-
-                if (result.Result == Result.Success)
-                {
-                    var setting = await _settingService.GetSettingAsync();
-                    if (setting.IsElasticsearchEnable)
-                    {
-                        var resultElastic = await _elasticsearch.DeleteAsync(id);
-                        if (!resultElastic) throw new Exception("Elasticsearch silme işlemi başarısız");
-                    }
-                }
             }
             return result;
         }

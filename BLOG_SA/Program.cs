@@ -59,12 +59,22 @@ builder.Services.AddSingleton<IRedisService, RedisService>();
 builder.Services.AddScoped<ISettingSave>(sp =>
 {
     var settingService = sp.GetRequiredService<ISettingService>();
-    var _service = sp.GetRequiredService<IService>();
     var redisService = sp.GetRequiredService<IRedisService>();
 
-    var redisDecorator = new SettingRedisDecorator(settingService, _service, redisService);
+    var redisDecorator = new SettingRedisDecorator(settingService, redisService);
 
     return redisDecorator;
+});
+
+builder.Services.AddScoped<IArticleIUD>(sp =>
+{
+    var settingService = sp.GetRequiredService<ISettingService>();
+    var articleService = sp.GetRequiredService<IArticleService>();
+    var elasticService = sp.GetRequiredService<IElasticsearchService>();
+    
+    var elasticDecorator = new ArticleElasticsearchDecorator(articleService, elasticService, settingService);
+
+    return elasticDecorator;
 });
 
 builder.Services.AddHttpContextAccessor();

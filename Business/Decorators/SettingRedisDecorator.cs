@@ -1,13 +1,7 @@
 ﻿using Business.Interfaces;
+using Business.Services;
 using Constants;
 using DB_EFCore.Entity;
-using DB_EFCore.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Business.Decorators
 {
@@ -15,7 +9,7 @@ namespace Business.Decorators
     {
         private readonly IRedisService _redisService;
 
-        public SettingRedisDecorator(ISettingService settingService, IService service, IRedisService redisService) : base(settingService, service)
+        public SettingRedisDecorator(ISettingService settingService, IRedisService redisService) : base(settingService)
         {
             _redisService = redisService;
         }

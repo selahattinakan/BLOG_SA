@@ -1,13 +1,9 @@
-﻿using BLOG_SA.Models;
-using Business.Services;
-using Business.Interfaces;
+﻿using Business.Interfaces;
 using Constants;
 using Constants.Enums;
-using DB_EFCore.DataAccessLayer;
 using DB_EFCore.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 
 namespace BLOG_SA.Controllers
 {
@@ -16,6 +12,7 @@ namespace BLOG_SA.Controllers
     {
         private readonly IAdminService _adminService;
         private readonly IArticleService _articleService;
+        private readonly IArticleIUD _articleIUD;
         private readonly IArticleCommentService _articleCommentService;
         private readonly IContactService _contactService;
         private readonly ISettingService _settingService;
@@ -23,7 +20,7 @@ namespace BLOG_SA.Controllers
         private readonly ISubscriberService _subscriberService;
         private readonly IService _service;
 
-        public AdminController(IArticleService articleService, IAdminService adminService, IArticleCommentService articleCommentService, IContactService contactService, ISettingService settingService, ISubscriberService subscriberService, IService service, ISettingSave settingSave)
+        public AdminController(IArticleService articleService, IAdminService adminService, IArticleCommentService articleCommentService, IContactService contactService, ISettingService settingService, ISubscriberService subscriberService, IService service, ISettingSave settingSave, IArticleIUD articleIUD)
         {
             _articleService = articleService;
             _adminService = adminService;
@@ -33,6 +30,7 @@ namespace BLOG_SA.Controllers
             _subscriberService = subscriberService;
             _service = service;
             _settingSave = settingSave;
+            _articleIUD = articleIUD;
         }
 
         public IActionResult Index()
@@ -167,7 +165,8 @@ namespace BLOG_SA.Controllers
             if (!string.IsNullOrEmpty(article.Title) && !string.IsNullOrEmpty(article.Content) && article.PublishDate != DateTime.MinValue && article.PhotoIndex > 0)
             {
                 //ArticleService articleService = new ArticleService();
-                result = await _articleService.SaveArticleAsync(article);
+                //result = await _articleService.SaveArticleAsync(article);
+                result = await _articleIUD.SaveArticleAsync(article); //decorator design pattern
             }
             else
             {
@@ -184,7 +183,8 @@ namespace BLOG_SA.Controllers
             if (id > 0)
             {
                 //ArticleService articleService = new ArticleService();
-                result = await _articleService.DeleteArticleAsync(id);
+                //result = await _articleService.DeleteArticleAsync(id);
+                result = await _articleIUD.DeleteArticleAsync(id);//decorator design pattern
             }
             else
             {
