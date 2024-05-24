@@ -22,16 +22,16 @@ namespace BLOG_SA.Controllers
         private readonly IArticleCommentService _articleCommentService;
         private readonly ISubscriberService _subscriberService;
         private readonly IContactService _contactService;
-        private readonly ISettingService _settingService;
+        private readonly ISettingCache _settingCache;
 
-        public HomeController(ILogger<HomeController> logger, IArticleService articleService, IArticleCommentService articleCommentService, ISubscriberService subscriberService, IContactService contactService, ISettingService settingService)
+        public HomeController(ILogger<HomeController> logger, IArticleService articleService, IArticleCommentService articleCommentService, ISubscriberService subscriberService, IContactService contactService, ISettingCache settingCache)
         {
             _logger = logger;
             _articleService = articleService;
             _articleCommentService = articleCommentService;
             _subscriberService = subscriberService;
             _contactService = contactService;
-            _settingService = settingService;
+            _settingCache = settingCache;
         }
 
         #region Views
@@ -40,7 +40,7 @@ namespace BLOG_SA.Controllers
             ViewBag.Page = page;
             ViewBag.FirstPage = false;
             ViewBag.LastPage = false;
-            Setting? setting = await _settingService.GetSettingAsync();
+            Setting? setting = await _settingCache.GetSettingAsync();
             ViewBag.Bio = setting?.BioText;
 
             List<ArticleDto> articles = await _articleService.GetArticlesWithCommentCountsAsync(page, pageSize);
@@ -63,11 +63,11 @@ namespace BLOG_SA.Controllers
             ViewBag.LastArticle = false;
             ViewBag.NextArticle = 0;
             ViewBag.PrevArticle = 0;
-            Setting? setting = await _settingService.GetSettingAsync();
+            Setting? setting = await _settingCache.GetSettingAsync();
             ViewBag.Bio = setting?.BioText;
             Article article = await _articleService.GetArticleWithCommentsAsync(articleId);
 
-            if (article == null) return View(new Article() { ArticleComments = new List<ArticleComment>()});
+            if (article == null) return View(new Article() { ArticleComments = new List<ArticleComment>() });
 
             List<int> articleIds = _articleService.GetArticleIds();
             var index = articleIds.IndexOf(article.Id);
@@ -150,7 +150,7 @@ namespace BLOG_SA.Controllers
 
         public async Task<IActionResult> Contact()
         {
-            Setting? setting = await _settingService.GetSettingAsync();
+            Setting? setting = await _settingCache.GetSettingAsync();
             ViewBag.Bio = setting?.BioText;
 
             var siteKey = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("Google")["RecaptchaV3SiteKey"];
@@ -175,7 +175,7 @@ namespace BLOG_SA.Controllers
 
         public async Task<IActionResult> Chat()
         {
-            Setting? setting = await _settingService.GetSettingAsync();
+            Setting? setting = await _settingCache.GetSettingAsync();
             ViewBag.Bio = setting?.BioText;
 
             _logger.LogInformation("Chat sayfasý açýlýyor..");

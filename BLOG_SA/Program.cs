@@ -56,7 +56,7 @@ builder.Services.AddSingleton<RedisRepository>();
 builder.Services.AddSingleton<IRedisService, RedisService>();
 
 //decorator design pattern
-builder.Services.AddScoped<ISettingSave>(sp =>
+builder.Services.AddScoped<ISettingCache>(sp =>
 {
     var settingService = sp.GetRequiredService<ISettingService>();
     var redisService = sp.GetRequiredService<IRedisService>();

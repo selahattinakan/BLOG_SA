@@ -28,5 +28,11 @@ namespace Business.Decorators
 
             return result;
         }
+
+        public override async Task<Setting?> GetSettingAsync()
+        {
+            Setting? setting = await _redisService.GetSettingFromCache(1);
+            return setting != null ? setting : await base.GetSettingAsync();
+        }
     }
 }

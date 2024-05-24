@@ -10,12 +10,10 @@ namespace Business.Services
     {
         private readonly ISettingRepository _repository;
         private readonly IService _service;
-        private readonly IRedisService _redisService;
-        public SettingService(ISettingRepository repository, IService service, IRedisService redisService)
+        public SettingService(ISettingRepository repository, IService service)
         {
             _repository = repository;
             _service = service;
-            _redisService = redisService;
         }
         public Setting? GetSetting()
         {
@@ -24,8 +22,7 @@ namespace Business.Services
 
         public async Task<Setting?> GetSettingAsync()
         {
-            Setting? setting = await _redisService.GetSettingFromCache(1);
-            return setting != null ? setting : await _repository.GetSettingAsync();
+            return await _repository.GetSettingAsync();
         }
 
         public ResultSet SaveSetting(Setting setting)
@@ -68,7 +65,7 @@ namespace Business.Services
             return result;
         }
 
-        //design pattern'e göre redis ve ayarlar ayrılacak ya da başka bir servis çalışacak SettingWithRedis.cs gibi
+
         public async Task<ResultSet> SaveSettingAsync(Setting setting)
         {
             ResultSet result = new ResultSet();
@@ -104,14 +101,6 @@ namespace Business.Services
                 }
                 result.Object = data;
 
-                //design patterna göre ayrılacak
-                //if (result.Result == Result.Success)
-                //{
-                //    if (setting.IsRedisEnable)
-                //    {
-                //        await _redisService.CreateSettingCache(data);
-                //    }
-                //}
             }
             catch (Exception ex)
             {
